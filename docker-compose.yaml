@@ -1,0 +1,27 @@
+version: "3.8"
+
+name: bus-seats-dev
+
+networks:
+  backend:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: bus-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - TZ=Asia/Seoul
+    env_file:
+      - .env
+    volumes:
+      - ./data/mysql-data:/var/lib/mysql
+      - ./data/mysql-files:/var/lib/mysql-files
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_unicode_ci
+      - --lower_case_table_names=1
