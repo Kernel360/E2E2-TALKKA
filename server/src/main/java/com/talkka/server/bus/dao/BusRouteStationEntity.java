@@ -1,9 +1,10 @@
 package com.talkka.server.bus.dao;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bus.enums.CenterStation;
 import com.talkka.server.bus.enums.DistrictCode;
@@ -15,6 +16,7 @@ import com.talkka.server.bus.util.TurnStationConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,18 +30,20 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(AuditingEntityListener.class)
 public class BusRouteStationEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "bus_route_station_id", nullable = false)
 	private Long busRouteStationId;
 
-	@Column(name = "route_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "route_id", nullable = false)
 	private Long routeId;
 
-	@Column(name = "station_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "station_id", nullable = false)
 	private Long stationId;
 
-	@Column(name = "station_seq", nullable = false, columnDefinition = "SMALLINT")
+	@Column(name = "station_seq", nullable = false)
 	private Short stationSeq;
 
 	@Column(name = "station_name", nullable = false, length = 100)
@@ -68,5 +72,5 @@ public class BusRouteStationEntity {
 
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
-	private Timestamp createdAt;
+	private LocalDateTime createdAt;
 }
