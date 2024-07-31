@@ -9,8 +9,8 @@ import jakarta.persistence.Converter;
 public class CenterStationConverter implements AttributeConverter<CenterStation, String> {
 
 	@Override
-	public String convertToDatabaseColumn(CenterStation attribute) {
-		return attribute.getCode();
+	public String convertToDatabaseColumn(CenterStation centerStation) {
+		return centerStation != null ? centerStation.getCode() : null;
 	}
 
 	@Override
