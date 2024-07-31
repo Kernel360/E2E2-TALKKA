@@ -7,11 +7,13 @@ import org.springframework.data.annotation.CreatedDate;
 import com.talkka.server.bus.enums.EndBus;
 import com.talkka.server.bus.enums.LowPlate;
 import com.talkka.server.bus.enums.PlateType;
+import com.talkka.server.bus.util.EndBusConverter;
+import com.talkka.server.bus.util.LowPlateConverter;
+import com.talkka.server.bus.util.PlateTypeConverter;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,31 +30,31 @@ import lombok.NoArgsConstructor;
 public class BusLocationEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "bus_location_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "bus_location_id", nullable = false)
 	private Long busLocationId;
 
-	@Column(name = "route_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "route_id", nullable = false)
 	private Long routeId;
 
-	@Column(name = "station_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "station_id", nullable = false)
 	private Long stationId;
 
 	@Column(name = "station_seq", nullable = false, columnDefinition = "SMALLINT")
 	private Short stationSeq;
 
-	@Column(name = "end_bus", nullable = false) // DB Migration 할 때 반드시 값을 변경해야합니다.
-	@Enumerated(EnumType.STRING)
+	@Column(name = "end_bus", nullable = false, length = 1)
+	@Convert(converter = EndBusConverter.class)
 	private EndBus endBus;
 
-	@Column(name = "low_plate", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "low_plate", nullable = false, length = 1)
+	@Convert(converter = LowPlateConverter.class)
 	private LowPlate lowPlate;
 
 	@Column(name = "plate_no", nullable = false, length = 32)
 	private String plateNo;
 
-	@Column(name = "plate_type", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "plate_type", nullable = false, length = 1)
+	@Convert(converter = PlateTypeConverter.class)
 	private PlateType plateType;
 
 	@Column(name = "remain_seat_count", nullable = false, columnDefinition = "SMALLINT")

@@ -8,11 +8,13 @@ import org.springframework.data.annotation.CreatedDate;
 import com.talkka.server.bus.enums.CenterStation;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.enums.TurnStation;
+import com.talkka.server.bus.util.CenterStationConverter;
+import com.talkka.server.bus.util.DistrictCodeConverter;
+import com.talkka.server.bus.util.TurnStationConverter;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -47,20 +49,21 @@ public class BusRouteStationEntity {
 	private String regionName;
 
 	@Column(name = "district_cd", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Convert(converter = DistrictCodeConverter.class)
 	private DistrictCode districtCd;
 
-	@Column(name = "center_yn", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "center_yn", nullable = false, length = 1)
+	@Convert(converter = CenterStationConverter.class)
 	private CenterStation centerYn;
 
-	@Column(name = "turn_yn", nullable = false)
+	@Column(name = "turn_yn", nullable = false, length = 1)
+	@Convert(converter = TurnStationConverter.class)
 	private TurnStation turnYn;
 
-	@Column(name = "longitude", nullable = false, columnDefinition = "DECIMAL", precision = 10, scale = 7)
+	@Column(name = "longitude", nullable = false, precision = 10, scale = 7)
 	private BigDecimal longitude;
 
-	@Column(name = "latitude", nullable = false, columnDefinition = "DECIMAL", precision = 10, scale = 7)
+	@Column(name = "latitude", nullable = false, precision = 10, scale = 7)
 	private BigDecimal latitude;
 
 	@Column(name = "created_at", nullable = false)

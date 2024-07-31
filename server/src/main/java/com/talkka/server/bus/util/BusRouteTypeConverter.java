@@ -6,7 +6,7 @@ import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 
 @Converter(autoApply = true)
-public class BusRoutTypeConverter implements AttributeConverter<BusRouteType, String> {
+public class BusRouteTypeConverter implements AttributeConverter<BusRouteType, String> {
 	@Override
 	public String convertToDatabaseColumn(BusRouteType busRouteType) {
 		return busRouteType != null ? busRouteType.getCode() : null;

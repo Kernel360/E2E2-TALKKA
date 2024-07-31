@@ -7,11 +7,12 @@ import org.springframework.data.annotation.LastModifiedDate;
 
 import com.talkka.server.bus.enums.BusRouteType;
 import com.talkka.server.bus.enums.DistrictCode;
+import com.talkka.server.bus.util.BusRouteTypeConverter;
+import com.talkka.server.bus.util.DistrictCodeConverter;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,14 +29,14 @@ import lombok.NoArgsConstructor;
 public class BusRouteEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "route_id", nullable = false, columnDefinition = "BIGINT")
+	@Column(name = "route_id", nullable = false)
 	private Long routeId;
 
 	@Column(name = "route_name", nullable = false, length = 50)
 	private String routeName;       // 노선 번호
 
-	@Column(name = "route_type_cd", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "route_type_cd", nullable = false, length = 3)
+	@Convert(converter = BusRouteTypeConverter.class)
 	private BusRouteType routeTypeCd;        // 노선 유형 코드
 
 	@Column(name = "route_type_name", nullable = false, length = 50)
@@ -50,8 +51,8 @@ public class BusRouteEntity {
 	@Column(name = "company_tel", length = 15)
 	private String companyTel;      // 운수업체 전화번호
 
-	@Column(name = "district_cd", nullable = false)
-	@Enumerated(EnumType.STRING)
+	@Column(name = "district_cd", nullable = false, length = 3)
+	@Convert(converter = DistrictCodeConverter.class)
 	private DistrictCode districtCd;         // 관할 지역 코드
 
 	@Column(name = "up_first_time", nullable = false, length = 5)
