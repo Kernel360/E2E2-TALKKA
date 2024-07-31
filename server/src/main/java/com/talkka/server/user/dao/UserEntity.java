@@ -49,11 +49,11 @@ public class UserEntity {
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)
-	private LocalDateTime createAt;
+	private LocalDateTime createdAt;
 
 	@LastModifiedDate
 	@Column(name = "updated_at", nullable = false)
-	private LocalDateTime updateAt;
+	private LocalDateTime updatedAt;
 
 	@Override
 	public boolean equals(Object o) {
