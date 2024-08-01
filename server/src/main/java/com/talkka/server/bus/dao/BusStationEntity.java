@@ -17,39 +17,45 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "bus_route_station")
+@Entity(name = "bus_station")
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
-public class BusRouteStationEntity {
+public class BusStationEntity {
+
 	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "bus_route_station_id", nullable = false)
-	private Long busRouteStationId;
-
-	@Column(name = "route_id", nullable = false)
-	private Long routeId;
-
-	@Column(name = "station_id", nullable = false)
 	private Long stationId;
 
-	@Column(name = "station_seq", nullable = false)
-	private Short stationSeq;
+	@Column(name = "region_name", nullable = false, length = 100)
+	private String regionName;
 
-	@Column(name = "station_name", nullable = false, length = 100)
-	private String stationName;
+	@Column(name = "district_cd", nullable = false)
+	@Convert(converter = DistrictCodeConverter.class)
+	private DistrictCode districtCd;
 
-	@Column(name = "created_at", nullable = false)
+	@Column(name = "center_yn", nullable = false, length = 1)
+	@Convert(converter = CenterStationConverter.class)
+	private CenterStation centerYn;
+
+	@Column(name = "turn_yn", nullable = false, length = 1)
+	@Convert(converter = TurnStationConverter.class)
+	private TurnStation turnYn;
+
+	@Column(name = "longitude", nullable = false, precision = 10, scale = 7)
+	private BigDecimal longitude;
+
+	@Column(name = "latitude", nullable = false, precision = 10, scale = 7)
+	private BigDecimal latitude;
+
+	@Column(name = "created_at", nullable = false, updatable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
 }
