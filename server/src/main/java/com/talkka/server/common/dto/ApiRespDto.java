@@ -11,7 +11,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @AllArgsConstructor
-public class ApiResponseDto<T> {
+public class ApiRespDto<T> {
 	private int statusCode;
 	private String message;
 	private T data;
