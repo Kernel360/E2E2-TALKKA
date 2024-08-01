@@ -53,9 +53,6 @@ public class BusReviewEntity {
 	@JoinColumn(name = "route_id")
 	private BusRouteEntity route;
 
-	@Column(name = "station_id", nullable = false, updatable = false)
-	private Long stationId;
-
 	@Column(name = "content")
 	private String content;
 
