@@ -2,6 +2,9 @@ package com.talkka.server.common.exception.http;
 
 import org.springframework.http.HttpStatus;
 
+import lombok.Getter;
+
+@Getter
 public abstract class HttpBaseException extends RuntimeException {
 	private final HttpStatus statusCode;
 	private final String message;
@@ -22,11 +25,4 @@ public abstract class HttpBaseException extends RuntimeException {
 		this(httpStatus.value(), message);
 	}
 
-	public HttpStatus getStatusCode() {
-		return statusCode;
-	}
-
-	public String getMessage() {
-		return message;
-	}
 }
