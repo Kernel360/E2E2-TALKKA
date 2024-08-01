@@ -1,14 +1,15 @@
-package com.talkka.server.user.dao;
+package com.talkka.server.review.dao;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Objects;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.talkka.server.review.dao.BusReviewEntity;
+import com.talkka.server.bus.dao.BusRouteEntity;
+import com.talkka.server.bus.dao.BusRouteStationEntity;
+import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -16,7 +17,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
-@Entity(name = "users")
+@Entity(name = "bus_review")
 @Getter
 @Setter
 @Builder
@@ -32,24 +34,36 @@ import lombok.ToString;
 @AllArgsConstructor
 @ToString
 @EntityListeners(AuditingEntityListener.class)
-public class UserEntity {
+public class BusReviewEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "user_id", nullable = false)
-	private Long userId;
+	@Column(name = "bus_review_id", nullable = false)
+	private Long busReviewId;
 
-	@Column(name = "nickname", length = 50, nullable = false)
-	private String nickname;
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private UserEntity writer;
 
-	@Column(name = "oauth_provider", length = 30, nullable = false, updatable = false)
-	private String oauthProvider;
+	@ManyToOne
+	@JoinColumn(name = "bus_route_station_id")
+	private BusRouteStationEntity station;
 
-	@Column(name = "access_token", length = 255, nullable = false)
-	private String accessToken;
+	@ManyToOne
+	@JoinColumn(name = "route_id")
+	private BusRouteEntity route;
 
-	@Column(name = "grade", length = 20, nullable = false)
-	private String grade;
+	@Column(name = "station_id", nullable = false, updatable = false)
+	private Long stationId;
+
+	@Column(name = "content")
+	private String content;
+
+	@Column(name = "time_slot", nullable = false)
+	private Integer timeSlot;
+
+	@Column(name = "rating", nullable = false)
+	private Integer rating;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -59,21 +73,18 @@ public class UserEntity {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	@OneToMany(mappedBy = "writer")
-	private List<BusReviewEntity> busReviews;
-
 	@Override
 	public boolean equals(Object o) {
 		if (this == o)
 			return true;
 		if (o == null || getClass() != o.getClass())
 			return false;
-		UserEntity that = (UserEntity)o;
-		return Objects.equals(userId, that.userId);
+		BusReviewEntity that = (BusReviewEntity)o;
+		return Objects.equals(busReviewId, that.busReviewId);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(userId);
+		return Objects.hashCode(busReviewId);
 	}
 }
