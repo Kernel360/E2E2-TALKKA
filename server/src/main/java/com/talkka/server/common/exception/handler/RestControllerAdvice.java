@@ -4,7 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
-import com.talkka.server.common.dto.ApiResponseDto;
+import com.talkka.server.common.dto.ApiRespDto;
 import com.talkka.server.common.exception.CustomException;
 import com.talkka.server.common.exception.http.HttpBaseException;
 
@@ -12,8 +12,8 @@ import com.talkka.server.common.exception.http.HttpBaseException;
 public class RestControllerAdvice {
 
 	@ExceptionHandler(HttpBaseException.class)
-	public ResponseEntity<ApiResponseDto<Void>> handleHttpException(HttpBaseException exception) {
-		ApiResponseDto<Void> responseDto = ApiResponseDto.<Void>builder()
+	public ResponseEntity<ApiRespDto<Void>> handleHttpException(HttpBaseException exception) {
+		ApiRespDto<Void> responseDto = ApiRespDto.<Void>builder()
 			.statusCode(exception.getStatusCode().value())
 			.message(exception.getMessage())
 			.build();
@@ -25,8 +25,8 @@ public class RestControllerAdvice {
 	}
 
 	@ExceptionHandler(CustomException.class)
-	public ResponseEntity<ApiResponseDto<Void>> handleCustomException(CustomException exception) {
-		ApiResponseDto<Void> responseDto = ApiResponseDto.<Void>builder()
+	public ResponseEntity<ApiRespDto<Void>> handleCustomException(CustomException exception) {
+		ApiRespDto<Void> responseDto = ApiRespDto.<Void>builder()
 			.statusCode(exception.getErrorCode().getCode())
 			.message(exception.getErrorCode().getMessage())
 			.build();
