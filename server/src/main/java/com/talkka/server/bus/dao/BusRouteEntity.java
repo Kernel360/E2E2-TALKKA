@@ -108,7 +108,7 @@ public class BusRouteEntity {
 	@Column(name = "updated_at", nullable = false)
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
-
+ 
 	@OneToMany(mappedBy = "route")
 	private List<BusLocationEntity> routeLocations = new ArrayList<>();
 
