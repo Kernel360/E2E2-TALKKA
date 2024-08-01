@@ -1,9 +1,11 @@
 package com.talkka.server.bus.enums;
 
+import com.talkka.server.common.util.EnumCodeInterface;
+
 import lombok.Getter;
 
 @Getter
-public enum LowPlate {
+public enum LowPlate implements EnumCodeInterface {
 	// "0 = NORMAL" or "1 = LOW"
 	NORMAL("0"), LOW("1");
 
@@ -11,13 +13,5 @@ public enum LowPlate {
 
 	LowPlate(String code) {
 		this.code = code;
-	}
-
-	public static LowPlate fromCode(String value) {
-		return switch (value) {
-			case "0" -> NORMAL;
-			case "1" -> LOW;
-			default -> throw new IllegalArgumentException("Invalid value: " + value); // DOMAIN EXCEPTION 으로 변환 필요
-		};
 	}
 }

@@ -1,9 +1,11 @@
 package com.talkka.server.bus.enums;
 
+import com.talkka.server.common.util.EnumCodeInterface;
+
 import lombok.Getter;
 
 @Getter
-public enum EndBus {
+public enum EndBus implements EnumCodeInterface {
 	// "0 = RUNNING" or "1 = END"
 	RUNNING("1"), END("0");
 
@@ -11,13 +13,5 @@ public enum EndBus {
 
 	EndBus(String code) {
 		this.code = code;
-	}
-
-	public static EndBus fromCode(String value) {
-		return switch (value) {
-			case "0" -> RUNNING;
-			case "1" -> END;
-			default -> throw new IllegalArgumentException("Invalid value: " + value); // DOMAIN EXCEPTION 으로 변환 필요
-		};
 	}
 }
