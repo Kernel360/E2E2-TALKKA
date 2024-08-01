@@ -12,6 +12,7 @@ import com.talkka.server.bus.enums.BusRouteType;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.util.BusRouteTypeConverter;
 import com.talkka.server.bus.util.DistrictCodeConverter;
+import com.talkka.server.review.dao.BusReviewEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -113,6 +114,9 @@ public class BusRouteEntity {
 
 	@OneToMany(mappedBy = "route")
 	private List<BusRouteStationEntity> routeStations = new ArrayList<>();
+
+	@OneToMany(mappedBy = "route")
+	private List<BusReviewEntity> reviews = new ArrayList<>();
 
 	@Override
 	public boolean equals(Object o) {

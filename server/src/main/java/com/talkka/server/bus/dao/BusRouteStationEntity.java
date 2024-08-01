@@ -2,6 +2,7 @@ package com.talkka.server.bus.dao;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -12,6 +13,7 @@ import com.talkka.server.bus.enums.TurnStation;
 import com.talkka.server.bus.util.CenterStationConverter;
 import com.talkka.server.bus.util.DistrictCodeConverter;
 import com.talkka.server.bus.util.TurnStationConverter;
+import com.talkka.server.review.dao.BusReviewEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -22,6 +24,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -56,4 +59,7 @@ public class BusRouteStationEntity {
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
+
+	@OneToMany(mappedBy = "station")
+	private List<BusReviewEntity> busReviews;
 }
