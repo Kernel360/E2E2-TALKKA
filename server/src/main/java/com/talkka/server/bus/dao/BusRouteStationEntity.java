@@ -53,5 +53,5 @@ public class BusRouteStationEntity {
 	private LocalDateTime createdAt;
 
 	@OneToMany(mappedBy = "station")
-	private List<BusReviewEntity> busReviews;
+	private List<BusReviewEntity> reviews;
 }
