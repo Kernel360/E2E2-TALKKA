@@ -20,6 +20,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,11 +39,13 @@ public class BusRouteStationEntity {
 	@Column(name = "bus_route_station_id", nullable = false)
 	private Long busRouteStationId;
 
-	@Column(name = "route_id", nullable = false)
-	private Long routeId;
+	@ManyToOne
+	@JoinColumn(name = "route_id")
+	private BusRouteEntity route;
 
-	@Column(name = "station_id", nullable = false)
-	private Long stationId;
+	@ManyToOne
+	@JoinColumn(name= "station_id")
+	private BusStationEntity station;
 
 	@Column(name = "station_seq", nullable = false)
 	private Short stationSeq;

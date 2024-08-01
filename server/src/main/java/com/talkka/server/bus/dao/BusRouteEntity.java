@@ -111,6 +111,9 @@ public class BusRouteEntity {
 	@OneToMany(mappedBy = "route")
 	private List<BusLocationEntity> routeLocations = new ArrayList<>();
 
+	@OneToMany(mappedBy = "route")
+	private List<BusRouteStationEntity> routeStations = new ArrayList<>();
+
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) {
