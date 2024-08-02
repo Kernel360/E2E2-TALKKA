@@ -106,7 +106,7 @@ class UserServiceTest {
 				Grade.USER
 			);
 			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			given(userService.isDuplicatedNickname(userDto.getNickname())).willReturn(true);
+			given(userService.isDuplicatedNickname(any())).willReturn(true);
 			// when
 			// then
 			assertThatThrownBy(() -> userService.createUser(userCreateDto)).isInstanceOf(exceptionClass);
