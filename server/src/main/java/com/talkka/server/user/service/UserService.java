@@ -57,12 +57,13 @@ public class UserService {
 		return UserDto.of(savedUser);
 	}
 
-	public void deleteUser(Long userId) {
+	public Long deleteUser(Long userId) {
 		final boolean isExist = userRepository.existsById(userId);
 		if (!isExist) {
 			throw new BadRequestException("존재하지 않는 유저입니다.");
 		}
 		userRepository.deleteById(userId);
+		return userId;
 	}
 
 	public boolean isDuplicatedNickname(String nickname) {

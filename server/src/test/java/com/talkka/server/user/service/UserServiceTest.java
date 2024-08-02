@@ -4,6 +4,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -32,15 +33,17 @@ class UserServiceTest {
 	private UserRepository userRepository;
 
 	private UserDto userDtoFixture(Long userId) {
-		return UserDto.builder()
-			.userId(userId)
-			.nickname("nickname" + userId)
-			.oauthProvider("oauthProvider")
-			.accessToken("accessToken")
-			.grade(Grade.USER)
-			.createdAt(LocalDateTime.now())
-			.updatedAt(LocalDateTime.now())
-			.build();
+		return new UserDto(
+			userId,
+			"name",
+			"email",
+			"nickname",
+			"oauthProvider",
+			"accessToken",
+			Grade.USER,
+			LocalDateTime.now(),
+			LocalDateTime.now()
+		);
 	}
 
 	@Nested
@@ -74,12 +77,14 @@ class UserServiceTest {
 		@Test
 		void 제안된_요청에_따라_유저를_생성한다() {
 			// given
-			final UserCreateDto userCreateDto = UserCreateDto.builder()
-				.oauthProvider("oauthProvider")
-				.accessToken("accessToken")
-				.grade(Grade.USER)
-				.nickname("nickname")
-				.build();
+			final UserCreateDto userCreateDto = new UserCreateDto(
+				"name",
+				"email",
+				"oauthProvider",
+				"nickname",
+				"accessToken",
+				Grade.USER
+			);
 			final UserDto resultDto = userDtoFixture(1L);
 			given(userRepository.save(any(UserEntity.class))).willReturn(resultDto.toEntity());
 			// when
@@ -92,12 +97,14 @@ class UserServiceTest {
 		void 중복된_닉네임이_이미_존재하는_경우_Exception을_throw_한다() {
 			// given
 			final UserDto userDto = userDtoFixture(1L);
-			final UserCreateDto userCreateDto = UserCreateDto.builder()
-				.oauthProvider(userDto.getOauthProvider())
-				.accessToken(userDto.getAccessToken())
-				.grade(userDto.getGrade())
-				.nickname(userDto.getNickname())
-				.build();
+			final UserCreateDto userCreateDto = new UserCreateDto(
+				"name",
+				"email",
+				"oauthProvider",
+				userDto.getNickname(),
+				"accessToken",
+				Grade.USER
+			);
 			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			given(userService.isDuplicatedNickname(userDto.getNickname())).willReturn(true);
 			// when
@@ -143,15 +150,18 @@ class UserServiceTest {
 				.build();
 			final UserDto findDto = userDtoFixture(1L);
 			final UserEntity findEntity = findDto.toEntity();
-			final UserEntity updatedEntity = UserEntity.builder()
-				.userId(1L)
-				.nickname(reqDto.getNickname())
-				.oauthProvider(findEntity.getOauthProvider())
-				.accessToken(findEntity.getAccessToken())
-				.grade(findEntity.getGrade())
-				.createdAt(findEntity.getCreatedAt())
-				.updatedAt(findEntity.getUpdatedAt())
-				.build();
+			final UserEntity updatedEntity = new UserEntity(
+				1L,
+				"name",
+				"email",
+				"nickname2",
+				"oauthProvider",
+				"accessToken",
+				Grade.USER,
+				LocalDateTime.now(),
+				LocalDateTime.now(),
+				new ArrayList<>()
+			);
 
 			given(userRepository.findById(1L)).willReturn(Optional.of(findEntity));
 			given(userRepository.save(updatedEntity)).willReturn(updatedEntity);
@@ -177,9 +187,7 @@ class UserServiceTest {
 		@Test
 		void 중복된_닉네임으로_수정할_경우_Exception을_throw_한다() {
 			// given
-			final UserUpdateReqDto reqDto = UserUpdateReqDto.builder()
-				.nickname("nickname2")
-				.build();
+			final UserUpdateReqDto reqDto = new UserUpdateReqDto("nickname2");
 			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			final UserDto findDto = userDtoFixture(1L);
 			final UserEntity findEntity = findDto.toEntity();
@@ -200,9 +208,10 @@ class UserServiceTest {
 			// given
 			given(userRepository.existsById(1L)).willReturn(true);
 			// when
-			userService.deleteUser(1L);
+			final Long result = userService.deleteUser(1L);
 			// then
 			then(userRepository).should().deleteById(1L);
+			assertThat(result).isEqualTo(1L);
 		}
 
 		@Test

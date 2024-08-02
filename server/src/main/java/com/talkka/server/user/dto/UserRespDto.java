@@ -14,14 +14,18 @@ import lombok.ToString;
 @AllArgsConstructor
 public class UserRespDto {
 	private Long userId;
+	private String name;
+	private String email;
 	private String nickname;
 	private String oauthProvider;
 
 	public static UserRespDto of(UserDto userDto) {
-		return UserRespDto.builder()
-			.userId(userDto.getUserId())
-			.nickname(userDto.getNickname())
-			.oauthProvider(userDto.getOauthProvider())
-			.build();
+		return new UserRespDto(
+			userDto.getUserId(),
+			userDto.getName(),
+			userDto.getEmail(),
+			userDto.getNickname(),
+			userDto.getOauthProvider()
+		);
 	}
 }

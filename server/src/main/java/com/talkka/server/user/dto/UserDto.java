@@ -1,9 +1,8 @@
 package com.talkka.server.user.dto;
 
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.ArrayList;
 
-import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.enums.Grade;
 
@@ -22,37 +21,40 @@ import lombok.ToString;
 @AllArgsConstructor
 public class UserDto {
 	private Long userId;
+	private String name;
+	private String email;
 	private String nickname;
 	private String oauthProvider;
 	private String accessToken;
 	private Grade grade;
 	private LocalDateTime createdAt;
 	private LocalDateTime updatedAt;
-	private List<BusReviewEntity> busReviews;
 
 	public static UserDto of(UserEntity userEntity) {
-		return UserDto.builder()
-			.userId(userEntity.getUserId())
-			.nickname(userEntity.getNickname())
-			.oauthProvider(userEntity.getOauthProvider())
-			.accessToken(userEntity.getAccessToken())
-			.grade(userEntity.getGrade())
-			.createdAt(userEntity.getCreatedAt())
-			.updatedAt(userEntity.getUpdatedAt())
-			.busReviews(userEntity.getBusReviews())
-			.build();
+		return new UserDto(
+			userEntity.getUserId(),
+			userEntity.getName(),
+			userEntity.getEmail(),
+			userEntity.getNickname(),
+			userEntity.getOauthProvider(),
+			userEntity.getAccessToken(),
+			userEntity.getGrade(),
+			userEntity.getCreatedAt(),
+			userEntity.getUpdatedAt()
+		);
 	}
 
 	public UserEntity toEntity() {
-		return UserEntity.builder()
-			.userId(userId)
-			.nickname(nickname)
-			.oauthProvider(oauthProvider)
-			.accessToken(accessToken)
-			.grade(grade)
-			.createdAt(createdAt)
-			.updatedAt(updatedAt)
-			.busReviews(busReviews)
-			.build();
+		return new UserEntity(
+			userId,
+			name,
+			email,
+			nickname,
+			oauthProvider,
+			accessToken,
+			grade,
+			createdAt,
+			updatedAt,
+			new ArrayList<>());
 	}
 }

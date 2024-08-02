@@ -1,4 +1,4 @@
-package com.talkka.server.common.dto;
+package com.talkka.server.user.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,8 +13,6 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode
-public class ApiRespDto<T> {
-	private int statusCode;
-	private String message;
-	private T data;
+public class UserCreateReqDto {
+	private String nickname;
 }
