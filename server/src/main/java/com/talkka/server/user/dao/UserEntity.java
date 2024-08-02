@@ -42,6 +42,12 @@ public class UserEntity {
 	@Column(name = "user_id", nullable = false)
 	private Long userId;
 
+	@Column(name = "name", nullable = false)
+	private String name;
+
+	@Column(name = "email", length = 30, nullable = false)
+	private String email;
+
 	@Column(name = "nickname", length = 50, nullable = false)
 	private String nickname;
 
@@ -51,7 +57,7 @@ public class UserEntity {
 	@Column(name = "access_token", length = 255, nullable = false)
 	private String accessToken;
 
-	@Column(name = "grade", length = 20, nullable = false)
+	@Column(name = "grade", length = 20, nullable = true)
 	@Enumerated(EnumType.STRING)
 	private Grade grade;
 

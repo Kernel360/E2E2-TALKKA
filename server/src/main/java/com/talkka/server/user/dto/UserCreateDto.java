@@ -17,6 +17,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserCreateDto {
+	private String name;
+	private String email;
 	private String nickname;
 	private String oauthProvider;
 	private String accessToken;
@@ -24,6 +26,8 @@ public class UserCreateDto {
 
 	public UserEntity toEntity() {
 		return UserEntity.builder()
+			.name(name)
+			.email(email)
 			.nickname(nickname)
 			.oauthProvider(oauthProvider)
 			.accessToken(accessToken)
