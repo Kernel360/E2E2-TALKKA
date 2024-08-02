@@ -53,7 +53,7 @@ public class AuthController {
 			.build();
 		UserDto user = userService.createUser(userCreateDto);
 		request.getSession().invalidate();
-		return "redirect:/auth/login";
+		return "redirect:/oauth2/authorization/naver";
 	}
 
 	@GetMapping("/login/naver")

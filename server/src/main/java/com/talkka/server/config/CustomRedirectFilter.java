@@ -20,7 +20,6 @@ public class CustomRedirectFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
-		// 초기화 코드가 필요하지 않으면 빈 상태로 둡니다.
 	}
 
 	@Override
@@ -34,7 +33,7 @@ public class CustomRedirectFilter implements Filter {
 		if (authentication != null) {
 			Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
 			for (GrantedAuthority authority : authorities) {
-				if (authority.getAuthority().equals("ROLE_UNREGISTERED")
+				if (authority.getAuthority().equals("UNREGISTERED")
 					&& !httpRequest.getRequestURI().equals("/auth/signUp")) {
 					httpResponse.sendRedirect("/auth/signUp");
 					return;

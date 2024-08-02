@@ -11,6 +11,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import com.talkka.server.oauth.domain.NaverOAuth2User;
+import com.talkka.server.oauth.domain.OAuth2UserInfo;
+import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +27,16 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
-		NaverOAuth2User oAuth2User = new NaverOAuth2User(super.loadUser(userRequest).getAttributes());
-		if (userRepository.existsByEmail(oAuth2User.getEmail())) {
+		// Spring Security가 auth provider(naver, kakao, google..)에게 인증 정보를 받아옴
+		// 이 시점에선 UNREGISTERED 권한 가지고 있음
+		OAuth2UserInfo oAuth2User = new NaverOAuth2User(super.loadUser(userRequest).getAttributes());
+		String accessToken = userRequest.getAccessToken().getTokenValue();
+		oAuth2User.getAttributes().put("accessToken", accessToken);
+		// 만약 DB에 회원정보가 있으면 ROLE_USER 권한 새로 부여
+		UserEntity user = userRepository.findByEmail(oAuth2User.getEmail());
+		if (user != null) {
 			Map<String, Object> attributes = oAuth2User.getAttributes();
+			attributes.put("nickname", user.getNickname());
 			return new NaverOAuth2User(attributes,
 				List.of(new SimpleGrantedAuthority("ROLE_USER")));
 		}

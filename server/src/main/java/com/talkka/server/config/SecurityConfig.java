@@ -5,7 +5,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 import com.talkka.server.oauth.OAuth2LoginFailureHandler;
 import com.talkka.server.oauth.service.CustomOAuth2Service;
@@ -28,11 +28,10 @@ public class SecurityConfig {
 				.requestMatchers("/auth/**", "/login/**").permitAll()
 				.anyRequest().authenticated()
 			)
-			.addFilterBefore(new CustomRedirectFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(new CustomRedirectFilter(), BasicAuthenticationFilter.class)
 			.oauth2Login(oauth -> oauth
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2Service))
 				.defaultSuccessUrl("/")
-				.failureHandler(oAuth2LoginFailureHandler)
 			)
 			.exceptionHandling(exceptionHandling -> exceptionHandling
 				.authenticationEntryPoint((request, response, authException) -> {
