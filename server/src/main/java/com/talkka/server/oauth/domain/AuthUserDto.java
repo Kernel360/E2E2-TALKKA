@@ -1,2 +1,4 @@
-package com.talkka.server.oauth.domain;public class AuthUserDto {
+package com.talkka.server.oauth.domain;
+
+public class AuthUserDto {
 }

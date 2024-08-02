@@ -1,2 +1,4 @@
-package com.talkka.server.oauth;public class OAuth2LoginFailureHandler {
+package com.talkka.server.oauth;
+
+public class OAuth2LoginFailureHandler {
 }
