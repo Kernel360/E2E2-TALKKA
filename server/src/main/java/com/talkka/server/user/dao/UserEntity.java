@@ -9,10 +9,13 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.review.dao.BusReviewEntity;
+import com.talkka.server.user.enums.Grade;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -49,7 +52,8 @@ public class UserEntity {
 	private String accessToken;
 
 	@Column(name = "grade", length = 20, nullable = false)
-	private String grade;
+	@Enumerated(EnumType.STRING)
+	private Grade grade;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)

@@ -111,12 +111,15 @@ public class BusRouteEntity {
 
 	// 추후 논의 필요
 	@OneToMany(mappedBy = "route")
+	@Builder.Default
 	private List<BusLocationEntity> routeLocations = new ArrayList<>();
 
 	@OneToMany(mappedBy = "route")
+	@Builder.Default
 	private List<BusRouteStationEntity> stations = new ArrayList<>();
 
 	@OneToMany(mappedBy = "route")
+	@Builder.Default
 	private List<BusReviewEntity> reviews = new ArrayList<>();
 
 	@Override
