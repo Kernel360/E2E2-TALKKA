@@ -1,6 +1,8 @@
 package com.talkka.server.bus.dao;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -10,6 +12,7 @@ import com.talkka.server.bus.enums.BusRouteType;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.util.BusRouteTypeConverter;
 import com.talkka.server.bus.util.DistrictCodeConverter;
+import com.talkka.server.review.dao.BusReviewEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -18,6 +21,7 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -104,6 +108,19 @@ public class BusRouteEntity {
 	@Column(name = "updated_at", nullable = false)
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
+
+	// 추후 논의 필요
+	@OneToMany(mappedBy = "route")
+	@Builder.Default
+	private List<BusLocationEntity> routeLocations = new ArrayList<>();
+
+	@OneToMany(mappedBy = "route")
+	@Builder.Default
+	private List<BusRouteStationEntity> stations = new ArrayList<>();
+
+	@OneToMany(mappedBy = "route")
+	@Builder.Default
+	private List<BusReviewEntity> reviews = new ArrayList<>();
 
 	@Override
 	public boolean equals(Object o) {
