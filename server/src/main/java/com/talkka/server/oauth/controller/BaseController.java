@@ -12,6 +12,7 @@ import com.talkka.server.oauth.domain.OAuth2UserInfo;
 public class BaseController {
 	@GetMapping("/")
 	public String authIndex(Model model, @AuthenticationPrincipal OAuth2UserInfo userInfo) {
+		model.addAttribute("userId", userInfo.getUserId());
 		model.addAttribute("name", userInfo.getName());
 		model.addAttribute("email", userInfo.getEmail());
 		model.addAttribute("nickname", userInfo.getNickName());
