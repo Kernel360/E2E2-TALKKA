@@ -30,7 +30,7 @@ public class UserController {
 	public ResponseEntity<ApiRespDto<UserRespDto>> getUser(
 		@PathVariable("user_id") Long userId
 	) {
-		final UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
+		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
 				.statusCode(200)
@@ -43,7 +43,7 @@ public class UserController {
 	@PostMapping("")
 	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(@RequestBody UserCreateReqDto userCreateReqDto) {
 		// Session 연결 이후에 재수정해야함.
-		final UserCreateDto userCreateDto = new UserCreateDto(
+		UserCreateDto userCreateDto = new UserCreateDto(
 			"name",
 			"test@test.com",
 			"naver",
@@ -51,7 +51,7 @@ public class UserController {
 			"token",
 			Grade.USER
 		);
-		final UserRespDto userRespDto = UserRespDto.of(userService.createUser(userCreateDto));
+		UserRespDto userRespDto = UserRespDto.of(userService.createUser(userCreateDto));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
 				.statusCode(200)
@@ -64,7 +64,7 @@ public class UserController {
 	@PutMapping("/{user_id}")
 	public ResponseEntity<ApiRespDto<UserRespDto>> updateUser(@PathVariable("user_id") Long userId,
 		@RequestBody UserUpdateReqDto userUpdateReqDto) {
-		final UserRespDto userRespDto = UserRespDto.of(
+		UserRespDto userRespDto = UserRespDto.of(
 			userService.updateUser(userId, userUpdateReqDto));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
@@ -77,7 +77,7 @@ public class UserController {
 
 	@DeleteMapping("/{user_id}")
 	public ResponseEntity<ApiRespDto<Long>> deleteUser(@PathVariable("user_id") Long userId) {
-		final Long deletedUserId = userService.deleteUser(userId);
+		Long deletedUserId = userService.deleteUser(userId);
 		return ResponseEntity.ok(
 			ApiRespDto.<Long>builder()
 				.statusCode(200)

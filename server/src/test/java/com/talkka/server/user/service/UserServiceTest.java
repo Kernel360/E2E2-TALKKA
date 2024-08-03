@@ -52,10 +52,10 @@ class UserServiceTest {
 		@Test
 		public void 유저의_아이디를_받아_유저를_반환한다() {
 			// given
-			final UserDto userDto = userDtoFixture(1L);
+			UserDto userDto = userDtoFixture(1L);
 			given(userRepository.findById(1L)).willReturn(Optional.of(userDto.toEntity()));
 			// when
-			final var result = userService.getUser(1L);
+			var result = userService.getUser(1L);
 			// then
 			assertThat(result).isEqualTo(result);
 		}
@@ -63,7 +63,7 @@ class UserServiceTest {
 		@Test
 		void 존재하지_않는_유저를_조회할_경우_Exception을_throw_한다() {
 			// given
-			final Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			given(userRepository.findById(1L)).willReturn(Optional.empty());
 			// when
 			// then
@@ -77,27 +77,33 @@ class UserServiceTest {
 		@Test
 		void 제안된_요청에_따라_유저를_생성한다() {
 			// given
-			final UserCreateDto userCreateDto = new UserCreateDto(
+			UserCreateDto userCreateDto = new UserCreateDto(
 				"name",
 				"email",
-				"oauthProvider",
 				"nickname",
+				"oauthProvider",
 				"accessToken",
 				Grade.USER
 			);
-			final UserDto resultDto = userDtoFixture(1L);
+			UserDto resultDto = userDtoFixture(1L);
 			given(userRepository.save(any(UserEntity.class))).willReturn(resultDto.toEntity());
 			// when
-			final var result = userService.createUser(userCreateDto);
+			var result = userService.createUser(userCreateDto);
 			// then
-			assertThat(result).isEqualTo(resultDto);
+			assertThat(result.getUserId()).isEqualTo(1L);
+			assertThat(result.getName()).isEqualTo(userCreateDto.getName());
+			assertThat(result.getEmail()).isEqualTo(userCreateDto.getEmail());
+			assertThat(result.getNickname()).isEqualTo(userCreateDto.getNickname());
+			assertThat(result.getOauthProvider()).isEqualTo(userCreateDto.getOauthProvider());
+			assertThat(result.getAccessToken()).isEqualTo(userCreateDto.getAccessToken());
+			assertThat(result.getGrade()).isEqualTo(userCreateDto.getGrade());
 		}
 
 		@Test
 		void 중복된_닉네임이_이미_존재하는_경우_Exception을_throw_한다() {
 			// given
-			final UserDto userDto = userDtoFixture(1L);
-			final UserCreateDto userCreateDto = new UserCreateDto(
+			UserDto userDto = userDtoFixture(1L);
+			UserCreateDto userCreateDto = new UserCreateDto(
 				"name",
 				"email",
 				"oauthProvider",
@@ -105,7 +111,7 @@ class UserServiceTest {
 				"accessToken",
 				Grade.USER
 			);
-			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			given(userService.isDuplicatedNickname(any())).willReturn(true);
 			// when
 			// then
@@ -119,10 +125,10 @@ class UserServiceTest {
 		@Test
 		void 닉네임이_중복되지_않는경우_false를_반환한다() {
 			// given
-			final String nickname = "nickname";
+			String nickname = "nickname";
 			given(userRepository.existsByNickname(nickname)).willReturn(false);
 			// when
-			final var result = userService.isDuplicatedNickname(nickname);
+			var result = userService.isDuplicatedNickname(nickname);
 			// then
 			assertThat(result).isFalse();
 		}
@@ -130,10 +136,10 @@ class UserServiceTest {
 		@Test
 		void 닉네임이_중복되는경우_true를_반환한다() {
 			// given
-			final String nickname = "nickname";
+			String nickname = "nickname";
 			given(userRepository.existsByNickname(nickname)).willReturn(true);
 			// when
-			final var result = userService.isDuplicatedNickname(nickname);
+			var result = userService.isDuplicatedNickname(nickname);
 			// then
 			assertThat(result).isTrue();
 		}
@@ -145,12 +151,13 @@ class UserServiceTest {
 		@Test
 		void 유저가_수정할_정보를_요청하면_수정한_정보를_반환한다() {
 			// given
-			final UserUpdateReqDto reqDto = UserUpdateReqDto.builder()
+			UserUpdateReqDto reqDto = UserUpdateReqDto.builder()
 				.nickname("nickname2")
 				.build();
-			final UserDto findDto = userDtoFixture(1L);
-			final UserEntity findEntity = findDto.toEntity();
-			final UserEntity updatedEntity = new UserEntity(
+			UserDto findDto = userDtoFixture(1L);
+			UserEntity findEntity = findDto.toEntity();
+			LocalDateTime now = LocalDateTime.now();
+			UserEntity updatedEntity = new UserEntity(
 				1L,
 				"name",
 				"email",
@@ -158,26 +165,32 @@ class UserServiceTest {
 				"oauthProvider",
 				"accessToken",
 				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now(),
+				findEntity.getCreatedAt(),
+				now,
 				new ArrayList<>()
 			);
 
 			given(userRepository.findById(1L)).willReturn(Optional.of(findEntity));
 			given(userRepository.save(updatedEntity)).willReturn(updatedEntity);
 			// when
-			final var result = userService.updateUser(1L, reqDto);
+			var result = userService.updateUser(1L, reqDto);
 			// then
-			assertThat(result).isEqualTo(UserDto.of(updatedEntity));
+			assertThat(result.getUserId()).isEqualTo(1L);
+			assertThat(result.getNickname()).isEqualTo("nickname2");
+			assertThat(result.getOauthProvider()).isEqualTo(findDto.getOauthProvider());
+			assertThat(result.getAccessToken()).isEqualTo(findDto.getAccessToken());
+			assertThat(result.getGrade()).isEqualTo(Grade.USER);
+			assertThat(result.getCreatedAt()).isEqualTo(findDto.getCreatedAt());
+			assertThat(result.getUpdatedAt()).isEqualTo(now);
 		}
 
 		@Test
 		void 존재하지_않는_유저를_수정할_경우_Exception을_throw_한다() {
 			// given
-			final UserUpdateReqDto reqDto = UserUpdateReqDto.builder()
+			UserUpdateReqDto reqDto = UserUpdateReqDto.builder()
 				.nickname("nickname2")
 				.build();
-			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			given(userRepository.findById(1L)).willReturn(Optional.empty());
 			// when
 			// then
@@ -187,10 +200,10 @@ class UserServiceTest {
 		@Test
 		void 중복된_닉네임으로_수정할_경우_Exception을_throw_한다() {
 			// given
-			final UserUpdateReqDto reqDto = new UserUpdateReqDto("nickname2");
-			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			final UserDto findDto = userDtoFixture(1L);
-			final UserEntity findEntity = findDto.toEntity();
+			UserUpdateReqDto reqDto = new UserUpdateReqDto("nickname2");
+			Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			UserDto findDto = userDtoFixture(1L);
+			UserEntity findEntity = findDto.toEntity();
 			given(userRepository.findById(1L)).willReturn(Optional.of(findEntity));
 			given(userService.isDuplicatedNickname(reqDto.getNickname())).willReturn(true);
 			// when
@@ -208,7 +221,7 @@ class UserServiceTest {
 			// given
 			given(userRepository.existsById(1L)).willReturn(true);
 			// when
-			final Long result = userService.deleteUser(1L);
+			Long result = userService.deleteUser(1L);
 			// then
 			then(userRepository).should().deleteById(1L);
 			assertThat(result).isEqualTo(1L);
@@ -217,7 +230,7 @@ class UserServiceTest {
 		@Test
 		void 존재하지_않는_유저를_삭제할_경우_Exception을_throw_한다() {
 			// given
-			final Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			given(userRepository.existsById(1L)).willReturn(false);
 			// when
 			// then

@@ -29,7 +29,6 @@ import lombok.ToString;
 
 @Entity(name = "users")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -49,6 +48,7 @@ public class UserEntity {
 	private String email;
 
 	@Column(name = "nickname", length = 50, nullable = false)
+	@Setter
 	private String nickname;
 
 	@Column(name = "oauth_provider", length = 30, nullable = false, updatable = false)
@@ -59,6 +59,7 @@ public class UserEntity {
 
 	@Column(name = "grade", length = 20, nullable = true)
 	@Enumerated(EnumType.STRING)
+	@Setter
 	private Grade grade;
 
 	@CreatedDate
@@ -66,10 +67,12 @@ public class UserEntity {
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
+	@ToString.Exclude
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "writer")
+	@ToString.Exclude
 	private List<BusReviewEntity> busReviews;
 
 	@Override

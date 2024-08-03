@@ -18,31 +18,31 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	public UserDto getUser(Long userId) {
-		final UserEntity user = userRepository.findById(userId)
+		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
 
 		return UserDto.of(user);
 	}
 
 	public UserDto createUser(UserCreateDto userCreateDto) {
-		final UserEntity user = userCreateDto.toEntity();
+		UserEntity user = userCreateDto.toEntity();
 		if (this.isDuplicatedNickname(user.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		final UserEntity savedUser = userRepository.save(user);
+		UserEntity savedUser = userRepository.save(user);
 
 		return UserDto.of(savedUser);
 	}
 
 	public UserDto updateUser(Long userId, UserUpdateReqDto reqDto) {
-		final UserEntity user = userRepository.findById(userId)
+		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 유저입니다."));
 		// 중복 닉네임 체크
 		if (!reqDto.getNickname().equals(user.getNickname())
 			&& this.isDuplicatedNickname(reqDto.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		final UserEntity updatedUser = UserEntity.builder() // refactoring 필요함.
+		UserEntity updatedUser = UserEntity.builder() // refactoring 필요함.
 			.userId(userId)
 			.nickname(reqDto.getNickname())
 			.oauthProvider(user.getOauthProvider())
@@ -52,13 +52,13 @@ public class UserService {
 			.updatedAt(user.getUpdatedAt())
 			.busReviews(user.getBusReviews())
 			.build();
-		final UserEntity savedUser = userRepository.save(updatedUser);
+		UserEntity savedUser = userRepository.save(updatedUser);
 
 		return UserDto.of(savedUser);
 	}
 
 	public Long deleteUser(Long userId) {
-		final boolean isExist = userRepository.existsById(userId);
+		boolean isExist = userRepository.existsById(userId);
 		if (!isExist) {
 			throw new BadRequestException("존재하지 않는 유저입니다.");
 		}
