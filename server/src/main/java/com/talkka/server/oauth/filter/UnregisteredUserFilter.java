@@ -46,7 +46,6 @@ public class UnregisteredUserFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// 종료 시 코드가 필요하지 않으면 빈 상태로 둡니다.
 	}
 
 }
