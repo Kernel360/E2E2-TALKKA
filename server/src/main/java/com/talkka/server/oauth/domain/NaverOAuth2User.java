@@ -5,7 +5,6 @@ import java.util.Map;
 
 import org.springframework.security.core.GrantedAuthority;
 
-@SuppressWarnings("unchecked")
 public class NaverOAuth2User extends OAuth2UserInfo {
 
 	public NaverOAuth2User(Map<String, Object> attributes) {

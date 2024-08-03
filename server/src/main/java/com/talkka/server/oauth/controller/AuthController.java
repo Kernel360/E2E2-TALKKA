@@ -35,7 +35,6 @@ public class AuthController {
 		return "signUpForm";
 	}
 
-	@SuppressWarnings("checkstyle:WhitespaceAround")
 	@PostMapping("/signUp")
 	public String signUp(@RequestParam("nickname") String nickname,
 		Model model,
@@ -49,7 +48,7 @@ public class AuthController {
 			.email(principal.getEmail())
 			.oauthProvider(principal.getProvider())
 			.nickname(nickname)
-			.accessToken("testToken")
+			.accessToken(principal.getAccessToken())
 			.build();
 		UserDto user = userService.createUser(userCreateDto);
 		request.getSession().invalidate();

@@ -2,6 +2,7 @@ package com.talkka.server.oauth.service;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -23,7 +24,6 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
 
 	private final UserRepository userRepository;
 
-	@SuppressWarnings({"checkstyle:RegexpSingleline", "checkstyle:WhitespaceAfter"})
 	@Override
 	public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
 
@@ -33,8 +33,9 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
 		String accessToken = userRequest.getAccessToken().getTokenValue();
 		oAuth2User.getAttributes().put("accessToken", accessToken);
 		// 만약 DB에 회원정보가 있으면 ROLE_USER 권한 새로 부여
-		UserEntity user = userRepository.findByEmail(oAuth2User.getEmail());
-		if (user != null) {
+		Optional<UserEntity> optionalUser = userRepository.findByEmail(oAuth2User.getEmail());
+		if (optionalUser.isPresent()) {
+			UserEntity user = optionalUser.get();
 			Map<String, Object> attributes = oAuth2User.getAttributes();
 			attributes.put("nickname", user.getNickname());
 			return new NaverOAuth2User(attributes,
