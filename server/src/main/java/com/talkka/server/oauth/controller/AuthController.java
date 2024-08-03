@@ -8,8 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import com.talkka.server.oauth.domain.AuthUserDto;
-import com.talkka.server.oauth.domain.CustomUserPrincipal;
+import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.service.UserService;
@@ -30,32 +29,30 @@ public class AuthController {
 	}
 
 	@GetMapping("/signUp")
-	public String signUpForm(Model model, @AuthenticationPrincipal CustomUserPrincipal principal) {
-		AuthUserDto userDto = principal.getUser();
-		model.addAttribute("user", userDto);
+	public String signUpForm(Model model, @AuthenticationPrincipal OAuth2UserInfo principal) {
+		model.addAttribute("name", principal.getName());
+		model.addAttribute("email", principal.getEmail());
 		return "signUpForm";
 	}
 
-	@SuppressWarnings("checkstyle:WhitespaceAround")
 	@PostMapping("/signUp")
 	public String signUp(@RequestParam("nickname") String nickname,
 		Model model,
-		@AuthenticationPrincipal CustomUserPrincipal principal,
+		@AuthenticationPrincipal OAuth2UserInfo principal,
 		HttpServletRequest request) {
 		if (userService.isDuplicatedNickname(nickname)) {
 			return "signUpForm";
 		}
-		AuthUserDto authUserDto = principal.getUser();
 		UserCreateDto userCreateDto = UserCreateDto.builder()
-			.name(authUserDto.getName())
-			.email(authUserDto.getEmail())
-			.oauthProvider(authUserDto.getProvider())
+			.name(principal.getName())
+			.email(principal.getEmail())
+			.oauthProvider(principal.getProvider())
 			.nickname(nickname)
-			.accessToken(authUserDto.getAccessToken())
+			.accessToken(principal.getAccessToken())
 			.build();
 		UserDto user = userService.createUser(userCreateDto);
 		request.getSession().invalidate();
-		return "redirect:/";
+		return "redirect:/oauth2/authorization/naver";
 	}
 
 	@GetMapping("/login/naver")
