@@ -1,4 +1,4 @@
-package com.talkka.server.config;
+package com.talkka.server.oauth.filter;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -16,7 +16,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-public class CustomRedirectFilter implements Filter {
+public class UnregisteredUserFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
