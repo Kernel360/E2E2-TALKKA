@@ -43,6 +43,10 @@ public abstract class OAuth2UserInfo implements OAuth2User {
 		return (String)attributes.get("id");
 	}
 
+	public Long getUserId() {
+		return (Long)attributes.get("userId");
+	}
+
 	public String getEmail() {
 		return (String)attributes.get("email");
 	}
