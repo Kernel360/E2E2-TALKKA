@@ -1,5 +1,6 @@
 package com.talkka.server.user.dto;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -9,7 +10,7 @@ import lombok.ToString;
 @Getter
 @Builder
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class UserUpdateReqDto {
 	private String nickname;

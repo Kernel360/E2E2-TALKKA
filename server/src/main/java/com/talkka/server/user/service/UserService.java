@@ -37,22 +37,13 @@ public class UserService {
 	public UserDto updateUser(Long userId, UserUpdateReqDto reqDto) {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 유저입니다."));
-		// 중복 닉네임 체크
+
 		if (!reqDto.getNickname().equals(user.getNickname())
 			&& this.isDuplicatedNickname(reqDto.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		UserEntity updatedUser = UserEntity.builder() // refactoring 필요함.
-			.userId(userId)
-			.nickname(reqDto.getNickname())
-			.oauthProvider(user.getOauthProvider())
-			.accessToken(user.getAccessToken())
-			.grade(user.getGrade())
-			.createdAt(user.getCreatedAt())
-			.updatedAt(user.getUpdatedAt())
-			.busReviews(user.getBusReviews())
-			.build();
-		UserEntity savedUser = userRepository.save(updatedUser);
+		user.setNickname(reqDto.getNickname());
+		UserEntity savedUser = userRepository.save(user);
 
 		return UserDto.of(savedUser);
 	}
