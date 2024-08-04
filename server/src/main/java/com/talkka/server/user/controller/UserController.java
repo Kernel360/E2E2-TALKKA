@@ -1,6 +1,7 @@
 package com.talkka.server.user.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,8 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.common.dto.ApiRespDto;
+import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
+import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.dto.UserRespDto;
 import com.talkka.server.user.dto.UserUpdateReqDto;
 import com.talkka.server.user.enums.Grade;
@@ -83,6 +86,32 @@ public class UserController {
 				.statusCode(200)
 				.message("OK")
 				.data(null)
+				.build()
+		);
+	}
+
+	@GetMapping("/me")
+	public ResponseEntity<ApiRespDto<UserRespDto>> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
+		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userInfo.getUserId()));
+		return ResponseEntity.ok(
+			ApiRespDto.<UserRespDto>builder()
+				.statusCode(200)
+				.message("OK")
+				.data(userRespDto)
+				.build()
+		);
+	}
+
+	@PutMapping("/me")
+	public ResponseEntity<ApiRespDto<UserRespDto>> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
+		@RequestBody UserUpdateReqDto userUpdateReqDto) {
+		UserDto userDto = userService.updateUser(userInfo.getUserId(), userUpdateReqDto);
+		UserRespDto userRespDto = UserRespDto.of(userDto);
+		return ResponseEntity.ok(
+			ApiRespDto.<UserRespDto>builder()
+				.statusCode(200)
+				.message("OK")
+				.data(userRespDto)
 				.build()
 		);
 	}
