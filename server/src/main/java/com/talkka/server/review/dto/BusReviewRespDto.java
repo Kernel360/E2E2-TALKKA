@@ -1,7 +1,5 @@
 package com.talkka.server.review.dto;
 
-import java.util.Optional;
-
 import com.talkka.server.review.dao.BusReviewEntity;
 
 import lombok.AllArgsConstructor;
@@ -22,7 +20,7 @@ public class BusReviewRespDto {
 	private Long userId;
 	private Long routeId;
 	private Long busRouteStationId;
-	private Optional<String> content;
+	private String content;
 	private Integer timeSlot;
 	private Integer rating;
 
@@ -31,7 +29,7 @@ public class BusReviewRespDto {
 			.userId(busEntity.getWriter().getUserId())
 			.routeId(busEntity.getRoute().getRouteId())
 			.busRouteStationId(busEntity.getStation().getBusRouteStationId())
-			.content(Optional.ofNullable(busEntity.getContent()))
+			.content(busEntity.getContent())
 			.timeSlot(busEntity.getTimeSlot())
 			.rating(busEntity.getRating())
 			.build();

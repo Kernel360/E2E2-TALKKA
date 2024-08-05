@@ -1,8 +1,6 @@
 package com.talkka.server.review.service;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
@@ -11,6 +9,7 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
@@ -31,14 +30,12 @@ public class BusReviewService {
 	private final BusRouteRepository busRouteRepository;
 
 	public List<BusReviewRespDto> getBusReviewList(
-		Long userId, Long routeId, Long stationId, Integer timeSlot
+		Long userId, Long routeId, Long busRouteStationId, Integer timeSlot
 	) {
-		Optional<List<BusReviewEntity>> optionalList = busReviewRepository.findAllByUserIdAndRouteIdAndStationIdAndTimeSlot(
-			userId, routeId, stationId, timeSlot);
+		List<BusReviewEntity> reviewList = busReviewRepository.findReviews(
+			userId, routeId, busRouteStationId, timeSlot);
 
-		List<BusReviewEntity> list = optionalList.orElseGet(ArrayList::new);
-
-		return list.stream()
+		return reviewList.stream()
 			.map(BusReviewRespDto::of)
 			.collect(Collectors.toList());
 	}
@@ -64,17 +61,15 @@ public class BusReviewService {
 		final BusReviewEntity review = busReviewRepository.findById(busReviewId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
 
-		review.setContent(busReviewReqDto.getContent()
-			.orElse(null));
-		review.setTimeSlot(busReviewReqDto.getTimeSlot());
-		review.setRating(busReviewReqDto.getRating());
-
+		review.updateReview(busReviewReqDto.getContent(), busReviewReqDto.getRating(), busReviewReqDto.getTimeSlot());
 		BusReviewEntity updatedReview = busReviewRepository.save(review);
-
 		return BusReviewRespDto.of(updatedReview);
 	}
 
 	public void deleteBusReview(Long busReviewId) {
+		if (!busReviewRepository.existsById(busReviewId)) {
+			throw new BadRequestException("존재하지 않는 리뷰입니다.");
+		}
 		busReviewRepository.deleteById(busReviewId);
 	}
 }

@@ -48,7 +48,7 @@ public class BusReviewServiceTest {
 			.userId(userId)
 			.routeId(236000050L)
 			.busRouteStationId(1L)
-			.content(Optional.of("리뷰 내용"))
+			.content("리뷰 내용")
 			.timeSlot(24)
 			.rating(4)
 			.build();
@@ -74,7 +74,7 @@ public class BusReviewServiceTest {
 			final BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(1L)
 				.routeId(236000050L)
-				.content(Optional.of("리뷰 내용"))
+				.content("리뷰 내용")
 				.timeSlot(24)
 				.rating(4)
 				.build();
@@ -123,7 +123,7 @@ public class BusReviewServiceTest {
 			final BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(null)
 				.routeId(236000050L)
-				.content(Optional.of("리뷰 내용"))
+				.content("리뷰 내용")
 				.timeSlot(24)
 				.rating(4)
 				.build();
@@ -144,7 +144,7 @@ public class BusReviewServiceTest {
 			final BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(1L)
 				.routeId(null)
-				.content(Optional.of("리뷰 내용"))
+				.content("리뷰 내용")
 				.timeSlot(24)
 				.rating(4)
 				.build();
@@ -167,7 +167,7 @@ public class BusReviewServiceTest {
 		BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 			.routeId(236000050L)
 			.busRouteStationId(1L)
-			.content(Optional.of("변경된 리뷰 내용"))
+			.content("변경된 리뷰 내용")
 			.timeSlot(23)
 			.rating(5)
 			.build();

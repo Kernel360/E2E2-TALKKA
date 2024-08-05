@@ -30,10 +30,10 @@ public class BusReviewController {
 	public List<BusReviewRespDto> getBusReviewList(
 		@SessionAttribute(name = "userId") Long userId,
 		@RequestParam Long routeId,
-		@RequestParam Long stationId,
+		@RequestParam Long busRouteStationId,
 		@RequestParam Integer timeSlot
 	) {
-		return busReviewService.getBusReviewList(userId, routeId, stationId, timeSlot);
+		return busReviewService.getBusReviewList(userId, routeId, busRouteStationId, timeSlot);
 	}
 
 	@PostMapping("")

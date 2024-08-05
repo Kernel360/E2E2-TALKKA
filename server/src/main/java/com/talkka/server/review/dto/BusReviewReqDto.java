@@ -1,7 +1,5 @@
 package com.talkka.server.review.dto;
 
-import java.util.Optional;
-
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.review.dao.BusReviewEntity;
@@ -24,13 +22,13 @@ public class BusReviewReqDto {
 
 	private Long routeId;
 	private Long busRouteStationId;
-	private Optional<String> content;
+	private String content;
 	private Integer timeSlot;
 	private Integer rating;
 
 	public BusReviewEntity toEntity(UserEntity user, BusRouteStationEntity station, BusRouteEntity route) {
 		return BusReviewEntity.builder()
-			.content(content.orElse(null))
+			.content(content)
 			.timeSlot(timeSlot)
 			.rating(rating)
 			.writer(user)
