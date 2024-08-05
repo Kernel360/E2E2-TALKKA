@@ -45,11 +45,11 @@ public class UserController {
 		);
 	}
 
+	// 현재는 AuthController 쪽에서 처리하고 있으나, 추후 FE 연결 이후 사용할 것임.
 	@PostMapping("")
 	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(
 		@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserCreateReqDto userCreateReqDto) {
-		// Session 연결 이후에 재수정해야함.
 		UserCreateDto userCreateDto = new UserCreateDto(
 			userInfo.getName(),
 			userInfo.getEmail(),
