@@ -24,6 +24,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.talkka.server.common.enums.StatusCode;
 import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.oauth.domain.NaverOAuth2User;
@@ -97,8 +98,8 @@ class UserControllerTest {
 			mockMvc.perform(get("/api/users/{user_id}", userId)
 					.with(oauth2Login().oauth2User(oAuth2User)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").value(expect.getUserId()))
 				.andExpect(jsonPath("$.data.nickname").value(expect.getNickname()))
 				.andExpect(jsonPath("$.data.oauth_provider").value(expect.getOauthProvider()));
@@ -156,8 +157,8 @@ class UserControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(userCreateReqDto)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").exists())
 				.andExpect(jsonPath("$.data.name").value(userCreateDto.getName()))
 				.andExpect(jsonPath("$.data.email").value(userCreateDto.getEmail()))
@@ -211,8 +212,8 @@ class UserControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").value(userDto.getUserId()))
 				.andExpect(jsonPath("$.data.name").value(userDto.getName()))
 				.andExpect(jsonPath("$.data.email").value(userDto.getEmail()))
@@ -253,8 +254,8 @@ class UserControllerTest {
 					.with(oauth2Login().oauth2User(oAuth2User))
 					.with(csrf()))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data").doesNotExist());
 		}
 
@@ -300,8 +301,8 @@ class UserControllerTest {
 			mockMvc.perform(get("/api/users/me")
 					.with(oauth2Login().oauth2User(oAuth2User)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").value(expect.getUserId()))
 				.andExpect(jsonPath("$.data.email").value(expect.getEmail()))
 				.andExpect(jsonPath("$.data.name").value(expect.getName()))
@@ -337,8 +338,8 @@ class UserControllerTest {
 					.contentType(MediaType.APPLICATION_JSON)
 					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
 				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(200))
-				.andExpect(jsonPath("$.message").value("OK"))
+				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
+				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").value(userDto.getUserId()))
 				.andExpect(jsonPath("$.data.name").value(userDto.getName()))
 				.andExpect(jsonPath("$.data.email").value(userDto.getEmail()))

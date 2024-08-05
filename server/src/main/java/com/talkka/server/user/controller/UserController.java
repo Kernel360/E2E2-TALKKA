@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.common.dto.ApiRespDto;
+import com.talkka.server.common.enums.StatusCode;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
@@ -36,8 +37,8 @@ public class UserController {
 		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(userRespDto)
 				.build()
 		);
@@ -57,8 +58,8 @@ public class UserController {
 		UserRespDto userRespDto = UserRespDto.of(userService.createUser(userCreateDto));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(userRespDto)
 				.build()
 		);
@@ -71,8 +72,8 @@ public class UserController {
 			userService.updateUser(userId, userUpdateReqDto));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(userRespDto)
 				.build()
 		);
@@ -83,8 +84,8 @@ public class UserController {
 		Long deletedUserId = userService.deleteUser(userId);
 		return ResponseEntity.ok(
 			ApiRespDto.<Long>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(null)
 				.build()
 		);
@@ -95,8 +96,8 @@ public class UserController {
 		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userInfo.getUserId()));
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(userRespDto)
 				.build()
 		);
@@ -109,8 +110,8 @@ public class UserController {
 		UserRespDto userRespDto = UserRespDto.of(userDto);
 		return ResponseEntity.ok(
 			ApiRespDto.<UserRespDto>builder()
-				.statusCode(200)
-				.message("OK")
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
 				.data(userRespDto)
 				.build()
 		);
