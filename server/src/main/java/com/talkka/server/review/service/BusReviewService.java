@@ -41,16 +41,16 @@ public class BusReviewService {
 	}
 
 	public BusReviewRespDto createBusReview(Long userId, BusReviewReqDto busReviewReqDto) {
-		final UserEntity user = userRepository.findById(userId)
+		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
 
-		final BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.getBusRouteStationId())
+		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.getBusRouteStationId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 경유 정류장입니다."));
 
-		final BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
+		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
 
-		final BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route);
+		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route);
 
 		BusReviewEntity savedReview = busReviewRepository.save(entity);
 
@@ -58,7 +58,7 @@ public class BusReviewService {
 	}
 
 	public BusReviewRespDto updateBusReview(Long busReviewId, BusReviewReqDto busReviewReqDto) {
-		final BusReviewEntity review = busReviewRepository.findById(busReviewId)
+		BusReviewEntity review = busReviewRepository.findById(busReviewId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
 
 		review.updateReview(busReviewReqDto.getContent(), busReviewReqDto.getRating(), busReviewReqDto.getTimeSlot());
