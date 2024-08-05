@@ -25,7 +25,6 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "users")
@@ -49,7 +48,6 @@ public class UserEntity {
 	private String email;
 
 	@Column(name = "nickname", length = 50, nullable = false)
-	@Setter
 	private String nickname;
 
 	@Column(name = "oauth_provider", length = 30, nullable = false, updatable = false)
@@ -60,7 +58,6 @@ public class UserEntity {
 
 	@Column(name = "grade", length = 20, nullable = true)
 	@Enumerated(EnumType.STRING)
-	@Setter
 	private Grade grade;
 
 	@CreatedDate
@@ -89,5 +86,11 @@ public class UserEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(userId);
+	}
+
+	public void updateUser(String nickname) {
+		if (nickname != null && !nickname.isEmpty()) {
+			this.nickname = nickname;
+		}
 	}
 }

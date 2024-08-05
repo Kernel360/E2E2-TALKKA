@@ -42,7 +42,7 @@ public class UserService {
 			&& this.isDuplicatedNickname(reqDto.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		user.setNickname(reqDto.getNickname());
+		user.updateUser(reqDto.getNickname());
 		UserEntity savedUser = userRepository.save(user);
 
 		return UserDto.of(savedUser);
