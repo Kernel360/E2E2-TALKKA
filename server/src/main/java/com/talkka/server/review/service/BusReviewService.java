@@ -1,7 +1,6 @@
 package com.talkka.server.review.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -37,7 +36,7 @@ public class BusReviewService {
 
 		return reviewList.stream()
 			.map(BusReviewRespDto::of)
-			.collect(Collectors.toList());
+			.toList();
 	}
 
 	public BusReviewRespDto createBusReview(Long userId, BusReviewReqDto busReviewReqDto) {
