@@ -29,7 +29,6 @@ import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.oauth.domain.NaverOAuth2User;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
-import com.talkka.server.user.dao.UserRepository;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
 import com.talkka.server.user.dto.UserDto;
@@ -49,9 +48,6 @@ class UserControllerTest {
 
 	@MockBean
 	private UserService userService;
-
-	@MockBean
-	private UserRepository userRepository;
 
 	@Mock
 	private OAuth2UserInfo oAuth2User;
@@ -183,6 +179,57 @@ class UserControllerTest {
 				.andExpect(jsonPath("$.message").value("중복된 닉네임 입니다."))
 				.andExpect(jsonPath("$.data").doesNotExist());
 		}
+
+		@Test
+		void 유저의_닉네임이_길이가_짧으면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("0");
+			// when
+			// then
+			mockMvc.perform(post("/api/users")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
+
+		@Test
+		void 유저의_닉네임_길이가_길면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("123456789012345678901");
+			// when
+			// then
+			mockMvc.perform(post("/api/users")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
+
+		@Test
+		void 유저의_닉네임이_양식에_맞지_않으면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname!");
+			// when
+			// then
+			mockMvc.perform(post("/api/users")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 영문 대소문자, 한글, 숫자로만 입력해주세요."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
 	}
 
 	@Nested
@@ -237,6 +284,57 @@ class UserControllerTest {
 				.andExpect(status().isBadRequest())
 				.andExpect(jsonPath("$.status_code").value(400))
 				.andExpect(jsonPath("$.message").value("중복된 닉네임 입니다."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
+
+		@Test
+		void 유저의_닉네임이_길이가_짧으면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("0");
+			// when
+			// then
+			mockMvc.perform(put("/api/users/1")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
+
+		@Test
+		void 유저의_닉네임_길이가_길면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("123456789012345678901");
+			// when
+			// then
+			mockMvc.perform(put("/api/users/1")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
+				.andExpect(jsonPath("$.data").doesNotExist());
+		}
+
+		@Test
+		void 유저의_닉네임이_양식에_맞지_않으면_400을_반환한다() throws Exception {
+			// given
+			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname!");
+			// when
+			// then
+			mockMvc.perform(put("/api/users/1")
+					.with(oauth2Login().oauth2User(oAuth2User))
+					.with(csrf())
+					.contentType(MediaType.APPLICATION_JSON)
+					.content(objectMapper.writeValueAsString(userCreateReqDto)))
+				.andExpect(status().isBadRequest())
+				.andExpect(jsonPath("$.status_code").value(400))
+				.andExpect(jsonPath("$.message").value("닉네임은 영문 대소문자, 한글, 숫자로만 입력해주세요."))
 				.andExpect(jsonPath("$.data").doesNotExist());
 		}
 	}

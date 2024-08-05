@@ -22,6 +22,7 @@ import com.talkka.server.user.dto.UserUpdateReqDto;
 import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.service.UserService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -45,7 +46,7 @@ public class UserController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(@RequestBody UserCreateReqDto userCreateReqDto) {
+	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(@RequestBody @Valid UserCreateReqDto userCreateReqDto) {
 		// Session 연결 이후에 재수정해야함.
 		UserCreateDto userCreateDto = new UserCreateDto(
 			"name",
@@ -67,7 +68,7 @@ public class UserController {
 
 	@PutMapping("/{user_id}")
 	public ResponseEntity<ApiRespDto<UserRespDto>> updateUser(@PathVariable("user_id") Long userId,
-		@RequestBody UserUpdateReqDto userUpdateReqDto) {
+		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		UserRespDto userRespDto = UserRespDto.of(
 			userService.updateUser(userId, userUpdateReqDto));
 		return ResponseEntity.ok(
@@ -105,7 +106,7 @@ public class UserController {
 
 	@PutMapping("/me")
 	public ResponseEntity<ApiRespDto<UserRespDto>> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
-		@RequestBody UserUpdateReqDto userUpdateReqDto) {
+		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		UserDto userDto = userService.updateUser(userInfo.getUserId(), userUpdateReqDto);
 		UserRespDto userRespDto = UserRespDto.of(userDto);
 		return ResponseEntity.ok(
