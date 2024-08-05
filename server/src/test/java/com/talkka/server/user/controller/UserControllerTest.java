@@ -125,8 +125,8 @@ class UserControllerTest {
 			// given
 			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname");
 			final UserCreateDto userCreateDto = new UserCreateDto(
-				"name",
-				"test@test.com",
+				"testUser",
+				"test@example.com",
 				"naver",
 				userCreateReqDto.getNickname(),
 				"token",
@@ -138,7 +138,7 @@ class UserControllerTest {
 				userCreateDto.getEmail(),
 				userCreateDto.getNickname(),
 				userCreateDto.getOauthProvider(),
-				"accessToken",
+				"token",
 				Grade.USER,
 				LocalDateTime.now(),
 				LocalDateTime.now()

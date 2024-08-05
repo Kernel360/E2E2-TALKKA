@@ -46,14 +46,16 @@ public class UserController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(@RequestBody @Valid UserCreateReqDto userCreateReqDto) {
+	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(
+		@AuthenticationPrincipal OAuth2UserInfo userInfo,
+		@RequestBody @Valid UserCreateReqDto userCreateReqDto) {
 		// Session 연결 이후에 재수정해야함.
 		UserCreateDto userCreateDto = new UserCreateDto(
-			"name",
-			"test@test.com",
-			"naver",
+			userInfo.getName(),
+			userInfo.getEmail(),
 			userCreateReqDto.getNickname(),
-			"token",
+			userInfo.getProvider(),
+			userInfo.getAccessToken(),
 			Grade.USER
 		);
 		UserRespDto userRespDto = UserRespDto.of(userService.createUser(userCreateDto));
