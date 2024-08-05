@@ -31,17 +31,17 @@ public class BusReviewReqDto {
 	@NotNull
 	private Long busRouteStationId;
 
-	@Size(min = 5, max = 200)
+	@Size(min = 5, max = 200, message = "리뷰는 5자 이상, 200자 이하로 작성하여야 합니다.")
 	private String content;
 
 	@NotNull
-	@Min(0)
-	@Max(47)
+	@Min(value = 0, message = "형식에 맞지 않은 timeSlot 입니다.")
+	@Max(value = 47, message = "형식에 맞지 않은 timeSlot 입니다.")
 	private Integer timeSlot;
 
 	@NotNull
-	@Min(1)
-	@Max(10)
+	@Min(value = 1, message = "형식에 맞지 않는 rating 입니다.")
+	@Max(value = 10, message = "형식에 맞지 않는 rating 입니다.")
 	private Integer rating;
 
 	public BusReviewEntity toEntity(UserEntity user, BusRouteStationEntity station, BusRouteEntity route) {

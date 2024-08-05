@@ -17,6 +17,7 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.common.exception.http.ForbiddenException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
@@ -74,7 +75,7 @@ public class BusReviewServiceTest {
 
 	@Nested
 	@DisplayName("createBusReview 메서드 테스트")
-	public class createBusReviewTest {
+	public class CreateBusReviewTest {
 
 		@Test
 		void 제한된_요청에_따라_버스리뷰를_생성한다() {
@@ -177,7 +178,7 @@ public class BusReviewServiceTest {
 
 	@Nested
 	@DisplayName("updateBusReviewList 메서드 테스트")
-	public class updateBusReviewTest {
+	public class UpdateBusReviewTest {
 		BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 			.routeId(236000050L)
 			.busRouteStationId(1L)
@@ -190,13 +191,33 @@ public class BusReviewServiceTest {
 		void 리뷰를_찾지_못하는_경우_Exception을_throw_한다() {
 			//given
 			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.empty());
 			//when
 			//then
 			assertThatThrownBy(
-				() -> busReviewService.updateBusReview(anyLong(), busReviewReqDto))
+				() -> busReviewService.updateBusReview(1L, 1L, busReviewReqDto))
 				.isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 리뷰입니다.");
+		}
+
+		@Test
+		void 유저의_리뷰가_아닌_경우_Exception을_발생시킨다() {
+			//given
+			Long userId = 1L;
+			Long busReviewId = 1L;
+			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
+				.busReviewId(busReviewId)
+				.content("리뷰 내용")
+				.timeSlot(24)
+				.rating(4)
+				.writer(getUserFixture(userId + 1))
+				.build();
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			//when
+			//then
+			assertThatThrownBy(() -> busReviewService.updateBusReview(userId, busReviewId, busReviewReqDto))
+				.isInstanceOf(ForbiddenException.class)
+				.hasMessage("작성자와 일치하지 않는 ID입니다.");
 		}
 
 		@Test
@@ -223,11 +244,61 @@ public class BusReviewServiceTest {
 			BusReviewRespDto resultDto = BusReviewRespDto.of(updatedEntity);
 
 			//when
-			BusReviewRespDto updatedReview = busReviewService.updateBusReview(originEntity.getBusReviewId(),
-				busReviewReqDto);
+			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getUserId(),
+				originEntity.getBusReviewId(), busReviewReqDto);
 
 			//then
 			assertThat(updatedReview).isEqualTo(resultDto);
+		}
+	}
+
+	@Nested
+	@DisplayName("deleteBusReview 메서드")
+	public class DeleteBusReviewTest {
+
+		@Test
+		void 유저의_리뷰를_삭제한다() {
+			// given
+			Long userId = 1L;
+			Long busReviewId = 1L;
+
+			// when
+			// then
+			var result = busReviewService.deleteBusReview(userId, busReviewId);
+			assertThat(result).isEqualTo(busReviewId);
+		}
+
+		@Test
+		void 존재하지않는_리뷰일경우_Exception을_발생시킨다() {
+			// given
+			Long userId = 1L;
+			Long busReviewId = 1L;
+
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.empty());
+			// when
+			// then
+			assertThatThrownBy(
+				() -> busReviewService.deleteBusReview(userId, busReviewId)
+			).isInstanceOf(NotFoundException.class)
+				.hasMessage("존재하지 않는 리뷰입니다.");
+		}
+
+		@Test
+		void 유저의_리뷰가_아닌_경우_Exception을_발생시킨다() {
+			// given
+			Long userId = 1L;
+			Long busReviewId = 1L;
+			BusReviewEntity reviewEntity = BusReviewEntity.builder()
+				.busReviewId(busReviewId)
+				.writer(getUserFixture(userId + 1))
+				.build();
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(reviewEntity));
+			// when
+			// then
+			assertThatThrownBy(
+				() -> busReviewService.deleteBusReview(userId, busReviewId)
+			).isInstanceOf(ForbiddenException.class)
+				.hasMessage("작성자와 일치하지 않는 ID입니다.");
 		}
 	}
 }
