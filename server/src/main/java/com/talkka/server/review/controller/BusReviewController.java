@@ -20,6 +20,7 @@ import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.service.BusReviewService;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -50,7 +51,7 @@ public class BusReviewController {
 	@PostMapping("")
 	public ResponseEntity<ApiRespDto<BusReviewRespDto>> saveBusReview(
 		@SessionAttribute(name = "userId") Long userId,
-		@RequestBody BusReviewReqDto busReviewReqDto
+		@RequestBody @Valid BusReviewReqDto busReviewReqDto
 	) {
 		BusReviewRespDto createdReview = busReviewService.createBusReview(userId, busReviewReqDto);
 
@@ -66,7 +67,7 @@ public class BusReviewController {
 	public ResponseEntity<ApiRespDto<BusReviewRespDto>> updateBusReview(
 		@SessionAttribute(name = "userId") Long userId,
 		@PathVariable(name = "bus_review_id") Long busReviewId,
-		@RequestBody BusReviewReqDto busReviewReqDto
+		@RequestBody @Valid BusReviewReqDto busReviewReqDto
 	) {
 		BusReviewRespDto updatedReview = busReviewService.updateBusReview(busReviewId, busReviewReqDto);
 
