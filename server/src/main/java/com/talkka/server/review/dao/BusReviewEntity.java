@@ -23,12 +23,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "bus_review")
 @Getter
-@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -83,5 +81,11 @@ public class BusReviewEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(busReviewId);
+	}
+
+	public void updateReview(String content, Integer timeSlot, Integer rating) {
+		this.content = content;
+		this.timeSlot = timeSlot;
+		this.rating = rating;
 	}
 }
