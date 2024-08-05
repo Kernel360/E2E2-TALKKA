@@ -15,7 +15,7 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
-public class UserUpdateReqDto {
+public class UserCreateReqDto {
 	@NotNull
 	@Size(min = 2, max = 20, message = "닉네임은 2자 이상 20자 이하로 입력해주세요.")
 	@Pattern(regexp = "^[a-zA-Z0-9가-힣]*$", message = "닉네임은 영문 대소문자, 한글, 숫자로만 입력해주세요.")

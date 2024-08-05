@@ -20,18 +20,17 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 import lombok.ToString;
 
 @Entity(name = "users")
 @Getter
-@Setter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @ToString
 @EntityListeners(AuditingEntityListener.class)
@@ -70,6 +69,7 @@ public class UserEntity {
 	private LocalDateTime updatedAt;
 
 	@OneToMany(mappedBy = "writer")
+	@ToString.Exclude
 	private List<BusReviewEntity> busReviews;
 
 	@Override
@@ -85,5 +85,11 @@ public class UserEntity {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(userId);
+	}
+
+	public void updateUser(String nickname) {
+		if (nickname != null && !nickname.isEmpty()) {
+			this.nickname = nickname;
+		}
 	}
 }
