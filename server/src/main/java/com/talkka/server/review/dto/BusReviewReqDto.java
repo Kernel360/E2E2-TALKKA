@@ -3,6 +3,7 @@ package com.talkka.server.review.dto;
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.review.dao.BusReviewEntity;
+import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.validation.constraints.Max;
@@ -35,9 +36,8 @@ public class BusReviewReqDto {
 	private String content;
 
 	@NotNull
-	@Min(value = 0, message = "형식에 맞지 않은 timeSlot 입니다.")
-	@Max(value = 47, message = "형식에 맞지 않은 timeSlot 입니다.")
-	private Integer timeSlot;
+	@Size(min = 1, max = 2, message = "형식에 맞지 않은 timeSlot 입니다.")
+	private String timeSlot;
 
 	@NotNull
 	@Min(value = 1, message = "형식에 맞지 않는 rating 입니다.")
@@ -45,6 +45,7 @@ public class BusReviewReqDto {
 	private Integer rating;
 
 	public BusReviewEntity toEntity(UserEntity user, BusRouteStationEntity station, BusRouteEntity route) {
-		return new BusReviewEntity(null, user, station, route, content, timeSlot, rating, null, null);
+		return new BusReviewEntity(null, user, station, route, content, TimeSlot.valueOf(timeSlot),
+			rating, null, null);
 	}
 }

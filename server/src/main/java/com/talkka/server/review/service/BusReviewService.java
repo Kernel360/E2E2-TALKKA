@@ -3,6 +3,7 @@ package com.talkka.server.review.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
@@ -14,6 +15,7 @@ import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
+import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -56,6 +58,7 @@ public class BusReviewService {
 		return BusReviewRespDto.of(savedReview);
 	}
 
+	@Transactional
 	public BusReviewRespDto updateBusReview(Long userId, Long busReviewId, BusReviewReqDto busReviewReqDto) {
 		BusReviewEntity review = busReviewRepository.findById(busReviewId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
@@ -64,9 +67,10 @@ public class BusReviewService {
 			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
 		}
 
-		review.updateReview(busReviewReqDto.getContent(), busReviewReqDto.getRating(), busReviewReqDto.getTimeSlot());
-		BusReviewEntity updatedReview = busReviewRepository.save(review);
-		return BusReviewRespDto.of(updatedReview);
+		review.updateReview(busReviewReqDto.getContent(), TimeSlot.valueOf(busReviewReqDto.getTimeSlot()),
+			busReviewReqDto.getRating());
+		
+		return BusReviewRespDto.of(review);
 	}
 
 	public Long deleteBusReview(Long userId, Long busReviewId) {

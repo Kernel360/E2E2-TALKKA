@@ -22,7 +22,7 @@ public class BusReviewRespDto {
 	private Long routeId;
 	private Long busRouteStationId;
 	private String content;
-	private Integer timeSlot;
+	private String timeSlot;
 	private Integer rating;
 
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
@@ -31,7 +31,7 @@ public class BusReviewRespDto {
 			busEntity.getRoute().getRouteId(),
 			busEntity.getStation().getBusRouteStationId(),
 			busEntity.getContent(),
-			busEntity.getTimeSlot(),
+			busEntity.getTimeSlot().getCode(),
 			busEntity.getRating());
 	}
 }
