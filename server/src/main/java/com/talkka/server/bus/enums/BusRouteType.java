@@ -1,5 +1,7 @@
 package com.talkka.server.bus.enums;
 
+import com.talkka.server.common.util.EnumCodeInterface;
+
 import lombok.Getter;
 
 /**
@@ -14,7 +16,7 @@ import lombok.Getter;
  * 22	좌석형농어촌버스	53	일반형공항버스
  */
 @Getter
-public enum BusRouteType {
+public enum BusRouteType implements EnumCodeInterface {
 	DIRECT_SEAT_CITY_BUS("11", "직행좌석형시내버스"),
 	SEAT_CITY_BUS("12", "좌석형시내버스"),
 	GENERAL_CITY_BUS("13", "일반형시내버스"),
@@ -38,27 +40,5 @@ public enum BusRouteType {
 	BusRouteType(String code, String name) {
 		this.code = code;
 		this.name = name;
-	}
-
-	public static BusRouteType fromCode(String value) {
-		return switch (value) {
-			case "11" -> DIRECT_SEAT_CITY_BUS;
-			case "12" -> SEAT_CITY_BUS;
-			case "13" -> GENERAL_CITY_BUS;
-			case "14" -> EXPRESS_CITY_BUS;
-			case "15" -> DDABOK_CITY_BUS;
-			case "16" -> GYEONGGI_CIRCULATION_BUS;
-			case "21" -> DIRECT_SEAT_RURAL_BUS;
-			case "22" -> SEAT_RURAL_BUS;
-			case "23" -> GENERAL_RURAL_BUS;
-			case "30" -> VILLAGE_BUS;
-			case "41" -> HIGH_SPEED_INTERCITY_BUS;
-			case "42" -> SEAT_INTERCITY_BUS;
-			case "43" -> GENERAL_INTERCITY_BUS;
-			case "51" -> LIMOUSINE_AIRPORT_BUS;
-			case "52" -> SEAT_AIRPORT_BUS;
-			case "53" -> GENERAL_AIRPORT_BUS;
-			default -> throw new IllegalArgumentException("Invalid value: " + value); // DOMAIN EXCEPTION 으로 변환 필요
-		};
 	}
 }

@@ -1,5 +1,7 @@
 package com.talkka.server.bus.enums;
 
+import com.talkka.server.common.util.EnumCodeInterface;
+
 import lombok.Getter;
 
 /**
@@ -17,7 +19,7 @@ import lombok.Getter;
  * 11	부천시	22	오산시	33	인천광역시
  */
 @Getter
-public enum DistrictCode {
+public enum DistrictCode implements EnumCodeInterface {
 	GAPAENG_GUN("1", "가평군"),
 	GOYANG("2", "고양시"),
 	GWACHEON("3", "과천시"),
@@ -58,44 +60,5 @@ public enum DistrictCode {
 	DistrictCode(String code, String name) {
 		this.code = code;
 		this.name = name;
-	}
-
-	public static DistrictCode fromCode(String value) {
-		return switch (value) {
-			case "1" -> GAPAENG_GUN;
-			case "2" -> GOYANG;
-			case "3" -> GWACHEON;
-			case "4" -> GWANGMYEONG;
-			case "5" -> GWANGJU;
-			case "6" -> GURI;
-			case "7" -> GUNPO;
-			case "8" -> KIMPO;
-			case "9" -> NAMYANGJU;
-			case "10" -> DONGDUCHEON;
-			case "11" -> BUCHEON;
-			case "12" -> SEONGNAM;
-			case "13" -> SUWON;
-			case "14" -> SIHEUNG;
-			case "15" -> ANSAN;
-			case "16" -> ANSEONG;
-			case "17" -> ANYANG;
-			case "18" -> YANGJU;
-			case "19" -> YANGPYEONG;
-			case "20" -> YEJU;
-			case "21" -> YEONCHEON;
-			case "22" -> OSAN;
-			case "23" -> YONGIN;
-			case "24" -> UIWANG;
-			case "25" -> UJEONGBU;
-			case "26" -> ICHUN;
-			case "27" -> PAJU;
-			case "28" -> PYEONGTAEK;
-			case "29" -> POCHON;
-			case "30" -> HWASEONG;
-			case "31" -> HANNAM;
-			case "32" -> SEOUL;
-			case "33" -> INCHEON;
-			default -> throw new IllegalArgumentException("Invalid value: " + value); // DOMAIN EXCEPTION 으로 변환 필요
-		};
 	}
 }
