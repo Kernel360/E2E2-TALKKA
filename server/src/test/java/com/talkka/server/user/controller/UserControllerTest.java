@@ -9,7 +9,6 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -29,7 +28,6 @@ import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.oauth.domain.NaverOAuth2User;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
-import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
@@ -69,8 +67,6 @@ class UserControllerTest {
 		attributes.put("accessToken", "token");
 		attributes.put("oauth2Id", "test");
 		oAuth2User = new NaverOAuth2User(attributes, List.of(new SimpleGrantedAuthority("ROLE_USER")));
-		given(userRepository.findByEmail(anyString())).willReturn(
-			Optional.ofNullable(UserEntity.builder().userId(1L).build()));
 	}
 
 	private final ObjectMapper objectMapper = new ObjectMapper();
