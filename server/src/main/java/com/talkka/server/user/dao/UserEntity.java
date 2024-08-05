@@ -65,7 +65,6 @@ public class UserEntity {
 	private LocalDateTime createdAt;
 
 	@LastModifiedDate
-	@ToString.Exclude
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 

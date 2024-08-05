@@ -4,7 +4,6 @@ import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -157,21 +156,8 @@ class UserServiceTest {
 			UserDto findDto = userDtoFixture(1L);
 			UserEntity findEntity = findDto.toEntity();
 			LocalDateTime now = LocalDateTime.now();
-			UserEntity updatedEntity = new UserEntity(
-				1L,
-				"name",
-				"email",
-				"nickname2",
-				"oauthProvider",
-				"accessToken",
-				Grade.USER,
-				findEntity.getCreatedAt(),
-				now,
-				new ArrayList<>()
-			);
 
 			given(userRepository.findById(1L)).willReturn(Optional.of(findEntity));
-			given(userRepository.save(updatedEntity)).willReturn(updatedEntity);
 			// when
 			var result = userService.updateUser(1L, reqDto);
 			// then
@@ -181,7 +167,6 @@ class UserServiceTest {
 			assertThat(result.getAccessToken()).isEqualTo(findDto.getAccessToken());
 			assertThat(result.getGrade()).isEqualTo(Grade.USER);
 			assertThat(result.getCreatedAt()).isEqualTo(findDto.getCreatedAt());
-			assertThat(result.getUpdatedAt()).isEqualTo(now);
 		}
 
 		@Test

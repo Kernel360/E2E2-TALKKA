@@ -1,6 +1,7 @@
 package com.talkka.server.user.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
@@ -34,6 +35,7 @@ public class UserService {
 		return UserDto.of(savedUser);
 	}
 
+	@Transactional
 	public UserDto updateUser(Long userId, UserUpdateReqDto reqDto) {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 유저입니다."));
@@ -43,9 +45,7 @@ public class UserService {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
 		user.updateUser(reqDto.getNickname());
-		UserEntity savedUser = userRepository.save(user);
-
-		return UserDto.of(savedUser);
+		return UserDto.of(user);
 	}
 
 	public Long deleteUser(Long userId) {
