@@ -1,6 +1,7 @@
 package com.talkka.server.user.service;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.common.exception.http.NotFoundException;
@@ -18,51 +19,42 @@ public class UserService {
 	private final UserRepository userRepository;
 
 	public UserDto getUser(Long userId) {
-		final UserEntity user = userRepository.findById(userId)
+		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
 
 		return UserDto.of(user);
 	}
 
 	public UserDto createUser(UserCreateDto userCreateDto) {
-		final UserEntity user = userCreateDto.toEntity();
+		UserEntity user = userCreateDto.toEntity();
 		if (this.isDuplicatedNickname(user.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		final UserEntity savedUser = userRepository.save(user);
+		UserEntity savedUser = userRepository.save(user);
 
 		return UserDto.of(savedUser);
 	}
 
+	@Transactional
 	public UserDto updateUser(Long userId, UserUpdateReqDto reqDto) {
-		final UserEntity user = userRepository.findById(userId)
+		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 유저입니다."));
-		// 중복 닉네임 체크
+
 		if (!reqDto.getNickname().equals(user.getNickname())
 			&& this.isDuplicatedNickname(reqDto.getNickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		final UserEntity updatedUser = UserEntity.builder() // refactoring 필요함.
-			.userId(userId)
-			.nickname(reqDto.getNickname())
-			.oauthProvider(user.getOauthProvider())
-			.accessToken(user.getAccessToken())
-			.grade(user.getGrade())
-			.createdAt(user.getCreatedAt())
-			.updatedAt(user.getUpdatedAt())
-			.busReviews(user.getBusReviews())
-			.build();
-		final UserEntity savedUser = userRepository.save(updatedUser);
-
-		return UserDto.of(savedUser);
+		user.updateUser(reqDto.getNickname());
+		return UserDto.of(user);
 	}
 
-	public void deleteUser(Long userId) {
-		final boolean isExist = userRepository.existsById(userId);
+	public Long deleteUser(Long userId) {
+		boolean isExist = userRepository.existsById(userId);
 		if (!isExist) {
 			throw new BadRequestException("존재하지 않는 유저입니다.");
 		}
 		userRepository.deleteById(userId);
+		return userId;
 	}
 
 	public boolean isDuplicatedNickname(String nickname) {
