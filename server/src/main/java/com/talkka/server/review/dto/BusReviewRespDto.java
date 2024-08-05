@@ -2,6 +2,7 @@ package com.talkka.server.review.dto;
 
 import com.talkka.server.review.dao.BusReviewEntity;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -13,7 +14,7 @@ import lombok.ToString;
 @Builder
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BusReviewRespDto {
 
@@ -25,13 +26,12 @@ public class BusReviewRespDto {
 	private Integer rating;
 
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
-		return BusReviewRespDto.builder()
-			.userId(busEntity.getWriter().getUserId())
-			.routeId(busEntity.getRoute().getRouteId())
-			.busRouteStationId(busEntity.getStation().getBusRouteStationId())
-			.content(busEntity.getContent())
-			.timeSlot(busEntity.getTimeSlot())
-			.rating(busEntity.getRating())
-			.build();
+		return new BusReviewRespDto(
+			busEntity.getWriter().getUserId(),
+			busEntity.getRoute().getRouteId(),
+			busEntity.getStation().getBusRouteStationId(),
+			busEntity.getContent(),
+			busEntity.getTimeSlot(),
+			busEntity.getRating());
 	}
 }

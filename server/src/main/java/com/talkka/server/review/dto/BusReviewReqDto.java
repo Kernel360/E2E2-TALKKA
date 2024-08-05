@@ -5,6 +5,7 @@ import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.user.dao.UserEntity;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
@@ -16,7 +17,7 @@ import lombok.ToString;
 @Builder
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 public class BusReviewReqDto {
 
@@ -27,13 +28,6 @@ public class BusReviewReqDto {
 	private Integer rating;
 
 	public BusReviewEntity toEntity(UserEntity user, BusRouteStationEntity station, BusRouteEntity route) {
-		return BusReviewEntity.builder()
-			.content(content)
-			.timeSlot(timeSlot)
-			.rating(rating)
-			.writer(user)
-			.station(station)
-			.route(route)
-			.build();
+		return new BusReviewEntity(null, user, station, route, content, timeSlot, rating, null, null);
 	}
 }
