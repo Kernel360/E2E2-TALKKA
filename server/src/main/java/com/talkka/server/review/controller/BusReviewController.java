@@ -2,6 +2,7 @@ package com.talkka.server.review.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.SessionAttribute;
 
+import com.talkka.server.common.dto.ApiRespDto;
+import com.talkka.server.common.enums.StatusCode;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.service.BusReviewService;
@@ -27,37 +30,66 @@ public class BusReviewController {
 	private final BusReviewService busReviewService;
 
 	@GetMapping("")
-	public List<BusReviewRespDto> getBusReviewList(
+	public ResponseEntity<ApiRespDto<List<BusReviewRespDto>>> getBusReviewList(
 		@SessionAttribute(name = "userId") Long userId,
 		@RequestParam Long routeId,
 		@RequestParam Long busRouteStationId,
 		@RequestParam Integer timeSlot
 	) {
-		return busReviewService.getBusReviewList(userId, routeId, busRouteStationId, timeSlot);
+		List<BusReviewRespDto> reviewData = busReviewService.getBusReviewList(userId, routeId, busRouteStationId,
+			timeSlot);
+
+		return ResponseEntity.ok(
+			ApiRespDto.<List<BusReviewRespDto>>builder()
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
+				.data(reviewData)
+				.build());
 	}
 
 	@PostMapping("")
-	public void saveBusReview(
+	public ResponseEntity<ApiRespDto<BusReviewRespDto>> saveBusReview(
 		@SessionAttribute(name = "userId") Long userId,
 		@RequestBody BusReviewReqDto busReviewReqDto
 	) {
-		busReviewService.createBusReview(userId, busReviewReqDto);
+		BusReviewRespDto createdReview = busReviewService.createBusReview(userId, busReviewReqDto);
+
+		return ResponseEntity.ok(
+			ApiRespDto.<BusReviewRespDto>builder()
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
+				.data(createdReview)
+				.build());
 	}
 
 	@PutMapping("{bus_review_id}")
-	public BusReviewRespDto updateBusReview(
+	public ResponseEntity<ApiRespDto<BusReviewRespDto>> updateBusReview(
 		@SessionAttribute(name = "userId") Long userId,
 		@PathVariable(name = "bus_review_id") Long busReviewId,
 		@RequestBody BusReviewReqDto busReviewReqDto
 	) {
-		return busReviewService.updateBusReview(busReviewId, busReviewReqDto);
+		BusReviewRespDto updatedReview = busReviewService.updateBusReview(busReviewId, busReviewReqDto);
+
+		return ResponseEntity.ok(
+			ApiRespDto.<BusReviewRespDto>builder()
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
+				.data(updatedReview)
+				.build());
 	}
 
 	@DeleteMapping("{bus_review_id}")
-	public void deleteBusReview(
+	public ResponseEntity<ApiRespDto<Void>> deleteBusReview(
 		@SessionAttribute(name = "userId") Long userId,
 		@PathVariable(name = "bus_review_id") Long busReviewId
 	) {
 		busReviewService.deleteBusReview(busReviewId);
+
+		return ResponseEntity.ok(
+			ApiRespDto.<Void>builder()
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
+				.data(null)
+				.build());
 	}
 }
