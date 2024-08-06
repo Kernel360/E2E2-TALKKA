@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -129,6 +130,30 @@ class BusStationServiceTest {
 			// then
 			assertThatThrownBy(() -> busStationService.createBusStation(createDto))
 				.isInstanceOf(exceptionClass).hasMessage("이미 등록된 정거장입니다.");
+		}
+	}
+
+	@Nested
+	@DisplayName("findByStationName method")
+	public class FindByStationNameTest {
+		@Test
+		void 정류장_이름으로_요청하면_해당_이름으로_시작하는_정류장의_리스트를_반환한다() {
+			// given
+			String stationName = "정거장1";
+			List<BusStationRespDto> expected = List.of(
+				getBusStationRespDto(1L),
+				getBusStationRespDto(12L)
+			);
+			List<BusStationEntity> entityList = List.of(
+				getBusStationEntity(1L),
+				getBusStationEntity(12L)
+			);
+			given(busStationRepository.findByStationNameLikeOrderByStationNameAsc(anyString())).willReturn(entityList);
+			// when
+			var result = busStationService.findByStationName(stationName);
+			// then
+			assertThat(result).containsAll(expected);
+			verify(busStationRepository, times(1)).findByStationNameLikeOrderByStationNameAsc(anyString());
 		}
 	}
 }
