@@ -1,8 +1,9 @@
 package com.talkka.server.bus.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -82,7 +83,7 @@ public class BusRouteServiceTest {
 
 	private BusRouteEntity getBusRouteEntity(Long id) {
 		return BusRouteEntity.builder()
-			.id(1L)
+			.id(id)
 			.apiRouteId("" + id)
 			.routeName("7800" + id)
 			.routeTypeCd(BusRouteType.DIRECT_SEAT_CITY_BUS)
@@ -189,6 +190,29 @@ public class BusRouteServiceTest {
 			).isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 노선입니다.");
 			verify(busRouteRepository, times(1)).findById(anyLong());
+		}
+	}
+
+	@Nested
+	@DisplayName("findByRouteName method")
+	public class FindByRouteNameTest {
+
+		@Test
+		void 버스노선이름을_요청으로_받아_repository에서_조회하고_해당_이름으로_시작하는_노선들을_리스트로_반환한다() {
+
+			// given
+			String routeName = "7800";
+			var entityList = List.of(getBusRouteEntity(1L), getBusRouteEntity(2L));
+			var expectedList = List.of(getBusRouteRespDto(1L), getBusRouteRespDto(2L));
+			given(busRouteRepository.findByRouteNameLikeOrderByRouteNameAsc(any(String.class))).willReturn(entityList);
+
+			// when
+			var resultList = busRouteService.findByRouteName(routeName);
+
+			// then
+			verify(busRouteRepository, times(1)).findByRouteNameLikeOrderByRouteNameAsc(anyString());
+			assertThat(resultList).containsAll(expectedList);
+
 		}
 	}
 }
