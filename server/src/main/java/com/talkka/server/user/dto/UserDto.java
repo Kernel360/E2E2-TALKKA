@@ -28,7 +28,7 @@ public class UserDto {
 
 	public static UserDto of(UserEntity userEntity) {
 		return new UserDto(
-			userEntity.getUserId(),
+			userEntity.getId(),
 			userEntity.getName(),
 			userEntity.getEmail(),
 			userEntity.getNickname(),

@@ -9,9 +9,12 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
+import com.talkka.server.review.enums.TimeSlot;
+import com.talkka.server.review.util.TimeSlotConverter;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -37,7 +40,7 @@ public class BusReviewEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "bus_review_id", nullable = false)
-	private Long busReviewId;
+	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
@@ -55,7 +58,8 @@ public class BusReviewEntity {
 	private String content;
 
 	@Column(name = "time_slot", nullable = false)
-	private Integer timeSlot;
+	@Convert(converter = TimeSlotConverter.class)
+	private TimeSlot timeSlot;
 
 	@Column(name = "rating", nullable = false)
 	private Integer rating;
@@ -75,15 +79,15 @@ public class BusReviewEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		BusReviewEntity that = (BusReviewEntity)o;
-		return Objects.equals(busReviewId, that.busReviewId);
+		return Objects.equals(id, that.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(busReviewId);
+		return Objects.hashCode(id);
 	}
 
-	public void updateReview(String content, Integer timeSlot, Integer rating) {
+	public void updateReview(String content, TimeSlot timeSlot, Integer rating) {
 		this.content = content;
 		this.timeSlot = timeSlot;
 		this.rating = rating;

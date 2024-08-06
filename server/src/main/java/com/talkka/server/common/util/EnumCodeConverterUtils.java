@@ -1,9 +1,9 @@
 package com.talkka.server.common.util;
 
 public class EnumCodeConverterUtils {
-	public static <T extends Enum<T>> T fromCode(Class<T> enumType, String codeString) {
+	public static <T extends Enum<T> & EnumCodeInterface> T fromCode(Class<T> enumType, String codeString) {
 		for (T type : enumType.getEnumConstants()) {
-			if (type.toString().equals(codeString)) {
+			if (type.getCode().equals(codeString)) {
 				return type;
 			}
 		}

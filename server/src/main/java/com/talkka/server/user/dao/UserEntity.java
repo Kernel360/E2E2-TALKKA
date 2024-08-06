@@ -39,7 +39,7 @@ public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "user_id", nullable = false)
-	private Long userId;
+	private Long id;
 
 	@Column(name = "name", nullable = false)
 	private String name;
@@ -79,12 +79,12 @@ public class UserEntity {
 		if (o == null || getClass() != o.getClass())
 			return false;
 		UserEntity that = (UserEntity)o;
-		return Objects.equals(userId, that.userId);
+		return Objects.equals(id, that.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(userId);
+		return Objects.hashCode(id);
 	}
 
 	public void updateUser(String nickname) {

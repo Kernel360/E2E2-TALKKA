@@ -3,6 +3,7 @@ package com.talkka.server.review.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -12,10 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.talkka.server.common.dto.ApiRespDto;
 import com.talkka.server.common.enums.StatusCode;
+import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.service.BusReviewService;
@@ -32,13 +33,13 @@ public class BusReviewController {
 
 	@GetMapping("")
 	public ResponseEntity<ApiRespDto<List<BusReviewRespDto>>> getBusReviewList(
-		@SessionAttribute(name = "userId") Long userId,
+		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestParam Long routeId,
 		@RequestParam Long busRouteStationId,
-		@RequestParam Integer timeSlot
+		@RequestParam String timeSlot
 	) {
-		List<BusReviewRespDto> reviewData = busReviewService.getBusReviewList(userId, routeId, busRouteStationId,
-			timeSlot);
+		List<BusReviewRespDto> reviewData = busReviewService.getBusReviewList(oAuth2UserInfo.getUserId(), routeId,
+			busRouteStationId, timeSlot);
 
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusReviewRespDto>>builder()
@@ -50,10 +51,10 @@ public class BusReviewController {
 
 	@PostMapping("")
 	public ResponseEntity<ApiRespDto<BusReviewRespDto>> saveBusReview(
-		@SessionAttribute(name = "userId") Long userId,
+		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody @Valid BusReviewReqDto busReviewReqDto
 	) {
-		BusReviewRespDto createdReview = busReviewService.createBusReview(userId, busReviewReqDto);
+		BusReviewRespDto createdReview = busReviewService.createBusReview(oAuth2UserInfo.getUserId(), busReviewReqDto);
 
 		return ResponseEntity.ok(
 			ApiRespDto.<BusReviewRespDto>builder()
@@ -65,11 +66,12 @@ public class BusReviewController {
 
 	@PutMapping("{bus_review_id}")
 	public ResponseEntity<ApiRespDto<BusReviewRespDto>> updateBusReview(
-		@SessionAttribute(name = "userId") Long userId,
+		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "bus_review_id") Long busReviewId,
 		@RequestBody @Valid BusReviewReqDto busReviewReqDto
 	) {
-		BusReviewRespDto updatedReview = busReviewService.updateBusReview(busReviewId, busReviewReqDto);
+		BusReviewRespDto updatedReview = busReviewService.updateBusReview(oAuth2UserInfo.getUserId(), busReviewId,
+			busReviewReqDto);
 
 		return ResponseEntity.ok(
 			ApiRespDto.<BusReviewRespDto>builder()
@@ -81,10 +83,10 @@ public class BusReviewController {
 
 	@DeleteMapping("{bus_review_id}")
 	public ResponseEntity<ApiRespDto<Void>> deleteBusReview(
-		@SessionAttribute(name = "userId") Long userId,
+		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "bus_review_id") Long busReviewId
 	) {
-		busReviewService.deleteBusReview(busReviewId);
+		busReviewService.deleteBusReview(oAuth2UserInfo.getUserId(), busReviewId);
 
 		return ResponseEntity.ok(
 			ApiRespDto.<Void>builder()

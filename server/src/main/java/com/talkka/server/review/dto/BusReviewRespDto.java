@@ -22,16 +22,16 @@ public class BusReviewRespDto {
 	private Long routeId;
 	private Long busRouteStationId;
 	private String content;
-	private Integer timeSlot;
+	private String timeSlot;
 	private Integer rating;
 
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
 		return new BusReviewRespDto(
-			busEntity.getWriter().getUserId(),
+			busEntity.getWriter().getId(),
 			busEntity.getRoute().getId(),
 			busEntity.getStation().getId(),
 			busEntity.getContent(),
-			busEntity.getTimeSlot(),
+			busEntity.getTimeSlot().getCode(),
 			busEntity.getRating());
 	}
 }
