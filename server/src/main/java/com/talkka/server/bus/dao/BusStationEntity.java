@@ -17,6 +17,8 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,7 +34,15 @@ import lombok.NoArgsConstructor;
 public class BusStationEntity {
 
 	@Id
-	private Long stationId;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@Column(name = "station_id")
+	private Long id;
+
+	@Column(name = "api_station_id", nullable = false, length = 40)
+	private String apiStationId;
+
+	@Column(name = "station_name", nullable = false, length = 100)
+	private String stationName;
 
 	@Column(name = "region_name", nullable = false, length = 100)
 	private String regionName;

@@ -28,8 +28,8 @@ public class BusReviewRespDto {
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
 		return new BusReviewRespDto(
 			busEntity.getWriter().getUserId(),
-			busEntity.getRoute().getRouteId(),
-			busEntity.getStation().getBusRouteStationId(),
+			busEntity.getRoute().getId(),
+			busEntity.getStation().getId(),
 			busEntity.getContent(),
 			busEntity.getTimeSlot(),
 			busEntity.getRating());
