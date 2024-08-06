@@ -55,11 +55,11 @@ public enum TimeSlot implements EnumCodeInterface {
 	T_23_00("23:00", "46"),
 	T_23_30("23:30", "47");
 
-	private final String timsSlot;
+	private final String timeSlot;
 	private final String code;
 
-	TimeSlot(String timsSlot, String code) {
-		this.timsSlot = timsSlot;
+	TimeSlot(String timeSlot, String code) {
+		this.timeSlot = timeSlot;
 		this.code = code;
 	}
 }

@@ -19,10 +19,12 @@ import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.common.exception.http.ForbiddenException;
 import com.talkka.server.common.exception.http.NotFoundException;
+import com.talkka.server.common.util.EnumCodeConverterUtils;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
+import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -50,7 +52,7 @@ public class BusReviewServiceTest {
 			.routeId(236000050L)
 			.busRouteStationId(1L)
 			.content("리뷰 내용")
-			.timeSlot(24)
+			.timeSlot(TimeSlot.T_00_00.getCode())
 			.rating(4)
 			.build();
 	}
@@ -83,17 +85,18 @@ public class BusReviewServiceTest {
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
 			BusRouteEntity route = getBusRouteFixture(236000050L);
+			TimeSlot timeSlot = EnumCodeConverterUtils.<TimeSlot>fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
 			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(1L)
 				.routeId(236000050L)
 				.content("리뷰 내용")
-				.timeSlot(24)
+				.timeSlot(TimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
 			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
 				.content("리뷰 내용")
-				.timeSlot(24)
+				.timeSlot(timeSlot)
 				.rating(4)
 				.writer(user)
 				.station(station)
@@ -131,14 +134,13 @@ public class BusReviewServiceTest {
 		@Test
 		void 경유_정류장을_못찾을_경우_Exceptio을_throw_한다() {
 			//given
-
 			UserEntity user = getUserFixture(1L);
 			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(null)
 				.routeId(236000050L)
 				.content("리뷰 내용")
-				.timeSlot(24)
+				.timeSlot(TimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
@@ -161,7 +163,7 @@ public class BusReviewServiceTest {
 				.busRouteStationId(1L)
 				.routeId(null)
 				.content("리뷰 내용")
-				.timeSlot(24)
+				.timeSlot(TimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
@@ -174,6 +176,32 @@ public class BusReviewServiceTest {
 				.isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 노선입니다.");
 		}
+
+		@Test
+		void 올바른_TimeSlot의_Code가_아닐_경우_IllegalArgumentException_을_throw_한다() {
+			//given
+			UserEntity user = getUserFixture(1L);
+			BusRouteStationEntity station = getBusRouteStationFixture(1L);
+			BusRouteEntity route = getBusRouteFixture(236000050L);
+			Class<?> exceptionClass = IllegalArgumentException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
+				.busRouteStationId(1L)
+				.routeId(236000050L)
+				.content("리뷰 내용")
+				.timeSlot("49")
+				.rating(4)
+				.build();
+
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
+			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(station));
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(route));
+
+			//when
+			//then
+			assertThatThrownBy(() -> busReviewService.createBusReview(anyLong(), busReviewReqDto))
+				.isInstanceOf(exceptionClass)
+				.hasMessage("Invalid value: 49");
+		}
 	}
 
 	@Nested
@@ -183,9 +211,41 @@ public class BusReviewServiceTest {
 			.routeId(236000050L)
 			.busRouteStationId(1L)
 			.content("변경된 리뷰 내용")
-			.timeSlot(23)
+			.timeSlot(TimeSlot.T_00_30.getCode())
 			.rating(5)
 			.build();
+
+		@Test
+		void 리뷰를_업데이트_한_경우_업데이트_된_BusReviewEntity의_BusReviewRespDto를_반환한다() {
+			//given
+			UserEntity user = getUserFixture(1L);
+			BusRouteStationEntity station = getBusRouteStationFixture(1L);
+			BusRouteEntity route = getBusRouteFixture(236000050L);
+			TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
+			BusReviewEntity originEntity = BusReviewEntity.builder()
+				.id(1L)
+				.content("리뷰 내용")
+				.timeSlot(timeSlot)
+				.rating(4)
+				.writer(user)
+				.station(station)
+				.route(route)
+				.build();
+
+			BusReviewEntity updatedEntity = busReviewReqDto.toEntity(user, station, route,
+				EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_30.getCode()));
+
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(originEntity));
+
+			BusReviewRespDto resultDto = BusReviewRespDto.of(updatedEntity);
+
+			//when
+			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getUserId(), originEntity.getId(),
+				busReviewReqDto);
+
+			//then
+			assertThat(updatedReview).isEqualTo(resultDto);
+		}
 
 		@Test
 		void 리뷰를_찾지_못하는_경우_Exception을_throw_한다() {
@@ -206,9 +266,9 @@ public class BusReviewServiceTest {
 			Long userId = 1L;
 			Long busReviewId = 1L;
 			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
-				.busReviewId(busReviewId)
+				.id(busReviewId)
 				.content("리뷰 내용")
-				.timeSlot(24)
+				.timeSlot(TimeSlot.T_00_00)
 				.rating(4)
 				.writer(getUserFixture(userId + 1))
 				.build();
@@ -221,34 +281,36 @@ public class BusReviewServiceTest {
 		}
 
 		@Test
-		void 리뷰를_업데이트_한_경우_업데이트_된_BusReviewEntity의_BusReviewRespDto를_반환한다() {
+		void 올바른_TimeSlot의_Code가_아닐_경우_IllegalArgumentException_을_throw_한다() {
 			//given
+			Long userId = 1L;
+			Long busReviewId = 1L;
+			Class<?> exceptionClass = IllegalArgumentException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 			UserEntity user = getUserFixture(1L);
-			BusRouteStationEntity station = getBusRouteStationFixture(1L);
-			BusRouteEntity route = getBusRouteFixture(236000050L);
-			BusReviewEntity originEntity = BusReviewEntity.builder()
-				.busReviewId(1L)
-				.content("리뷰 내용")
-				.timeSlot(24)
-				.rating(4)
-				.writer(user)
-				.station(station)
-				.route(route)
+
+			BusReviewReqDto wrongBusReviewReqDto = BusReviewReqDto.builder()
+				.routeId(236000050L)
+				.busRouteStationId(1L)
+				.content("변경된 리뷰 내용")
+				.timeSlot("49")
+				.rating(5)
 				.build();
 
-			BusReviewEntity updatedEntity = busReviewReqDto.toEntity(user, station, route);
+			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
+				.id(busReviewId)
+				.content("리뷰 내용")
+				.timeSlot(TimeSlot.T_00_00)
+				.rating(4)
+				.writer(getUserFixture(userId))
+				.build();
 
-			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(originEntity));
-			given(busReviewRepository.save(originEntity)).willReturn(updatedEntity);
-
-			BusReviewRespDto resultDto = BusReviewRespDto.of(updatedEntity);
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
 
 			//when
-			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getUserId(),
-				originEntity.getBusReviewId(), busReviewReqDto);
-
 			//then
-			assertThat(updatedReview).isEqualTo(resultDto);
+			assertThatThrownBy(() -> busReviewService.updateBusReview(userId, busReviewId, wrongBusReviewReqDto))
+				.isInstanceOf(exceptionClass)
+				.hasMessage("Invalid value: 49");
 		}
 	}
 
@@ -261,8 +323,14 @@ public class BusReviewServiceTest {
 			// given
 			Long userId = 1L;
 			Long busReviewId = 1L;
+			BusReviewEntity reviewEntity = BusReviewEntity.builder()
+				.id(busReviewId)
+				.writer(getUserFixture(userId))
+				.build();
 
 			// when
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(reviewEntity));
+
 			// then
 			var result = busReviewService.deleteBusReview(userId, busReviewId);
 			assertThat(result).isEqualTo(busReviewId);
@@ -289,7 +357,7 @@ public class BusReviewServiceTest {
 			Long userId = 1L;
 			Long busReviewId = 1L;
 			BusReviewEntity reviewEntity = BusReviewEntity.builder()
-				.busReviewId(busReviewId)
+				.id(busReviewId)
 				.writer(getUserFixture(userId + 1))
 				.build();
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(reviewEntity));

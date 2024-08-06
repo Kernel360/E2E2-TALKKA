@@ -11,6 +11,7 @@ import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.common.exception.http.ForbiddenException;
 import com.talkka.server.common.exception.http.NotFoundException;
+import com.talkka.server.common.util.EnumCodeConverterUtils;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
@@ -51,7 +52,9 @@ public class BusReviewService {
 		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
 
-		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route);
+		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+
+		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route, timeSlot);
 
 		BusReviewEntity savedReview = busReviewRepository.save(entity);
 
@@ -67,9 +70,10 @@ public class BusReviewService {
 			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
 		}
 
-		review.updateReview(busReviewReqDto.getContent(), TimeSlot.valueOf(busReviewReqDto.getTimeSlot()),
-			busReviewReqDto.getRating());
-		
+		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+
+		review.updateReview(busReviewReqDto.getContent(), timeSlot, busReviewReqDto.getRating());
+
 		return BusReviewRespDto.of(review);
 	}
 

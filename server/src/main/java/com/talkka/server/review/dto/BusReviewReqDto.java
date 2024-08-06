@@ -44,8 +44,8 @@ public class BusReviewReqDto {
 	@Max(value = 10, message = "형식에 맞지 않는 rating 입니다.")
 	private Integer rating;
 
-	public BusReviewEntity toEntity(UserEntity user, BusRouteStationEntity station, BusRouteEntity route) {
-		return new BusReviewEntity(null, user, station, route, content, TimeSlot.valueOf(timeSlot),
-			rating, null, null);
+	public BusReviewEntity toEntity(
+		UserEntity user, BusRouteStationEntity station, BusRouteEntity route, TimeSlot timeSlot) {
+		return new BusReviewEntity(null, user, station, route, content, timeSlot, rating, null, null);
 	}
 }
