@@ -3,6 +3,8 @@ package com.talkka.server.bus.service;
 import static org.assertj.core.api.AssertionsForClassTypes.*;
 import static org.mockito.BDDMockito.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -78,6 +80,33 @@ public class BusRouteServiceTest {
 			.build();
 	}
 
+	private BusRouteEntity getBusRouteEntity(Long id) {
+		return BusRouteEntity.builder()
+			.id(1L)
+			.apiRouteId("" + id)
+			.routeName("7800" + id)
+			.routeTypeCd(BusRouteType.DIRECT_SEAT_CITY_BUS)
+			.routeTypeName(BusRouteType.DIRECT_SEAT_CITY_BUS.getName())
+			.companyId("COMP123")
+			.companyName("수형운수")
+			.companyTel("02-123-4567")
+			.districtCd(DistrictCode.DONGDUCHEON)
+			.upFirstTime("05:30")
+			.upLastTime("23:00")
+			.downFirstTime("06:00")
+			.downLastTime("00:35")
+			.startMobileNo("101")
+			.startStationId(1001L)
+			.startStationName("기점 정류소")
+			.endStationId(2002L)
+			.endMobileNo("202")
+			.endStationName("종점 정류소")
+			.regionName("서울")
+			.peekAlloc(15)
+			.nPeekAlloc(25)
+			.build();
+	}
+
 	@Nested
 	@DisplayName("createBusRoute method")
 	public class CreateBusRouteTest {
@@ -129,6 +158,37 @@ public class BusRouteServiceTest {
 				() -> busRouteService.createBusRoute(reqDto)
 			).isInstanceOf(BadRequestException.class)
 				.hasMessage("이미 등록된 버스 노선입니다.");
+		}
+	}
+
+	@Nested
+	@DisplayName("findByRouteId method")
+	public class FindByRouteIdTest {
+		@Test
+		void ID를_기반으로_버스_노선을_요청하면_레포지토리를_통해_결과를_DTO로_반환한다() {
+			// given
+			Long routeId = 1L;
+			BusRouteEntity foundEntity = getBusRouteEntity(routeId);
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(foundEntity));
+			// when
+			var BusRouteRespDto = busRouteService.findByRouteId(routeId);
+			// then
+			verify(busRouteRepository).findById(anyLong());
+			assertThat(BusRouteRespDto).isEqualTo(getBusRouteRespDto(routeId));
+		}
+
+		@Test
+		void ID가_존재하지_않으면_Exception을_throw한다() {
+			// given
+			Class<?> exceptionClass = BadRequestException.class;
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.empty());
+			// when
+			// then
+			assertThatThrownBy(
+				() -> busRouteService.findByRouteId(1L)
+			).isInstanceOf(exceptionClass)
+				.hasMessage("존재하지 않는 노선입니다.");
+			verify(busRouteRepository, times(1)).findById(anyLong());
 		}
 	}
 }
