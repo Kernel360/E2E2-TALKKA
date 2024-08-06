@@ -36,8 +36,11 @@ import lombok.NoArgsConstructor;
 public class BusRouteEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "route_id", nullable = false)
-	private Long routeId;
+	@Column(name = "route_id")
+	private Long id;
+
+	@Column(name = "api_route_id", nullable = false, length = 40)
+	private String apiRouteId;       // 공공 api 에서 제공해주는 식별자
 
 	@Column(name = "route_name", nullable = false, length = 50)
 	private String routeName;       // 노선 번호
@@ -132,11 +135,11 @@ public class BusRouteEntity {
 		}
 
 		BusRouteEntity that = (BusRouteEntity)o;
-		return getRouteId().equals(that.getRouteId());
+		return getId().equals(that.getId());
 	}
 
 	@Override
 	public int hashCode() {
-		return getRouteId().hashCode();
+		return getId().hashCode();
 	}
 }
