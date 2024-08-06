@@ -59,7 +59,7 @@ public class BusReviewServiceTest {
 
 	private UserEntity getUserFixture(Long userId) {
 		return UserEntity.builder()
-			.userId(userId)
+			.id(userId)
 			.build();
 	}
 
@@ -108,10 +108,10 @@ public class BusReviewServiceTest {
 			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(route));
 			given(busReviewRepository.save(any(BusReviewEntity.class))).willReturn(busReviewEntity);
 
-			BusReviewRespDto resultDto = busReviewRespDtoFixture(user.getUserId());
+			BusReviewRespDto resultDto = busReviewRespDtoFixture(user.getId());
 
 			//when
-			BusReviewRespDto result = busReviewService.createBusReview(user.getUserId(), busReviewReqDto);
+			BusReviewRespDto result = busReviewService.createBusReview(user.getId(), busReviewReqDto);
 
 			//then
 			assertThat(result).isEqualTo(resultDto);
@@ -148,7 +148,7 @@ public class BusReviewServiceTest {
 
 			//when
 			//then
-			assertThatThrownBy(() -> busReviewService.createBusReview(user.getUserId(), busReviewReqDto))
+			assertThatThrownBy(() -> busReviewService.createBusReview(user.getId(), busReviewReqDto))
 				.isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 경유 정류장입니다.");
 		}
@@ -240,7 +240,7 @@ public class BusReviewServiceTest {
 			BusReviewRespDto resultDto = BusReviewRespDto.of(updatedEntity);
 
 			//when
-			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getUserId(), originEntity.getId(),
+			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getId(), originEntity.getId(),
 				busReviewReqDto);
 
 			//then

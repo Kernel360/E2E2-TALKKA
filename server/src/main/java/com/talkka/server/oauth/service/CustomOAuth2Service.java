@@ -36,7 +36,7 @@ public class CustomOAuth2Service extends DefaultOAuth2UserService {
 		if (user == null) {
 			return oAuth2User;
 		}
-		attributes.put("userId", user.getUserId());
+		attributes.put("userId", user.getId());
 		attributes.put("nickname", user.getNickname());
 		return new NaverOAuth2User(attributes,
 			List.of(new SimpleGrantedAuthority("ROLE_USER")));

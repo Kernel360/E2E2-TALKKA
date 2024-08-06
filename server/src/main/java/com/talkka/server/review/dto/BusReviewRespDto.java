@@ -27,7 +27,7 @@ public class BusReviewRespDto {
 
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
 		return new BusReviewRespDto(
-			busEntity.getWriter().getUserId(),
+			busEntity.getWriter().getId(),
 			busEntity.getRoute().getId(),
 			busEntity.getStation().getId(),
 			busEntity.getContent(),

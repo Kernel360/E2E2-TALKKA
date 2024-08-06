@@ -36,7 +36,7 @@ public class BusReviewController {
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestParam Long routeId,
 		@RequestParam Long busRouteStationId,
-		@RequestParam Integer timeSlot
+		@RequestParam String timeSlot
 	) {
 		List<BusReviewRespDto> reviewData = busReviewService.getBusReviewList(oAuth2UserInfo.getUserId(), routeId,
 			busRouteStationId, timeSlot);

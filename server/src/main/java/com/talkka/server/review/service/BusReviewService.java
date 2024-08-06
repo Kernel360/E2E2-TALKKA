@@ -32,10 +32,10 @@ public class BusReviewService {
 	private final BusRouteRepository busRouteRepository;
 
 	public List<BusReviewRespDto> getBusReviewList(
-		Long userId, Long routeId, Long busRouteStationId, Integer timeSlot
+		Long userId, Long routeId, Long busRouteStationId, String timeSlot
 	) {
-		List<BusReviewEntity> reviewList = busReviewRepository.findReviews(
-			userId, routeId, busRouteStationId, timeSlot);
+		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlot(
+			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
 
 		return reviewList.stream()
 			.map(BusReviewRespDto::of)
@@ -89,6 +89,6 @@ public class BusReviewService {
 	}
 
 	private boolean isReviewOwner(long userId, BusReviewEntity busReviewEntity) {
-		return userId == busReviewEntity.getWriter().getUserId();
+		return userId == busReviewEntity.getWriter().getId();
 	}
 }
