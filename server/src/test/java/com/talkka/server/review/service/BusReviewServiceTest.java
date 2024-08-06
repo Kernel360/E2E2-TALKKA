@@ -65,13 +65,13 @@ public class BusReviewServiceTest {
 
 	private BusRouteStationEntity getBusRouteStationFixture(Long busRouteStationId) {
 		return BusRouteStationEntity.builder()
-			.busRouteStationId(busRouteStationId)
+			.id(busRouteStationId)
 			.build();
 	}
 
 	private BusRouteEntity getBusRouteFixture(Long routeId) {
 		return BusRouteEntity.builder()
-			.routeId(routeId)
+			.id(routeId)
 			.build();
 	}
 

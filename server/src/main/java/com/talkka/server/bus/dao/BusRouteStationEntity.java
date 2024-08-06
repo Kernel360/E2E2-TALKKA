@@ -32,7 +32,7 @@ public class BusRouteStationEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "bus_route_station_id", nullable = false)
-	private Long busRouteStationId;
+	private Long id;
 
 	@ManyToOne
 	@JoinColumn(name = "route_id")
