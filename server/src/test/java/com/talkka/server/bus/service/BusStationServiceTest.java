@@ -103,4 +103,32 @@ class BusStationServiceTest {
 			verify(busStationRepository, times(1)).findById(anyLong());
 		}
 	}
+
+	@Nested
+	@DisplayName("createBusStation method")
+	public class CreateBusStationTest {
+		@Test
+		void BusStationReqDto를_요청으로_받아_BusStationRepository에_저장한다() {
+			// given
+			BusStationCreateDto createDto = getBusStationCreateDto(1L);
+			given(busStationRepository.save(any(BusStationEntity.class))).willReturn(getBusStationEntity(1L));
+			// when
+			var result = busStationService.createBusStation(createDto);
+			// then
+			verify(busStationRepository, times(1)).save(any(BusStationEntity.class));
+			assertThat(result).isEqualTo(getBusStationRespDto(1L));
+		}
+
+		@Test
+		void 이미_등록된_정거장일_경우_Exception을_발생시킨다() {
+			// given
+			var createDto = getBusStationCreateDto(1L);
+			Class<?> exceptionClass = BadRequestException.class;
+			given(busStationRepository.existsByApiStationId(createDto.getApiStationId())).willReturn(true);
+			// when
+			// then
+			assertThatThrownBy(() -> busStationService.createBusStation(createDto))
+				.isInstanceOf(exceptionClass).hasMessage("이미 등록된 정거장입니다.");
+		}
+	}
 }
