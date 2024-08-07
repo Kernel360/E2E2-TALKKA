@@ -1,7 +1,5 @@
 package com.talkka.server.bus.dto;
 
-import com.talkka.server.bus.dao.BusStationEntity;
-
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -20,7 +18,6 @@ public class BusRouteStationCreateDto {
 
 	private String apiRouteId;
 	private String apiStationId;
-	private BusStationEntity station;
 	private Short stationSeq;
 	private String stationName;
 }
