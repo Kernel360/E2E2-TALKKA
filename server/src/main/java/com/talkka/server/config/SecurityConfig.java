@@ -24,10 +24,17 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.cors(AbstractHttpConfigurer::disable)
 			.authorizeHttpRequests(authorize -> authorize
-				.requestMatchers("/auth/**", "/login/**").permitAll()
+				.requestMatchers("/api/auth/**", "/login/**").permitAll()
 				.anyRequest().authenticated()
 			)
+
+			.logout(logout -> logout.logoutUrl("/api/auth/logout")
+				.logoutSuccessUrl("/api/auth/login")
+				.deleteCookies("JSESSIONID")
+			)
+
 			.addFilterAfter(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
+
 			.oauth2Login(oauth -> oauth
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2Service))
 				.defaultSuccessUrl("/")
