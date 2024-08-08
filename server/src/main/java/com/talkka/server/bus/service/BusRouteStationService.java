@@ -25,17 +25,12 @@ public class BusRouteStationService {
 	private final BusRouteStationRepository routeStationRepository;
 
 	public BusRouteStationRespDto createBusRouteStation(BusRouteStationCreateDto busRouteStationCreateDto) {
-		BusRouteEntity routeEntity = routeRepository.findByApiRouteId(busRouteStationCreateDto.getApiRouteId())
+		BusRouteEntity routeEntity = routeRepository.findByApiRouteId(busRouteStationCreateDto.apiRouteId())
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선입니다."));
 		BusStationEntity stationEntity = stationRepository.findByApiStationId(
-				busRouteStationCreateDto.getApiStationId())
+				busRouteStationCreateDto.apiStationId())
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 정류장입니다."));
-		BusRouteStationEntity busRouteStationEntity = BusRouteStationEntity.builder()
-			.route(routeEntity)
-			.station(stationEntity)
-			.stationSeq(busRouteStationCreateDto.getStationSeq())
-			.stationName(busRouteStationCreateDto.getStationName())
-			.build();
+		BusRouteStationEntity busRouteStationEntity = busRouteStationCreateDto.toEntity(routeEntity, stationEntity);
 		return BusRouteStationRespDto.of(routeStationRepository.save(busRouteStationEntity));
 	}
 

@@ -46,13 +46,13 @@ public class BusReviewService {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
 
-		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.getBusRouteStationId())
+		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.busRouteStationId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 경유 정류장입니다."));
 
-		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
+		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.routeId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
 
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.timeSlot());
 
 		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route, timeSlot);
 
@@ -70,9 +70,9 @@ public class BusReviewService {
 			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
 		}
 
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.timeSlot());
 
-		review.updateReview(busReviewReqDto.getContent(), timeSlot, busReviewReqDto.getRating());
+		review.updateReview(busReviewReqDto.content(), timeSlot, busReviewReqDto.rating());
 
 		return BusReviewRespDto.of(review);
 	}
