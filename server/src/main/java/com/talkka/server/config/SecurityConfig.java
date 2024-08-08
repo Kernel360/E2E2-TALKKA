@@ -27,7 +27,7 @@ public class SecurityConfig {
 				.requestMatchers("/auth/**", "/login/**").permitAll()
 				.anyRequest().authenticated()
 			)
-			.addFilterBefore(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
+			.addFilterAfter(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
 			.oauth2Login(oauth -> oauth
 				.userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2Service))
 				.defaultSuccessUrl("/")
