@@ -40,11 +40,11 @@ public class UserService {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 유저입니다."));
 
-		if (!reqDto.getNickname().equals(user.getNickname())
-			&& this.isDuplicatedNickname(reqDto.getNickname())) {
+		if (!reqDto.nickname().equals(user.getNickname())
+			&& this.isDuplicatedNickname(reqDto.nickname())) {
 			throw new BadRequestException("중복된 닉네임 입니다.");
 		}
-		user.updateUser(reqDto.getNickname());
+		user.updateUser(reqDto.nickname());
 		return UserDto.of(user);
 	}
 

@@ -53,7 +53,7 @@ public class UserController {
 		UserCreateDto userCreateDto = new UserCreateDto(
 			userInfo.getName(),
 			userInfo.getEmail(),
-			userCreateReqDto.getNickname(),
+			userCreateReqDto.nickname(),
 			userInfo.getProvider(),
 			userInfo.getAccessToken(),
 			Grade.USER

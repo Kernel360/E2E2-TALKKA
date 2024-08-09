@@ -6,26 +6,20 @@ import java.util.ArrayList;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.enums.Grade;
 
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.ToString;
 
-@Getter
 @Builder
-@ToString
-@AllArgsConstructor
-public class UserDto {
-	private Long userId;
-	private String name;
-	private String email;
-	private String nickname;
-	private String oauthProvider;
-	private String accessToken;
-	private Grade grade;
-	private LocalDateTime createdAt;
-	private LocalDateTime updatedAt;
-
+public record UserDto(
+	Long userId,
+	String name,
+	String email,
+	String nickname,
+	String oauthProvider,
+	String accessToken,
+	Grade grade,
+	LocalDateTime createdAt,
+	LocalDateTime updatedAt
+) {
 	public static UserDto of(UserEntity userEntity) {
 		return new UserDto(
 			userEntity.getId(),
@@ -51,6 +45,7 @@ public class UserDto {
 			grade,
 			createdAt,
 			updatedAt,
-			new ArrayList<>());
+			new ArrayList<>()
+		);
 	}
 }
