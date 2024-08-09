@@ -31,4 +31,15 @@ public class BusRouteController {
 				.build()
 		);
 	}
+
+	@GetMapping("")
+	public ResponseEntity<ApiRespDto<BusRouteRespDto>> findByRouteId(@RequestParam("routeId") Long routeId) {
+		return ResponseEntity.ok(
+			ApiRespDto.<BusRouteRespDto>builder()
+				.statusCode(StatusCode.OK.getCode())
+				.message(StatusCode.OK.getMessage())
+				.data(busRouteService.findByRouteId(routeId))
+				.build()
+		);
+	}
 }
