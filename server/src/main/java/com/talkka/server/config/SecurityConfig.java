@@ -26,7 +26,6 @@ import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.oauth.filter.UnregisteredUserFilter;
 import com.talkka.server.oauth.service.CustomOAuth2Service;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -45,7 +44,6 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/api/auth/login/**").permitAll()
-				.requestMatchers("/auth/**", "/login/**").permitAll()
 				.requestMatchers(HttpMethod.POST, "/api/auth/register").hasAuthority(AuthRole.UNREGISTERED.getName())
 				.anyRequest().authenticated()//.hasAuthority(AuthRole.USER.getName())
 			)
@@ -83,16 +81,12 @@ public class SecurityConfig {
 		return new AuthenticationSuccessHandler() {
 			@Override
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
-				Authentication authentication) throws IOException, ServletException {
+				Authentication authentication) throws IOException {
 				if (isUnregisteredUser(authentication)) {
 					response.sendRedirect("http://localhost:3000/register");
 					return;
 				}
 				response.sendRedirect("http://localhost:3000");
-			}
-
-			private boolean isSignUpRequest(HttpServletRequest request) {
-				return request.getRequestURI().equals("/auth/signUp");
 			}
 
 			private boolean isUnregisteredUser(Authentication authentication) {
