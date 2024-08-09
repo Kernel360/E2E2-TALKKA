@@ -30,7 +30,7 @@ public class BusStationService {
 	}
 
 	public BusStationRespDto createBusStation(BusStationCreateDto busStationCreateDto) {
-		if (busStationRepository.existsByApiStationId(busStationCreateDto.getApiStationId())) {
+		if (busStationRepository.existsByApiStationId(busStationCreateDto.apiStationId())) {
 			throw new BadRequestException("이미 등록된 정거장입니다.");
 		}
 		return BusStationRespDto.of(busStationRepository.save(busStationCreateDto.toEntity()));

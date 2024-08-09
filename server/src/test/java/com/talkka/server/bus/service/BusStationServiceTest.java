@@ -81,7 +81,7 @@ class BusStationServiceTest {
 			// given
 			var createDto = getBusStationCreateDto(1L);
 			Class<?> exceptionClass = BadRequestException.class;
-			given(busStationRepository.existsByApiStationId(createDto.getApiStationId())).willReturn(true);
+			given(busStationRepository.existsByApiStationId(createDto.apiStationId())).willReturn(true);
 			// when
 			// then
 			assertThatThrownBy(() -> busStationService.createBusStation(createDto))
