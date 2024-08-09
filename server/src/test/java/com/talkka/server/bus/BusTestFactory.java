@@ -1,4 +1,4 @@
-package com.talkka.server.bus.service;
+package com.talkka.server.bus;
 
 import java.math.BigDecimal;
 
@@ -16,9 +16,9 @@ import com.talkka.server.bus.enums.CenterStation;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.enums.TurnStation;
 
-public class BusFactory {
+public class BusTestFactory {
 
-	protected static BusRouteEntity getBusRouteEntity(Long id) {
+	public static BusRouteEntity getBusRouteEntity(Long id) {
 		return BusRouteEntity.builder()
 			.id(id)
 			.apiRouteId("BRT" + id)
@@ -45,7 +45,7 @@ public class BusFactory {
 			.build();
 	}
 
-	protected static BusRouteCreateDto getBusRouteCreateDto(Long id) {
+	public static BusRouteCreateDto getBusRouteCreateDto(Long id) {
 
 		return BusRouteCreateDto.builder()
 			.apiRouteId("BRT" + id)
@@ -72,7 +72,7 @@ public class BusFactory {
 			.build();
 	}
 
-	protected static BusRouteRespDto getBusRouteRespDto(Long id) {
+	public static BusRouteRespDto getBusRouteRespDto(Long id) {
 		return BusRouteRespDto.builder()
 			.routeId(id)
 			.routeName("7800" + id)
@@ -95,7 +95,7 @@ public class BusFactory {
 			.build();
 	}
 
-	protected static BusStationEntity getBusStationEntity(Long id) {
+	public static BusStationEntity getBusStationEntity(Long id) {
 		return BusStationEntity.builder()
 			.id(id)
 			.apiStationId("BST" + id)
@@ -109,7 +109,7 @@ public class BusFactory {
 			.build();
 	}
 
-	protected static BusStationCreateDto getBusStationCreateDto(Long id) {
+	public static BusStationCreateDto getBusStationCreateDto(Long id) {
 		return BusStationCreateDto.builder()
 			.apiStationId("BST" + id)
 			.stationName("정거장" + id)

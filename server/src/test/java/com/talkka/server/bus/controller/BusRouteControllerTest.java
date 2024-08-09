@@ -1,6 +1,6 @@
 package com.talkka.server.bus.controller;
 
-import static com.talkka.server.bus.controller.BusFactory.*;
+import static com.talkka.server.bus.BusTestFactory.*;
 import static org.mockito.BDDMockito.*;
 
 import java.util.List;
