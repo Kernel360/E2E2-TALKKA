@@ -1,5 +1,6 @@
 package com.talkka.server.review.dto;
 
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.review.dao.BusReviewEntity;
 
 import lombok.Builder;
@@ -10,7 +11,7 @@ public record BusReviewRespDto(
 	Long routeId,
 	Long busRouteStationId,
 	String content,
-	String timeSlot,
+	TimeSlot timeSlot,
 	Integer rating
 ) {
 	public static BusReviewRespDto of(BusReviewEntity busEntity) {
@@ -19,7 +20,7 @@ public record BusReviewRespDto(
 			busEntity.getRoute().getId(),
 			busEntity.getStation().getId(),
 			busEntity.getContent(),
-			busEntity.getTimeSlot().getCode(),
+			busEntity.getTimeSlot(),
 			busEntity.getRating()
 		);
 	}

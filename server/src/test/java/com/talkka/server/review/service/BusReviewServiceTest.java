@@ -52,7 +52,7 @@ public class BusReviewServiceTest {
 			.routeId(236000050L)
 			.busRouteStationId(1L)
 			.content("리뷰 내용")
-			.timeSlot(TimeSlot.T_00_00.getCode())
+			.timeSlot(TimeSlot.T_00_00)
 			.rating(4)
 			.build();
 	}
