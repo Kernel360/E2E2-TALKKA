@@ -89,13 +89,13 @@ class UserServiceTest {
 			// when
 			var result = userService.createUser(userCreateDto);
 			// then
-			assertThat(result.getUserId()).isEqualTo(1L);
-			assertThat(result.getName()).isEqualTo(userCreateDto.getName());
-			assertThat(result.getEmail()).isEqualTo(userCreateDto.getEmail());
-			assertThat(result.getNickname()).isEqualTo(userCreateDto.getNickname());
-			assertThat(result.getOauthProvider()).isEqualTo(userCreateDto.getOauthProvider());
-			assertThat(result.getAccessToken()).isEqualTo(userCreateDto.getAccessToken());
-			assertThat(result.getGrade()).isEqualTo(userCreateDto.getGrade());
+			assertThat(result.userId()).isEqualTo(1L);
+			assertThat(result.name()).isEqualTo(userCreateDto.name());
+			assertThat(result.email()).isEqualTo(userCreateDto.email());
+			assertThat(result.nickname()).isEqualTo(userCreateDto.nickname());
+			assertThat(result.oauthProvider()).isEqualTo(userCreateDto.oauthProvider());
+			assertThat(result.accessToken()).isEqualTo(userCreateDto.accessToken());
+			assertThat(result.grade()).isEqualTo(userCreateDto.grade());
 		}
 
 		@Test
@@ -106,7 +106,7 @@ class UserServiceTest {
 				"name",
 				"email",
 				"oauthProvider",
-				userDto.getNickname(),
+				userDto.nickname(),
 				"accessToken",
 				Grade.USER
 			);
@@ -161,12 +161,12 @@ class UserServiceTest {
 			// when
 			var result = userService.updateUser(1L, reqDto);
 			// then
-			assertThat(result.getUserId()).isEqualTo(1L);
-			assertThat(result.getNickname()).isEqualTo("nickname2");
-			assertThat(result.getOauthProvider()).isEqualTo(findDto.getOauthProvider());
-			assertThat(result.getAccessToken()).isEqualTo(findDto.getAccessToken());
-			assertThat(result.getGrade()).isEqualTo(Grade.USER);
-			assertThat(result.getCreatedAt()).isEqualTo(findDto.getCreatedAt());
+			assertThat(result.userId()).isEqualTo(1L);
+			assertThat(result.nickname()).isEqualTo("nickname2");
+			assertThat(result.oauthProvider()).isEqualTo(findDto.oauthProvider());
+			assertThat(result.accessToken()).isEqualTo(findDto.accessToken());
+			assertThat(result.grade()).isEqualTo(Grade.USER);
+			assertThat(result.createdAt()).isEqualTo(findDto.createdAt());
 		}
 
 		@Test
@@ -190,7 +190,7 @@ class UserServiceTest {
 			UserDto findDto = userDtoFixture(1L);
 			UserEntity findEntity = findDto.toEntity();
 			given(userRepository.findById(1L)).willReturn(Optional.of(findEntity));
-			given(userService.isDuplicatedNickname(reqDto.getNickname())).willReturn(true);
+			given(userService.isDuplicatedNickname(reqDto.nickname())).willReturn(true);
 			// when
 			// then
 			assertThatThrownBy(() -> userService.updateUser(1L, reqDto)).isInstanceOf(exceptionClass)
