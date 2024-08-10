@@ -30,7 +30,7 @@ public class AuthController {
 		@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserCreateReqDto userCreateReqDto,
 		HttpServletRequest request) {
-		String nickname = userCreateReqDto.getNickname();
+		String nickname = userCreateReqDto.nickname();
 		if (userService.isDuplicatedNickname(nickname)) {
 			return ResponseEntity.badRequest().body(
 				ApiRespDto.<Void>builder()
