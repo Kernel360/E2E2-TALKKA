@@ -2,8 +2,8 @@ package com.talkka.server.review.dto;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.review.dao.BusReviewEntity;
-import com.talkka.server.review.enums.BusTimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.validation.constraints.Max;
@@ -22,7 +22,7 @@ public record BusReviewReqDto(
 	@Max(value = 10, message = "형식에 맞지 않는 rating 입니다.") Integer rating
 ) {
 	public BusReviewEntity toEntity(
-		UserEntity user, BusRouteStationEntity station, BusRouteEntity route, BusTimeSlot busTimeSlot) {
-		return new BusReviewEntity(null, user, station, route, content, busTimeSlot, rating, null, null);
+		UserEntity user, BusRouteStationEntity station, BusRouteEntity route, TimeSlot timeSlot) {
+		return new BusReviewEntity(null, user, station, route, content, timeSlot, rating, null, null);
 	}
 }

@@ -1,11 +1,11 @@
-package com.talkka.server.review.enums;
+package com.talkka.server.common.enums;
 
 import com.talkka.server.common.util.EnumCodeInterface;
 
 import lombok.Getter;
 
 @Getter
-public enum BusTimeSlot implements EnumCodeInterface {
+public enum TimeSlot implements EnumCodeInterface {
 	T_00_00("00:00", "0"),
 	T_00_30("00:30", "1"),
 	T_01_00("01:00", "2"),
@@ -58,7 +58,7 @@ public enum BusTimeSlot implements EnumCodeInterface {
 	private final String timeSlot;
 	private final String code;
 
-	BusTimeSlot(String timeSlot, String code) {
+	TimeSlot(String timeSlot, String code) {
 		this.timeSlot = timeSlot;
 		this.code = code;
 	}

@@ -2,13 +2,13 @@ package com.talkka.server.subway.dao;
 
 import java.util.Objects;
 
+import com.talkka.server.common.enums.TimeSlot;
+import com.talkka.server.common.util.TimeSlotConverter;
 import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Line;
-import com.talkka.server.subway.enums.SubwayTimeSlot;
 import com.talkka.server.subway.enums.Updown;
 import com.talkka.server.subway.util.DayTypeConverter;
 import com.talkka.server.subway.util.LineConverter;
-import com.talkka.server.subway.util.SubwayTimeSlotConverter;
 import com.talkka.server.subway.util.UpdownConverter;
 
 import jakarta.persistence.Column;
@@ -61,8 +61,8 @@ public class SubwayConfusionEntity {
 	private Updown updown;
 
 	@Column(name = "time_slot", nullable = false)
-	@Convert(converter = SubwayTimeSlotConverter.class)
-	private SubwayTimeSlot subwayTimeslot;
+	@Convert(converter = TimeSlotConverter.class)
+	private TimeSlot timeslot;
 
 	@Column(name = "confusion")
 	private Double confusion;

@@ -19,7 +19,7 @@ public record BusReviewRespDto(
 			busEntity.getRoute().getId(),
 			busEntity.getStation().getId(),
 			busEntity.getContent(),
-			busEntity.getBusTimeSlot().getCode(),
+			busEntity.getTimeSlot().getCode(),
 			busEntity.getRating()
 		);
 	}
