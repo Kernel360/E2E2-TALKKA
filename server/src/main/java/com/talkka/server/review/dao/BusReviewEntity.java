@@ -9,8 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
-import com.talkka.server.review.enums.TimeSlot;
-import com.talkka.server.review.util.TimeSlotConverter;
+import com.talkka.server.common.enums.TimeSlot;
+import com.talkka.server.common.util.TimeSlotConverter;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.Column;

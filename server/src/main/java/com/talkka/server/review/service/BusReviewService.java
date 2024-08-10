@@ -9,6 +9,7 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.common.exception.http.ForbiddenException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.common.util.EnumCodeConverterUtils;
@@ -16,7 +17,6 @@ import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
-import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 

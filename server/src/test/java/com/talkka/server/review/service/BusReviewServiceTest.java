@@ -17,6 +17,7 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.common.exception.http.ForbiddenException;
 import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.common.util.EnumCodeConverterUtils;
@@ -24,7 +25,6 @@ import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
-import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -85,7 +85,8 @@ public class BusReviewServiceTest {
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
 			BusRouteEntity route = getBusRouteFixture(236000050L);
-			TimeSlot timeSlot = EnumCodeConverterUtils.<TimeSlot>fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
+			TimeSlot timeSlot = EnumCodeConverterUtils.<TimeSlot>fromCode(TimeSlot.class,
+				TimeSlot.T_00_00.getCode());
 			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(1L)
 				.routeId(236000050L)
