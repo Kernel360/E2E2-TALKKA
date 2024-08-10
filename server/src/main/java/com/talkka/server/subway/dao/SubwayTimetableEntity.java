@@ -3,9 +3,11 @@ package com.talkka.server.subway.dao;
 import java.time.LocalTime;
 import java.util.Objects;
 
+import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Express;
 import com.talkka.server.subway.enums.Line;
 import com.talkka.server.subway.enums.Updown;
+import com.talkka.server.subway.util.DayTypeConverter;
 import com.talkka.server.subway.util.ExpressConverter;
 import com.talkka.server.subway.util.LineConverter;
 import com.talkka.server.subway.util.UpdownConverter;
@@ -52,7 +54,8 @@ public class SubwayTimetableEntity {
 	private String stationName;
 
 	@Column(name = "day_type", nullable = false)
-	private String dayType;
+	@Convert(converter = DayTypeConverter.class)
+	private DayType dayType;
 
 	@Column(name = "updown", nullable = false)
 	@Convert(converter = UpdownConverter.class)

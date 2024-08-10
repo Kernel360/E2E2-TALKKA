@@ -2,9 +2,11 @@ package com.talkka.server.subway.dao;
 
 import java.util.Objects;
 
+import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Line;
 import com.talkka.server.subway.enums.SubwayTimeSlot;
 import com.talkka.server.subway.enums.Updown;
+import com.talkka.server.subway.util.DayTypeConverter;
 import com.talkka.server.subway.util.LineConverter;
 import com.talkka.server.subway.util.SubwayTimeSlotConverter;
 import com.talkka.server.subway.util.UpdownConverter;
@@ -41,7 +43,8 @@ public class SubwayConfusionEntity {
 	private SubwayStationEntity subwayStation;
 
 	@Column(name = "day_type", nullable = false)
-	private String dayType;
+	@Convert(converter = DayTypeConverter.class)
+	private DayType dayType;
 
 	@Column(name = "line_cd", nullable = false)
 	@Convert(converter = LineConverter.class)
