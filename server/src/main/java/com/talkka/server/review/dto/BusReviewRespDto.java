@@ -31,7 +31,7 @@ public class BusReviewRespDto {
 			busEntity.getRoute().getId(),
 			busEntity.getStation().getId(),
 			busEntity.getContent(),
-			busEntity.getTimeSlot().getCode(),
+			busEntity.getBusTimeSlot().getCode(),
 			busEntity.getRating());
 	}
 }

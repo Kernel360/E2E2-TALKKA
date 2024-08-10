@@ -16,7 +16,7 @@ import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
-import com.talkka.server.review.enums.TimeSlot;
+import com.talkka.server.review.enums.BusTimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -34,8 +34,8 @@ public class BusReviewService {
 	public List<BusReviewRespDto> getBusReviewList(
 		Long userId, Long routeId, Long busRouteStationId, String timeSlot
 	) {
-		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlot(
-			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
+		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndBusTimeSlot(
+			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(BusTimeSlot.class, timeSlot));
 
 		return reviewList.stream()
 			.map(BusReviewRespDto::of)
@@ -52,9 +52,9 @@ public class BusReviewService {
 		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
 
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+		BusTimeSlot busTimeSlot = EnumCodeConverterUtils.fromCode(BusTimeSlot.class, busReviewReqDto.getTimeSlot());
 
-		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route, timeSlot);
+		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route, busTimeSlot);
 
 		BusReviewEntity savedReview = busReviewRepository.save(entity);
 
@@ -70,9 +70,9 @@ public class BusReviewService {
 			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
 		}
 
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.getTimeSlot());
+		BusTimeSlot busTimeSlot = EnumCodeConverterUtils.fromCode(BusTimeSlot.class, busReviewReqDto.getTimeSlot());
 
-		review.updateReview(busReviewReqDto.getContent(), timeSlot, busReviewReqDto.getRating());
+		review.updateReview(busReviewReqDto.getContent(), busTimeSlot, busReviewReqDto.getRating());
 
 		return BusReviewRespDto.of(review);
 	}

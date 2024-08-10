@@ -9,8 +9,8 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
-import com.talkka.server.review.enums.TimeSlot;
-import com.talkka.server.review.util.TimeSlotConverter;
+import com.talkka.server.review.enums.BusTimeSlot;
+import com.talkka.server.review.util.BusTimeSlotConverter;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.Column;
@@ -58,8 +58,8 @@ public class BusReviewEntity {
 	private String content;
 
 	@Column(name = "time_slot", nullable = false)
-	@Convert(converter = TimeSlotConverter.class)
-	private TimeSlot timeSlot;
+	@Convert(converter = BusTimeSlotConverter.class)
+	private BusTimeSlot busTimeSlot;
 
 	@Column(name = "rating", nullable = false)
 	private Integer rating;
@@ -87,9 +87,9 @@ public class BusReviewEntity {
 		return Objects.hashCode(id);
 	}
 
-	public void updateReview(String content, TimeSlot timeSlot, Integer rating) {
+	public void updateReview(String content, BusTimeSlot busTimeSlot, Integer rating) {
 		this.content = content;
-		this.timeSlot = timeSlot;
+		this.busTimeSlot = busTimeSlot;
 		this.rating = rating;
 	}
 }
