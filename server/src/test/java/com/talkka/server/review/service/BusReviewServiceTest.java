@@ -24,7 +24,7 @@ import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
-import com.talkka.server.review.enums.TimeSlot;
+import com.talkka.server.review.enums.BusTimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -52,7 +52,7 @@ public class BusReviewServiceTest {
 			.routeId(236000050L)
 			.busRouteStationId(1L)
 			.content("리뷰 내용")
-			.timeSlot(TimeSlot.T_00_00.getCode())
+			.timeSlot(BusTimeSlot.T_00_00.getCode())
 			.rating(4)
 			.build();
 	}
@@ -85,18 +85,19 @@ public class BusReviewServiceTest {
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
 			BusRouteEntity route = getBusRouteFixture(236000050L);
-			TimeSlot timeSlot = EnumCodeConverterUtils.<TimeSlot>fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
+			BusTimeSlot busTimeSlot = EnumCodeConverterUtils.<BusTimeSlot>fromCode(BusTimeSlot.class,
+				BusTimeSlot.T_00_00.getCode());
 			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
 				.busRouteStationId(1L)
 				.routeId(236000050L)
 				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
+				.timeSlot(BusTimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
 			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
 				.content("리뷰 내용")
-				.timeSlot(timeSlot)
+				.busTimeSlot(busTimeSlot)
 				.rating(4)
 				.writer(user)
 				.station(station)
@@ -140,7 +141,7 @@ public class BusReviewServiceTest {
 				.busRouteStationId(null)
 				.routeId(236000050L)
 				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
+				.timeSlot(BusTimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
@@ -163,7 +164,7 @@ public class BusReviewServiceTest {
 				.busRouteStationId(1L)
 				.routeId(null)
 				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
+				.timeSlot(BusTimeSlot.T_00_00.getCode())
 				.rating(4)
 				.build();
 
@@ -211,7 +212,7 @@ public class BusReviewServiceTest {
 			.routeId(236000050L)
 			.busRouteStationId(1L)
 			.content("변경된 리뷰 내용")
-			.timeSlot(TimeSlot.T_00_30.getCode())
+			.timeSlot(BusTimeSlot.T_00_30.getCode())
 			.rating(5)
 			.build();
 
@@ -221,11 +222,11 @@ public class BusReviewServiceTest {
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
 			BusRouteEntity route = getBusRouteFixture(236000050L);
-			TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
+			BusTimeSlot busTimeSlot = EnumCodeConverterUtils.fromCode(BusTimeSlot.class, BusTimeSlot.T_00_00.getCode());
 			BusReviewEntity originEntity = BusReviewEntity.builder()
 				.id(1L)
 				.content("리뷰 내용")
-				.timeSlot(timeSlot)
+				.busTimeSlot(busTimeSlot)
 				.rating(4)
 				.writer(user)
 				.station(station)
@@ -233,7 +234,7 @@ public class BusReviewServiceTest {
 				.build();
 
 			BusReviewEntity updatedEntity = busReviewReqDto.toEntity(user, station, route,
-				EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_30.getCode()));
+				EnumCodeConverterUtils.fromCode(BusTimeSlot.class, BusTimeSlot.T_00_30.getCode()));
 
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(originEntity));
 
@@ -268,7 +269,7 @@ public class BusReviewServiceTest {
 			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
 				.id(busReviewId)
 				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00)
+				.busTimeSlot(BusTimeSlot.T_00_00)
 				.rating(4)
 				.writer(getUserFixture(userId + 1))
 				.build();
@@ -299,7 +300,7 @@ public class BusReviewServiceTest {
 			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
 				.id(busReviewId)
 				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00)
+				.busTimeSlot(BusTimeSlot.T_00_00)
 				.rating(4)
 				.writer(getUserFixture(userId))
 				.build();
