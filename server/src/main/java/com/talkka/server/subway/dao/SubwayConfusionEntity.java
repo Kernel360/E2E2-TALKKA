@@ -62,7 +62,7 @@ public class SubwayConfusionEntity {
 
 	@Column(name = "time_slot", nullable = false)
 	@Convert(converter = TimeSlotConverter.class)
-	private TimeSlot timeslot;
+	private TimeSlot timeSlot;
 
 	@Column(name = "confusion")
 	private Double confusion;
