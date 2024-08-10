@@ -7,31 +7,19 @@ import com.talkka.server.bus.enums.CenterStation;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.enums.TurnStation;
 
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-@Getter
 @Builder
-@ToString
-@EqualsAndHashCode
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-public class BusStationCreateDto {
-
-	private String apiStationId;
-	private String stationName;
-	private String regionName;
-	private DistrictCode districtCd;
-	private CenterStation centerYn;
-	private TurnStation turnYn;
-	private BigDecimal longitude;
-	private BigDecimal latitude;
-
+public record BusStationCreateDto(
+	String apiStationId,
+	String stationName,
+	String regionName,
+	DistrictCode districtCd,
+	CenterStation centerYn,
+	TurnStation turnYn,
+	BigDecimal longitude,
+	BigDecimal latitude
+) {
 	public BusStationEntity toEntity() {
 		return BusStationEntity.builder()
 			.apiStationId(apiStationId)

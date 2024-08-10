@@ -96,9 +96,9 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
 				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(expect.getUserId()))
-				.andExpect(jsonPath("$.data.nickname").value(expect.getNickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(expect.getOauthProvider()));
+				.andExpect(jsonPath("$.data.user_id").value(expect.userId()))
+				.andExpect(jsonPath("$.data.nickname").value(expect.nickname()))
+				.andExpect(jsonPath("$.data.oauth_provider").value(expect.oauthProvider()));
 		}
 
 		@Test
@@ -128,16 +128,16 @@ class UserControllerTest {
 				"testUser",
 				"test@example.com",
 				"naver",
-				userCreateReqDto.getNickname(),
+				userCreateReqDto.nickname(),
 				"token",
 				Grade.USER
 			);
 			final UserDto expectedData = new UserDto(
 				1L,
-				userCreateDto.getName(),
-				userCreateDto.getEmail(),
-				userCreateDto.getNickname(),
-				userCreateDto.getOauthProvider(),
+				userCreateDto.name(),
+				userCreateDto.email(),
+				userCreateDto.nickname(),
+				userCreateDto.oauthProvider(),
 				"token",
 				Grade.USER,
 				LocalDateTime.now(),
@@ -156,10 +156,10 @@ class UserControllerTest {
 				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
 				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
 				.andExpect(jsonPath("$.data.user_id").exists())
-				.andExpect(jsonPath("$.data.name").value(userCreateDto.getName()))
-				.andExpect(jsonPath("$.data.email").value(userCreateDto.getEmail()))
-				.andExpect(jsonPath("$.data.nickname").value(userCreateDto.getNickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userCreateDto.getOauthProvider()));
+				.andExpect(jsonPath("$.data.name").value(userCreateDto.name()))
+				.andExpect(jsonPath("$.data.email").value(userCreateDto.email()))
+				.andExpect(jsonPath("$.data.nickname").value(userCreateDto.nickname()))
+				.andExpect(jsonPath("$.data.oauth_provider").value(userCreateDto.oauthProvider()));
 		}
 
 		@Test
@@ -242,7 +242,7 @@ class UserControllerTest {
 			final UserDto userDto = new UserDto(
 				1L,
 				"name",
-				userUpdateReqDto.getNickname(),
+				userUpdateReqDto.nickname(),
 				"email",
 				"oauthProvider",
 				"accessToken",
@@ -261,11 +261,11 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
 				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(userDto.getUserId()))
-				.andExpect(jsonPath("$.data.name").value(userDto.getName()))
-				.andExpect(jsonPath("$.data.email").value(userDto.getEmail()))
-				.andExpect(jsonPath("$.data.nickname").value(userDto.getNickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.getOauthProvider()));
+				.andExpect(jsonPath("$.data.user_id").value(userDto.userId()))
+				.andExpect(jsonPath("$.data.name").value(userDto.name()))
+				.andExpect(jsonPath("$.data.email").value(userDto.email()))
+				.andExpect(jsonPath("$.data.nickname").value(userDto.nickname()))
+				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.oauthProvider()));
 		}
 
 		@Test
@@ -401,11 +401,11 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
 				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(expect.getUserId()))
-				.andExpect(jsonPath("$.data.email").value(expect.getEmail()))
-				.andExpect(jsonPath("$.data.name").value(expect.getName()))
-				.andExpect(jsonPath("$.data.nickname").value(expect.getNickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(expect.getOauthProvider()));
+				.andExpect(jsonPath("$.data.user_id").value(expect.userId()))
+				.andExpect(jsonPath("$.data.email").value(expect.email()))
+				.andExpect(jsonPath("$.data.name").value(expect.name()))
+				.andExpect(jsonPath("$.data.nickname").value(expect.nickname()))
+				.andExpect(jsonPath("$.data.oauth_provider").value(expect.oauthProvider()));
 		}
 	}
 
@@ -419,7 +419,7 @@ class UserControllerTest {
 			final UserDto userDto = new UserDto(
 				1L,
 				"name",
-				userUpdateReqDto.getNickname(),
+				userUpdateReqDto.nickname(),
 				"email",
 				"oauthProvider",
 				"accessToken",
@@ -438,11 +438,11 @@ class UserControllerTest {
 				.andExpect(status().isOk())
 				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
 				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(userDto.getUserId()))
-				.andExpect(jsonPath("$.data.name").value(userDto.getName()))
-				.andExpect(jsonPath("$.data.email").value(userDto.getEmail()))
-				.andExpect(jsonPath("$.data.nickname").value(userDto.getNickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.getOauthProvider()));
+				.andExpect(jsonPath("$.data.user_id").value(userDto.userId()))
+				.andExpect(jsonPath("$.data.name").value(userDto.name()))
+				.andExpect(jsonPath("$.data.email").value(userDto.email()))
+				.andExpect(jsonPath("$.data.nickname").value(userDto.nickname()))
+				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.oauthProvider()));
 		}
 
 		@Test

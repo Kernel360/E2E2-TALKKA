@@ -30,7 +30,7 @@ public class BusRouteService {
 	}
 
 	public BusRouteRespDto createBusRoute(BusRouteCreateDto busRouteCreateDto) {
-		if (!busRouteRepository.existsByApiRouteId(busRouteCreateDto.getApiRouteId())) {
+		if (!busRouteRepository.existsByApiRouteId(busRouteCreateDto.apiRouteId())) {
 			throw new BadRequestException("이미 등록된 버스 노선입니다.");
 		}
 		return BusRouteRespDto.of(busRouteRepository.save(busRouteCreateDto.toEntity()));

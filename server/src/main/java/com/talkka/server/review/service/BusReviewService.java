@@ -46,10 +46,10 @@ public class BusReviewService {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
 
-		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.getBusRouteStationId())
+		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.busRouteStationId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 경유 정류장입니다."));
 
-		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.getRouteId())
+		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.routeId())
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
 
 		BusTimeSlot busTimeSlot = EnumCodeConverterUtils.fromCode(BusTimeSlot.class, busReviewReqDto.getTimeSlot());
