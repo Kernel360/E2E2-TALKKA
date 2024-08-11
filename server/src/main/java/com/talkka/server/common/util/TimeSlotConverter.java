@@ -1,7 +1,6 @@
-package com.talkka.server.review.util;
+package com.talkka.server.common.util;
 
-import com.talkka.server.common.util.EnumCodeConverter;
-import com.talkka.server.review.enums.TimeSlot;
+import com.talkka.server.common.enums.TimeSlot;
 
 import jakarta.persistence.Converter;
 

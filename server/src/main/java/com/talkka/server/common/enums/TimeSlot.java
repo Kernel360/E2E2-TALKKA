@@ -1,4 +1,4 @@
-package com.talkka.server.review.enums;
+package com.talkka.server.common.enums;
 
 import com.talkka.server.common.util.EnumCodeInterface;
 

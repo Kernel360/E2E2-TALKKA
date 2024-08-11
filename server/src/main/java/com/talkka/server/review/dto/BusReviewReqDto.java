@@ -2,8 +2,8 @@ package com.talkka.server.review.dto;
 
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.review.dao.BusReviewEntity;
-import com.talkka.server.review.enums.TimeSlot;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.validation.constraints.Max;
