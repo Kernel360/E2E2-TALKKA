@@ -122,7 +122,7 @@ public class BusTestFactory {
 			.build();
 	}
 
-	protected static BusStationRespDto getBusStationRespDto(Long id) {
+	public static BusStationRespDto getBusStationRespDto(Long id) {
 		return BusStationRespDto.builder()
 			.stationId(id)
 			.stationName("정거장" + id)
@@ -135,7 +135,7 @@ public class BusTestFactory {
 			.build();
 	}
 
-	protected static BusRouteStationEntity getBusRouteStationEntity(Long id, BusRouteEntity routeEntity,
+	public static BusRouteStationEntity getBusRouteStationEntity(Long id, BusRouteEntity routeEntity,
 		BusStationEntity stationEntity) {
 		return BusRouteStationEntity.builder()
 			.id(id)
@@ -146,7 +146,7 @@ public class BusTestFactory {
 			.build();
 	}
 
-	protected static BusRouteStationCreateDto getBusRouteStationCreateDto(Long id) {
+	public static BusRouteStationCreateDto getBusRouteStationCreateDto(Long id) {
 		return BusRouteStationCreateDto.builder()
 			.apiRouteId("BRT" + id)
 			.apiStationId("BST" + id)
@@ -155,7 +155,7 @@ public class BusTestFactory {
 			.build();
 	}
 
-	protected static BusRouteStationRespDto getBusRouteStationRespDto(Long id, BusRouteRespDto routeRespDto,
+	public static BusRouteStationRespDto getBusRouteStationRespDto(Long id, BusRouteRespDto routeRespDto,
 		BusStationRespDto stationRespDto) {
 		return BusRouteStationRespDto.builder()
 			.busRouteStationId(id)
