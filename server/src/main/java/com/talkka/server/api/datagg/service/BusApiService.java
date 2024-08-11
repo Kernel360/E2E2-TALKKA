@@ -10,11 +10,11 @@ import com.talkka.server.api.datagg.dto.BusRouteStationBodyDto;
 public interface BusApiService {
 	List<BusRouteSearchBodyDto> getSearchedRouteInfo(String routeName);
 
-	List<BusRouteInfoBodyDto> getRouteInfo(String routeId);
+	List<BusRouteInfoBodyDto> getRouteInfo(String apiRouteId);
 
-	List<BusRouteStationBodyDto> getRouteStationInfo(String routeId);
+	List<BusRouteStationBodyDto> getRouteStationInfo(String apiRouteId);
 
-	List<BusLocationBodyDto> getBusLocationInfo(String routeId);
+	List<BusLocationBodyDto> getBusLocationInfo(String apiRouteId);
 
 	// List<RouteBusStationArrivalInfoRespDto> getBusStationArrivalInfo(String routeId);
 }

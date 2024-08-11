@@ -4,9 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface PublicBusApiResp<T> {
-	Map<String, String> getComMsgHeader();
+	Map<String, String> comMsgHeader();
 
-	Map<String, String> getMsgHeader();
+	Map<String, String> msgHeader();
 
-	List<T> getMsgBody();
+	List<T> msgBody();
 }

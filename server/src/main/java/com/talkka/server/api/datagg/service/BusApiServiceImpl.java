@@ -36,37 +36,37 @@ public class BusApiServiceImpl implements BusApiService {
 		params.add("keyword", keyword);
 		URI uri = this.getOpenApiURI(path, params);
 		ResponseEntity<BusRouteSearchRespDto> resp = restTemplate.getForEntity(uri, BusRouteSearchRespDto.class);
-		return resp.getBody().getMsgBody();
+		return resp.getBody().msgBody();
 	}
 
 	@Override
-	public List<BusRouteInfoBodyDto> getRouteInfo(String routeId) {
+	public List<BusRouteInfoBodyDto> getRouteInfo(String apiRouteId) {
 		final String path = "/6410000/busrouteservice/getBusRouteInfoItem";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("routeId", routeId);
+		params.add("routeId", apiRouteId);
 		URI uri = this.getOpenApiURI(path, params);
 		ResponseEntity<BusRouteInfoRespDto> resp = restTemplate.getForEntity(uri, BusRouteInfoRespDto.class);
-		return resp.getBody().getMsgBody();
+		return resp.getBody().msgBody();
 	}
 
 	@Override
-	public List<BusRouteStationBodyDto> getRouteStationInfo(String routeId) {
+	public List<BusRouteStationBodyDto> getRouteStationInfo(String apiRouteId) {
 		final String path = "/6410000/busrouteservice/getBusRouteStationList";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("routeId", routeId);
+		params.add("routeId", apiRouteId);
 		URI uri = this.getOpenApiURI(path, params);
 		ResponseEntity<BusRouteStationRespDto> resp = restTemplate.getForEntity(uri, BusRouteStationRespDto.class);
-		return resp.getBody().getMsgBody();
+		return resp.getBody().msgBody();
 	}
 
 	@Override
-	public List<BusLocationBodyDto> getBusLocationInfo(String routeId) {
+	public List<BusLocationBodyDto> getBusLocationInfo(String apiRouteId) {
 		final String path = "/6410000/buslocationservice/getBusLocationList";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
-		params.add("routeId", routeId);
+		params.add("routeId", apiRouteId);
 		URI uri = this.getOpenApiURI(path, params);
 		ResponseEntity<BusLocationRespDto> resp = restTemplate.getForEntity(uri, BusLocationRespDto.class);
-		return resp.getBody().getMsgBody();
+		return resp.getBody().msgBody();
 	}
 
 	// @Override

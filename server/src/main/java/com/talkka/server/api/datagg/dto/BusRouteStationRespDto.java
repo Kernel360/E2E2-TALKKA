@@ -6,23 +6,9 @@ import java.util.Map;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty;
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlRootElement;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
-
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-@ToString
 @JacksonXmlRootElement(localName = "response")
-public class BusRouteStationRespDto implements PublicBusApiResp<BusRouteStationBodyDto> {
-	@JacksonXmlProperty(localName = "comMsgHeader")
-	private Map<String, String> comMsgHeader;
-	@JacksonXmlProperty(localName = "msgHeader")
-	private Map<String, String> msgHeader;
-	@JacksonXmlProperty(localName = "msgBody")
-	private List<BusRouteStationBodyDto> msgBody;
+public record BusRouteStationRespDto(@JacksonXmlProperty(localName = "comMsgHeader") Map<String, String> comMsgHeader,
+									 @JacksonXmlProperty(localName = "msgHeader") Map<String, String> msgHeader,
+									 @JacksonXmlProperty(localName = "msgBody") List<BusRouteStationBodyDto> msgBody)
+	implements PublicBusApiResp<BusRouteStationBodyDto> {
 }

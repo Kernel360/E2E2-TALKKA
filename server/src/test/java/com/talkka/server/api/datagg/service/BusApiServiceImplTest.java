@@ -29,7 +29,7 @@ class BusApiServiceImplTest {
 			assertNotNull(result);
 			assertFalse(result.isEmpty());
 			for (var dto : result) {
-				assertThat(dto.getRouteName()).contains(routeName);
+				assertThat(dto.routeName()).contains(routeName);
 			}
 		}
 	}
@@ -49,7 +49,7 @@ class BusApiServiceImplTest {
 			assertNotNull(result);
 			assertFalse(result.isEmpty());
 			for (var dto : result) {
-				assertThat(dto.getRouteId()).isEqualTo(Long.parseLong(routeId));
+				assertThat(dto.routeId()).isEqualTo(Long.parseLong(routeId));
 			}
 		}
 	}
