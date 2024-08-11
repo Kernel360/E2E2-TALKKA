@@ -5,9 +5,9 @@ spring:
     property-naming-strategy: SNAKE_CASE
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${MYSQL_URL}
-    username: ${MYSQL_USERNAME}
-    password: ${MYSQL_PASSWORD}
+    url: jdbc:mysql://localhost:3306/TALKKA_DB?createDatabaseIfNotExist=true
+    username: root
+    password: 1234
   jpa:
     hibernate:
       ddl-auto: create
@@ -21,7 +21,7 @@ spring:
       client:
         registration:
           naver:
-            client-id: ${NAVER_CLIENT_ID}
+            client-id: ${NAVER_CLIENT_ID} # NOTE: 실제 테스트 시에는 env 에 대해서 값을 삽입하고 사용할 것.
             client-secret: ${NAVER_CLINET_SECRET}
             redirect_uri: http://localhost:8080/login/oauth2/code/naver
             client-name: Naver
@@ -38,3 +38,10 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+
+openapi:
+  public:
+    bus:
+      service-key:
+        keys:
+          - ${SERVICE_KEY_1}

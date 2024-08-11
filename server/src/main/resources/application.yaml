@@ -36,3 +36,11 @@ spring:
   thymeleaf:
     prefix: classpath:/templates/
     suffix: .html
+
+
+openapi:
+  public:
+    bus:
+      service-key:
+        keys:
+          - ${SERVICE_KEY_1}
