@@ -43,11 +43,11 @@ public class BusRouteControllerTest {
 					.data(getBusRouteRespDto(id))
 					.build()
 			);
-			given(routeService.findByRouteId(anyLong())).willReturn(getBusRouteRespDto(id));
+			given(routeService.getRouteById(anyLong())).willReturn(getBusRouteRespDto(id));
 			// when
-			var result = routeController.findByRouteId(id);
+			var result = routeController.getRouteById(id);
 			// then
-			verify(routeService, times(1)).findByRouteId(anyLong());
+			verify(routeService, times(1)).getRouteById(anyLong());
 			Assertions.assertThat(result).isEqualTo(expected);
 		}
 	}
@@ -74,7 +74,7 @@ public class BusRouteControllerTest {
 					)
 					.build()
 			);
-			given(routeService.findByRouteName(anyString())).willReturn(
+			given(routeService.getRoutesByRouteName(anyString())).willReturn(
 				List.of(
 					getBusRouteRespDto(id1),
 					getBusRouteRespDto(id2),
@@ -82,9 +82,9 @@ public class BusRouteControllerTest {
 				)
 			);
 			// when
-			var result = routeController.findByRouteName("7800");
+			var result = routeController.getRoutes("7800");
 			// then
-			verify(routeService, times(1)).findByRouteName(anyString());
+			verify(routeService, times(1)).getRoutesByRouteName(anyString());
 			Assertions.assertThat(result).isEqualTo(expected);
 		}
 	}
