@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -21,9 +22,9 @@ import lombok.RequiredArgsConstructor;
 public class BusRouteStationController {
 	private final BusRouteStationService routeStationService;
 
-	@GetMapping("")
+	@GetMapping("/id/{id}")
 	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findById(
-		@RequestParam("routeStationId") Long routeStationId) {
+		@PathVariable("id") Long routeStationId) {
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusRouteStationRespDto>>builder()
 				.statusCode(StatusCode.OK.getCode())
@@ -33,7 +34,7 @@ public class BusRouteStationController {
 		);
 	}
 
-	@GetMapping("")
+	@GetMapping("/routeId/{routeId}")
 	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findByRouteId(
 		@RequestParam("routeId") Long routeId) {
 		return ResponseEntity.ok(
@@ -45,7 +46,7 @@ public class BusRouteStationController {
 		);
 	}
 
-	@GetMapping("")
+	@GetMapping("/stationId/{stationId}")
 	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findByStationId(
 		@RequestParam("stationId") Long stationId) {
 		return ResponseEntity.ok(

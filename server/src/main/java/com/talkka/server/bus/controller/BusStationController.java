@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 public class BusStationController {
 	private final BusStationService stationService;
 
-	@GetMapping("")
+	@GetMapping("/name/{name}")
 	public ResponseEntity<ApiRespDto<List<BusStationRespDto>>> findByStationName(
-		@RequestParam("search") String stationName) {
+		@RequestParam("name") String stationName) {
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusStationRespDto>>builder()
 				.statusCode(StatusCode.OK.getCode())
@@ -33,8 +33,8 @@ public class BusStationController {
 		);
 	}
 
-	@GetMapping("")
-	public ResponseEntity<ApiRespDto<BusStationRespDto>> findByStationId(@RequestParam("stationId") Long stationId) {
+	@GetMapping("/id/{id}")
+	public ResponseEntity<ApiRespDto<BusStationRespDto>> findByStationId(@RequestParam("id") Long stationId) {
 		return ResponseEntity.ok(
 			ApiRespDto.<BusStationRespDto>builder()
 				.statusCode(StatusCode.OK.getCode())
