@@ -1,6 +1,6 @@
 package com.talkka.server.bus.service;
 
-import static com.talkka.server.bus.service.BusFactory.*;
+import static com.talkka.server.bus.BusTestFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
