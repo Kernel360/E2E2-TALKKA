@@ -30,16 +30,13 @@ public class SubwayStationEntity {
 	@Column(name = "station_id", nullable = false)
 	private Long id;
 
-	@Column(name = "api_station_id")
-	private String apiStationId;
-
-	@Column(name = "station_name", nullable = false)
+	@Column(name = "station_name", nullable = false, length = 50)
 	private String stationName;
 
-	@Column(name = "fr_code", nullable = false)
-	private String frCode;
+	@Column(name = "station_code", nullable = false, length = 10)
+	private String stationCode;
 
-	@Column(name = "line_code", nullable = false)
+	@Column(name = "line_code", nullable = false, length = 4)
 	@Convert(converter = LineConverter.class)
 	private Line line;
 

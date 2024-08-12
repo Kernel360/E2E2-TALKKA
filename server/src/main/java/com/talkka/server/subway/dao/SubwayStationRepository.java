@@ -9,5 +9,5 @@ import org.springframework.stereotype.Repository;
 public interface SubwayStationRepository extends JpaRepository<SubwayStationEntity, Long> {
 	List<SubwayStationEntity> findByStationNameLikeOrderByStationNameAsc(String stationName);
 
-	boolean existsByApiStationId(String apiStationId);
+	boolean existsByStationCode(String stationCode);
 }

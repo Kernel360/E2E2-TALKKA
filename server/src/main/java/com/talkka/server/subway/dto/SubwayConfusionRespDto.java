@@ -1,10 +1,7 @@
 package com.talkka.server.subway.dto;
 
-import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.subway.dao.SubwayConfusionEntity;
-import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Line;
-import com.talkka.server.subway.enums.Updown;
 
 import lombok.Builder;
 
@@ -12,18 +9,18 @@ import lombok.Builder;
 public record SubwayConfusionRespDto(
 	Long stationId,
 	Line line,
-	DayType dayType,
-	Updown updown,
-	TimeSlot timeSlot,
+	String dayType,
+	String updown,
+	String timeSlot,
 	Double confusion
 ) {
 	public static SubwayConfusionRespDto of(SubwayConfusionEntity subwayConfusionEntity) {
 		return new SubwayConfusionRespDto(
 			subwayConfusionEntity.getId(),
 			subwayConfusionEntity.getLine(),
-			subwayConfusionEntity.getDayType(),
-			subwayConfusionEntity.getUpdown(),
-			subwayConfusionEntity.getTimeSlot(),
+			subwayConfusionEntity.getDayType().getCode(),
+			subwayConfusionEntity.getUpdown().getCode(),
+			subwayConfusionEntity.getTimeSlot().getCode(),
 			subwayConfusionEntity.getConfusion()
 		);
 	}

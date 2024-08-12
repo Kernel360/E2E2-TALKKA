@@ -31,8 +31,8 @@ public class SubwayStationService {
 			.toList();
 	}
 
-	public SubwayStationRespDto saveStation(SubwayStationReqDto reqDto) {
-		if (stationRepository.existsByApiStationId(reqDto.apiStationId())) {
+	public SubwayStationRespDto createStation(SubwayStationReqDto reqDto) {
+		if (stationRepository.existsByStationCode(reqDto.stationCode())) {
 			throw new BadRequestException("이미 존재하는 지하철 역입니다");
 		}
 

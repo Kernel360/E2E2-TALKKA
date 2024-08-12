@@ -42,25 +42,25 @@ public class SubwayConfusionEntity {
 	@JoinColumn(name = "station_id")
 	private SubwayStationEntity subwayStation;
 
-	@Column(name = "day_type", nullable = false)
-	@Convert(converter = DayTypeConverter.class)
-	private DayType dayType;
+	@Column(name = "station_code", nullable = false, length = 10)
+	private String stationCode;
 
-	@Column(name = "line_cd", nullable = false)
+	@Column(name = "station_name", nullable = false, length = 50)
+	private String stationName;
+
+	@Column(name = "line_code", nullable = false, length = 4)
 	@Convert(converter = LineConverter.class)
 	private Line line;
 
-	@Column(name = "fr_code", nullable = false)
-	private String frCode;
+	@Column(name = "day_type", nullable = false, length = 3)
+	@Convert(converter = DayTypeConverter.class)
+	private DayType dayType;
 
-	@Column(name = "station_name", nullable = false)
-	private String stationName;
-
-	@Column(name = "updown", nullable = false)
+	@Column(name = "updown", nullable = false, length = 1)
 	@Convert(converter = UpdownConverter.class)
 	private Updown updown;
 
-	@Column(name = "time_slot", nullable = false)
+	@Column(name = "time_slot", nullable = false, length = 2)
 	@Convert(converter = TimeSlotConverter.class)
 	private TimeSlot timeSlot;
 

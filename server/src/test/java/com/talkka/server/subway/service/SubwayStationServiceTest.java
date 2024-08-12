@@ -34,17 +34,16 @@ public class SubwayStationServiceTest {
 		return SubwayStationRespDto.builder()
 			.stationId(stationId)
 			.stationName("서울역")
-			.frCode("0150")
-			.line(Line.LINE_ONE)
+			.stationCode("0150")
+			.lineCode(Line.LINE_ONE.getCode())
 			.build();
 	}
 
 	private SubwayStationEntity stationEntityFixture(Long stationId) {
 		return SubwayStationEntity.builder()
 			.id(stationId)
-			.apiStationId("1001000133")
 			.stationName("서울역")
-			.frCode("0150")
+			.stationCode("0150")
 			.line(Line.LINE_ONE)
 			.build();
 	}
@@ -61,7 +60,7 @@ public class SubwayStationServiceTest {
 			SubwayStationEntity subwayStationEntity = SubwayStationEntity.builder()
 				.id(stationId)
 				.stationName("서울역")
-				.frCode("0150")
+				.stationCode("0150")
 				.line(Line.LINE_ONE)
 				.build();
 
@@ -127,9 +126,8 @@ public class SubwayStationServiceTest {
 	public class saveStation {
 
 		SubwayStationReqDto subwayStationReqDto = SubwayStationReqDto.builder()
-			.apiStationId("1001000133")
 			.stationName("서울역")
-			.frCode("0150")
+			.stationCode("0150")
 			.lineId(Line.LINE_ONE.getCode())
 			.build();
 
@@ -142,7 +140,7 @@ public class SubwayStationServiceTest {
 				stationEntityFixture(stationId));
 
 			//when
-			SubwayStationRespDto result = stationService.saveStation(subwayStationReqDto);
+			SubwayStationRespDto result = stationService.createStation(subwayStationReqDto);
 
 			//then
 			assertThat(result).isEqualTo(stationDtoFixture(stationId));
@@ -153,11 +151,11 @@ public class SubwayStationServiceTest {
 			//given
 			Class<?> exceptionClass = BadRequestException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
 
-			given(stationRepository.existsByApiStationId(subwayStationReqDto.apiStationId())).willReturn(true);
+			given(stationRepository.existsByStationCode(subwayStationReqDto.stationCode())).willReturn(true);
 
 			//when
 			//then
-			assertThatThrownBy(() -> stationService.saveStation(subwayStationReqDto))
+			assertThatThrownBy(() -> stationService.createStation(subwayStationReqDto))
 				.isInstanceOf(exceptionClass)
 				.hasMessage("이미 존재하는 지하철 역입니다");
 		}
