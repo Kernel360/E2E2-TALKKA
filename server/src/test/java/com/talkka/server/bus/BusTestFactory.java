@@ -159,10 +159,11 @@ public class BusTestFactory {
 		BusStationRespDto stationRespDto) {
 		return BusRouteStationRespDto.builder()
 			.busRouteStationId(id)
-			.route(routeRespDto)
-			.station(stationRespDto)
-			.stationName("정거장" + id)
+			.stationId(stationRespDto.stationId())
+			.stationName("정거장" + stationRespDto.stationId())
 			.stationSeq(Short.valueOf(String.valueOf(id)))
+			.routeId(routeRespDto.routeId())
+			.routeName(routeRespDto.routeName())
 			.build();
 	}
 
