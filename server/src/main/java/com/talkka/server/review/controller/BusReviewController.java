@@ -33,13 +33,18 @@ public class BusReviewController {
 
 	@GetMapping("")
 	public ResponseEntity<ApiRespDto<List<BusReviewRespDto>>> getBusReviewList(
-		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
-		@RequestParam Long routeId,
-		@RequestParam Long busRouteStationId,
-		@RequestParam String timeSlot
+		@RequestParam(required = true) Long routeId,
+		@RequestParam(required = false) Long busRouteStationId,
+		@RequestParam(required = false) String timeSlot
 	) {
-		List<BusReviewRespDto> reviewData = busReviewService.getBusReviewList(oAuth2UserInfo.getUserId(), routeId,
-			busRouteStationId, timeSlot);
+		List<BusReviewRespDto> reviewData;
+		if (busRouteStationId != null && timeSlot != null) {
+			reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId, timeSlot);
+		} else if (busRouteStationId != null) {
+			reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId);
+		} else {
+			reviewData = busReviewService.getBusReviewList(routeId);
+		}
 
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusReviewRespDto>>builder()
