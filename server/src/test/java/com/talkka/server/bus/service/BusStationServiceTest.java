@@ -30,8 +30,8 @@ class BusStationServiceTest {
 	private BusStationRepository busStationRepository;
 
 	@Nested
-	@DisplayName("findByStationId method")
-	public class FindByStationId {
+	@DisplayName("getStationByStationId method")
+	public class GetStationByStationId {
 		@Test
 		void ID를_기반으로_버스_정류장을_요청하면_레포지토리를_통해_조회하여_결과를_DTO로_반환한다() {
 			Long stationId = 1L;
@@ -39,7 +39,7 @@ class BusStationServiceTest {
 			BusStationRespDto expected = getBusStationRespDto(stationId);
 			given(busStationRepository.findById(stationId)).willReturn(Optional.of(busStationEntity));
 			// when
-			BusStationRespDto result = busStationService.findByStationId(stationId);
+			BusStationRespDto result = busStationService.getStationById(stationId);
 			// then
 			verify(busStationRepository, times(1)).findById(anyLong());
 			assertThat(result).isEqualTo(expected);
@@ -54,7 +54,7 @@ class BusStationServiceTest {
 			// when
 			// then
 			assertThatThrownBy(
-				() -> busStationService.findByStationId(stationId)
+				() -> busStationService.getStationById(stationId)
 			).isInstanceOf(exceptionCLass)
 				.hasMessage("존재하지 않는 정거장입니다.");
 			verify(busStationRepository, times(1)).findById(anyLong());
@@ -70,7 +70,7 @@ class BusStationServiceTest {
 			BusStationCreateDto createDto = getBusStationCreateDto(1L);
 			given(busStationRepository.save(any(BusStationEntity.class))).willReturn(getBusStationEntity(1L));
 			// when
-			var result = busStationService.createBusStation(createDto);
+			var result = busStationService.createStation(createDto);
 			// then
 			verify(busStationRepository, times(1)).save(any(BusStationEntity.class));
 			assertThat(result).isEqualTo(getBusStationRespDto(1L));
@@ -84,14 +84,14 @@ class BusStationServiceTest {
 			given(busStationRepository.existsByApiStationId(createDto.apiStationId())).willReturn(true);
 			// when
 			// then
-			assertThatThrownBy(() -> busStationService.createBusStation(createDto))
+			assertThatThrownBy(() -> busStationService.createStation(createDto))
 				.isInstanceOf(exceptionClass).hasMessage("이미 등록된 정거장입니다.");
 		}
 	}
 
 	@Nested
-	@DisplayName("findByStationName method")
-	public class FindByStationNameTest {
+	@DisplayName("getStationsByStationName method")
+	public class GetStationsByStationNameTest {
 		@Test
 		void 정류장_이름으로_요청하면_해당_이름으로_시작하는_정류장의_리스트를_반환한다() {
 			// given
@@ -106,10 +106,33 @@ class BusStationServiceTest {
 			);
 			given(busStationRepository.findByStationNameLikeOrderByStationNameAsc(anyString())).willReturn(entityList);
 			// when
-			var result = busStationService.findByStationName(stationName);
+			var result = busStationService.getStationsByStationName(stationName);
 			// then
 			assertThat(result).containsAll(expected);
 			verify(busStationRepository, times(1)).findByStationNameLikeOrderByStationNameAsc(anyString());
+		}
+	}
+
+	@Nested
+	@DisplayName("getStations method")
+	public class GetStationsTest {
+		@Test
+		void 모든_정류장을_조회한다() {
+			// given
+			List<BusStationRespDto> expected = List.of(
+				getBusStationRespDto(1L),
+				getBusStationRespDto(12L)
+			);
+			List<BusStationEntity> entityList = List.of(
+				getBusStationEntity(1L),
+				getBusStationEntity(12L)
+			);
+			given(busStationRepository.findAll()).willReturn(entityList);
+			// when
+			var result = busStationService.getStations();
+			// then
+			assertThat(result).containsAll(expected);
+			verify(busStationRepository, times(1)).findAll();
 		}
 	}
 }

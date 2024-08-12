@@ -22,38 +22,38 @@ import lombok.RequiredArgsConstructor;
 public class BusRouteStationController {
 	private final BusRouteStationService routeStationService;
 
-	@GetMapping("/id/{id}")
-	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findById(
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiRespDto<BusRouteStationRespDto>> getRouteStationById(
 		@PathVariable("id") Long routeStationId) {
 		return ResponseEntity.ok(
-			ApiRespDto.<List<BusRouteStationRespDto>>builder()
+			ApiRespDto.<BusRouteStationRespDto>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(routeStationService.findByStationId(routeStationId))
+				.data(routeStationService.getRouteStationById(routeStationId))
 				.build()
 		);
 	}
 
-	@GetMapping("/routeId/{routeId}")
-	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findByRouteId(
-		@RequestParam("routeId") Long routeId) {
-		return ResponseEntity.ok(
-			ApiRespDto.<List<BusRouteStationRespDto>>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(routeStationService.findByRouteId(routeId))
-				.build()
-		);
-	}
+	@GetMapping("")
+	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> getRouteStations(
+		@RequestParam(value = "routeId", required = false) Long routeId,
+		@RequestParam(value = "stationId", required = false) Long stationId) {
+		List<BusRouteStationRespDto> routeStationList;
 
-	@GetMapping("/stationId/{stationId}")
-	public ResponseEntity<ApiRespDto<List<BusRouteStationRespDto>>> findByStationId(
-		@RequestParam("stationId") Long stationId) {
+		if (routeId != null && stationId != null) {
+			routeStationList = routeStationService.getRouteStationsByRouteIdAndStationId(routeId, stationId);
+		} else if (routeId != null) {
+			routeStationList = routeStationService.getRouteStationsByRouteId(routeId);
+		} else if (stationId != null) {
+			routeStationList = routeStationService.getRouteStationsByStationId(stationId);
+		} else {
+			routeStationList = routeStationService.getRouteStations();
+		}
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusRouteStationRespDto>>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(routeStationService.findByStationId(stationId))
+				.data(routeStationList)
 				.build()
 		);
 	}

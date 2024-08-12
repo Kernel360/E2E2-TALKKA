@@ -36,8 +36,8 @@ public class BusRouteStationServiceTest {
 	private BusRouteStationRepository routeStationRepository;
 
 	@Nested
-	@DisplayName("createBusStation method")
-	public class CreateBusStationTest {
+	@DisplayName("createStation method")
+	public class CreateStationTest {
 		@Test
 		void BusRouteStationReqDto를_요청으로_받아_BusRouteStationRepository에_저장한다() {
 			/// given
@@ -50,7 +50,7 @@ public class BusRouteStationServiceTest {
 			given(routeStationRepository.save(any(BusRouteStationEntity.class))).willReturn(
 				getBusRouteStationEntity(id, getBusRouteEntity(id), getBusStationEntity(id)));
 			// when
-			var result = routeStationService.createBusRouteStation(createDto);
+			var result = routeStationService.createRouteStation(createDto);
 			// then
 			assertThat(result).isEqualTo(expected);
 		}
@@ -62,7 +62,7 @@ public class BusRouteStationServiceTest {
 			given(routeRepository.findByApiRouteId(any())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(() -> routeStationService.createBusRouteStation(createDto)).isInstanceOf(
+			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto)).isInstanceOf(
 				BadRequestException.class).hasMessage("존재하지 않는 노선입니다.");
 		}
 
@@ -74,98 +74,112 @@ public class BusRouteStationServiceTest {
 			given(stationRepository.findByApiStationId(any())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(() -> routeStationService.createBusRouteStation(createDto)).isInstanceOf(
+			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto)).isInstanceOf(
 				BadRequestException.class).hasMessage("존재하지 않는 정류장입니다.");
 		}
 	}
 
 	@Nested
-	@DisplayName("findById method")
-	public class FindByIdTest {
-
+	@DisplayName("getRouteStationsByRouteIdAndStationId method")
+	public class GetRouteStationsByRouteIdAndStationIdTest {
 		@Test
-		void Id를_받아_해당되는_정류장노선_정보를_조회하고_결과를_RespDto로_반환한다() {
+		void RouteId와_StationId를_받아_해당_아이디의_노선정류장을_조회한다() {
+			// given
+			Long routeId = 1L;
+			Long stationId = 1L;
+			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			given(routeStationRepository.findAllByRouteIdAndStationId(anyLong(), anyLong())).willReturn(
+				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+			// when
+			var result = routeStationService.getRouteStationsByRouteIdAndStationId(routeId, stationId);
+			// then
+			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findAllByRouteIdAndStationId(anyLong(), anyLong());
+		}
+	}
+
+	@Nested
+	@DisplayName("getRouteStationsByRouteId method")
+	public class GetRouteStationsByRouteIdTest {
+		@Test
+		void RouteId를_받아_해당_아이디의_노선정류장을_조회한다() {
+			// given
+			Long routeId = 1L;
+			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			given(routeStationRepository.findAllByRouteId(anyLong())).willReturn(
+				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+			// when
+			var result = routeStationService.getRouteStationsByRouteId(routeId);
+			// then
+			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findAllByRouteId(anyLong());
+		}
+	}
+
+	@Nested
+	@DisplayName("getRouteStationsByStationId method")
+	public class GetRouteStationsByStationIdTest {
+		@Test
+		void StationId를_받아_해당_아이디의_노선정류장을_조회한다() {
+			// given
+			Long stationId = 1L;
+			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			given(routeStationRepository.findAllByStationId(anyLong())).willReturn(
+				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+			// when
+			var result = routeStationService.getRouteStationsByStationId(stationId);
+			// then
+			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findAllByStationId(anyLong());
+		}
+	}
+
+	@Nested
+	@DisplayName("getRouteStations method")
+	public class GetRouteStationsTest {
+		@Test
+		void 모든_노선정류장을_조회한다() {
+			// given
+			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			given(routeStationRepository.findAll()).willReturn(
+				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+			// when
+			var result = routeStationService.getRouteStations();
+			// then
+			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findAll();
+		}
+	}
+
+	@Nested
+	@DisplayName("getRouteStationById method")
+	public class GetRouteStationByIdTest {
+		@Test
+		void ID를_받아_해당_아이디의_노선정류장을_조회한다() {
 			// given
 			Long id = 1L;
 			var expected = getBusRouteStationRespDto(id, getBusRouteRespDto(id), getBusStationRespDto(id));
-			given(routeStationRepository.findById(any(Long.class))).willReturn(
+			given(routeStationRepository.findById(anyLong())).willReturn(
 				Optional.of(getBusRouteStationEntity(id, getBusRouteEntity(id), getBusStationEntity(id))));
 			// when
-			var result = routeStationService.findById(id);
+			var result = routeStationService.getRouteStationById(id);
 			// then
 			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findById(anyLong());
 		}
 
 		@Test
-		void 존재하지_않는_Id면_Exception을_throw한다() {
+		void ID가_존재하지_않으면_Exception을_throw한다() {
 			// given
-			Long id = 1L;
+			Class<?> exceptionClass = BadRequestException.class;
 			given(routeStationRepository.findById(anyLong())).willReturn(Optional.empty());
 			// when
-
 			// then
-			assertThatThrownBy(() -> routeStationService.findById(id)).isInstanceOf(BadRequestException.class)
+			assertThatThrownBy(
+				() -> routeStationService.getRouteStationById(1L)
+			).isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 노선정류장입니다.");
-		}
-	}
-
-	@Nested
-	@DisplayName("findByRouteId method")
-	public class FindByRouteIdTest {
-
-		@Test
-		void RouteId를_받아_해당노선에_속하는_정류장정보를_조회하고_결과를_RespDto의_리스트로_반환한다() {
-			// given
-			Long routeId = 1L;
-			Long id1 = 2L;
-			Long id2 = 3L;
-			Long id3 = 4L;
-			var expected = List.of(
-				getBusRouteStationRespDto(id1, getBusRouteRespDto(routeId), getBusStationRespDto(id1)),
-				getBusRouteStationRespDto(id2, getBusRouteRespDto(routeId), getBusStationRespDto(id2)),
-				getBusRouteStationRespDto(id3, getBusRouteRespDto(routeId), getBusStationRespDto(id3))
-			);
-			given(routeStationRepository.findByRouteId(any(Long.class))).willReturn(
-				List.of(
-					getBusRouteStationEntity(id1, getBusRouteEntity(routeId), getBusStationEntity(id1)),
-					getBusRouteStationEntity(id2, getBusRouteEntity(routeId), getBusStationEntity(id2)),
-					getBusRouteStationEntity(id3, getBusRouteEntity(routeId), getBusStationEntity(id3))
-				)
-			);
-			// when
-			var result = routeStationService.findByRouteId(routeId);
-			// then
-			assertThat(result).isEqualTo(expected);
-		}
-	}
-
-	@Nested
-	@DisplayName("findByStationId method")
-	public class FindByStationIdTest {
-
-		@Test
-		void StationId를_받아_해당노선에_속하는_정류장정보를_조회하고_결과를_RespDto의_리스트로_반환한다() {
-			// given
-			Long stationId = 1L;
-			Long id1 = 2L;
-			Long id2 = 3L;
-			Long id3 = 4L;
-			var expected = List.of(
-				getBusRouteStationRespDto(id1, getBusRouteRespDto(id1), getBusStationRespDto(stationId)),
-				getBusRouteStationRespDto(id2, getBusRouteRespDto(id2), getBusStationRespDto(stationId)),
-				getBusRouteStationRespDto(id3, getBusRouteRespDto(id3), getBusStationRespDto(stationId))
-			);
-			given(routeStationRepository.findByStationId(any(Long.class))).willReturn(
-				List.of(
-					getBusRouteStationEntity(id1, getBusRouteEntity(id1), getBusStationEntity(stationId)),
-					getBusRouteStationEntity(id2, getBusRouteEntity(id2), getBusStationEntity(stationId)),
-					getBusRouteStationEntity(id3, getBusRouteEntity(id3), getBusStationEntity(stationId))
-				)
-			);
-			// when
-			var result = routeStationService.findByStationId(stationId);
-			// then
-			assertThat(result).isEqualTo(expected);
+			verify(routeStationRepository, times(1)).findById(anyLong());
 		}
 	}
 }

@@ -17,19 +17,25 @@ import lombok.RequiredArgsConstructor;
 public class BusRouteService {
 	private final BusRouteRepository busRouteRepository;
 
-	public BusRouteRespDto findByRouteId(Long routeId) {
+	public BusRouteRespDto getRouteById(Long routeId) {
 		BusRouteEntity busRouteEntity = busRouteRepository.findById(routeId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선입니다."));
 		return BusRouteRespDto.of(busRouteEntity);
 	}
 
-	public List<BusRouteRespDto> findByRouteName(String routeName) {
-		return busRouteRepository.findByRouteNameLikeOrderByRouteNameAsc(routeName).stream()
+	public List<BusRouteRespDto> getRoutes() {
+		return busRouteRepository.findAll().stream()
 			.map(BusRouteRespDto::of)
 			.toList();
 	}
 
-	public BusRouteRespDto createBusRoute(BusRouteCreateDto busRouteCreateDto) {
+	public List<BusRouteRespDto> getRoutesByRouteName(String routeName) {
+		return busRouteRepository.findAllByRouteNameLikeOrderByRouteNameAsc(routeName).stream()
+			.map(BusRouteRespDto::of)
+			.toList();
+	}
+
+	public BusRouteRespDto createRoute(BusRouteCreateDto busRouteCreateDto) {
 		if (!busRouteRepository.existsByApiRouteId(busRouteCreateDto.apiRouteId())) {
 			throw new BadRequestException("이미 등록된 버스 노선입니다.");
 		}
