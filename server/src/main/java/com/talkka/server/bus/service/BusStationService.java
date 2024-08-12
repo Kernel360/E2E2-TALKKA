@@ -17,19 +17,25 @@ import lombok.RequiredArgsConstructor;
 public class BusStationService {
 	private final BusStationRepository busStationRepository;
 
-	public BusStationRespDto findByStationId(Long stationId) {
+	public BusStationRespDto getStationById(Long stationId) {
 		BusStationEntity busStationEntity = busStationRepository.findById(stationId)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 정거장입니다."));
 		return BusStationRespDto.of(busStationEntity);
 	}
 
-	public List<BusStationRespDto> findByStationName(String stationName) {
+	public List<BusStationRespDto> getStationsByStationName(String stationName) {
 		return busStationRepository.findByStationNameLikeOrderByStationNameAsc(stationName).stream()
 			.map(BusStationRespDto::of)
 			.toList();
 	}
 
-	public BusStationRespDto createBusStation(BusStationCreateDto busStationCreateDto) {
+	public List<BusStationRespDto> getStations() {
+		return busStationRepository.findAll().stream()
+			.map(BusStationRespDto::of)
+			.toList();
+	}
+
+	public BusStationRespDto createStation(BusStationCreateDto busStationCreateDto) {
 		if (busStationRepository.existsByApiStationId(busStationCreateDto.apiStationId())) {
 			throw new BadRequestException("이미 등록된 정거장입니다.");
 		}

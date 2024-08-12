@@ -24,7 +24,7 @@ public class BusRouteStationService {
 	private final BusStationRepository stationRepository;
 	private final BusRouteStationRepository routeStationRepository;
 
-	public BusRouteStationRespDto createBusRouteStation(BusRouteStationCreateDto busRouteStationCreateDto) {
+	public BusRouteStationRespDto createRouteStation(BusRouteStationCreateDto busRouteStationCreateDto) {
 		BusRouteEntity routeEntity = routeRepository.findByApiRouteId(busRouteStationCreateDto.apiRouteId())
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선입니다."));
 		BusStationEntity stationEntity = stationRepository.findByApiStationId(
@@ -34,20 +34,32 @@ public class BusRouteStationService {
 		return BusRouteStationRespDto.of(routeStationRepository.save(busRouteStationEntity));
 	}
 
-	public BusRouteStationRespDto findById(Long id) {
+	public BusRouteStationRespDto getRouteStationById(Long id) {
 		BusRouteStationEntity busRouteStationEntity = routeStationRepository.findById(id)
 			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선정류장입니다."));
 		return BusRouteStationRespDto.of(busRouteStationEntity);
 	}
 
-	public List<BusRouteStationRespDto> findByRouteId(Long routeId) {
-		return routeStationRepository.findByRouteId(routeId).stream()
+	public List<BusRouteStationRespDto> getRouteStationsByRouteIdAndStationId(Long routeId, Long stationId) {
+		return routeStationRepository.findAllByRouteIdAndStationId(routeId, stationId).stream()
 			.map(BusRouteStationRespDto::of)
 			.toList();
 	}
 
-	public List<BusRouteStationRespDto> findByStationId(Long stationId) {
-		return routeStationRepository.findByStationId(stationId).stream()
+	public List<BusRouteStationRespDto> getRouteStationsByRouteId(Long routeId) {
+		return routeStationRepository.findAllByRouteId(routeId).stream()
+			.map(BusRouteStationRespDto::of)
+			.toList();
+	}
+
+	public List<BusRouteStationRespDto> getRouteStationsByStationId(Long stationId) {
+		return routeStationRepository.findAllByStationId(stationId).stream()
+			.map(BusRouteStationRespDto::of)
+			.toList();
+	}
+
+	public List<BusRouteStationRespDto> getRouteStations() {
+		return routeStationRepository.findAll().stream()
 			.map(BusRouteStationRespDto::of)
 			.toList();
 	}

@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.dto.BusRouteRespDto;
@@ -21,24 +22,32 @@ import lombok.RequiredArgsConstructor;
 public class BusRouteController {
 	private final BusRouteService busRouteService;
 
-	@GetMapping("/name/{name}")
-	public ResponseEntity<ApiRespDto<List<BusRouteRespDto>>> findByRouteName(@PathVariable("name") String routeName) {
+	@GetMapping("")
+	public ResponseEntity<ApiRespDto<List<BusRouteRespDto>>> getRoutes(
+		@RequestParam(value = "search", required = false) String routeName) {
+		List<BusRouteRespDto> routeList;
+
+		if (routeName != null) {
+			routeList = busRouteService.getRoutesByRouteName(routeName);
+		} else {
+			routeList = busRouteService.getRoutes();
+		}
 		return ResponseEntity.ok(
 			ApiRespDto.<List<BusRouteRespDto>>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(busRouteService.findByRouteName(routeName))
+				.data(routeList)
 				.build()
 		);
 	}
 
-	@GetMapping("/id/{id}")
-	public ResponseEntity<ApiRespDto<BusRouteRespDto>> findByRouteId(@PathVariable("id") Long routeId) {
+	@GetMapping("/{id}")
+	public ResponseEntity<ApiRespDto<BusRouteRespDto>> getRouteById(@PathVariable("id") Long routeId) {
 		return ResponseEntity.ok(
 			ApiRespDto.<BusRouteRespDto>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(busRouteService.findByRouteId(routeId))
+				.data(busRouteService.getRouteById(routeId))
 				.build()
 		);
 	}
