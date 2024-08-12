@@ -49,8 +49,11 @@ public class BusReviewServiceTest {
 	private BusReviewRespDto busReviewRespDtoFixture(Long userId) {
 		return BusReviewRespDto.builder()
 			.userId(userId)
+			.userName("유저 이름")
 			.routeId(236000050L)
+			.routeName("노선 이름")
 			.busRouteStationId(1L)
+			.stationName("정류장 이름")
 			.content("리뷰 내용")
 			.timeSlot(TimeSlot.T_00_00.getCode())
 			.rating(4)
@@ -60,18 +63,21 @@ public class BusReviewServiceTest {
 	private UserEntity getUserFixture(Long userId) {
 		return UserEntity.builder()
 			.id(userId)
+			.name("유저 이름")
 			.build();
 	}
 
 	private BusRouteStationEntity getBusRouteStationFixture(Long busRouteStationId) {
 		return BusRouteStationEntity.builder()
 			.id(busRouteStationId)
+			.stationName("정류장 이름")
 			.build();
 	}
 
 	private BusRouteEntity getBusRouteFixture(Long routeId) {
 		return BusRouteEntity.builder()
 			.id(routeId)
+			.routeName("노선 이름")
 			.build();
 	}
 
@@ -80,7 +86,7 @@ public class BusReviewServiceTest {
 	public class CreateBusReviewTest {
 
 		@Test
-		void 제한된_요청에_따라_버스리뷰를_생성한다() {
+		void 제안된_요청에_따라_버스리뷰를_생성한다() {
 			//given
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
