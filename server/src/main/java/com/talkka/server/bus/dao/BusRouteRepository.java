@@ -13,6 +13,6 @@ public interface BusRouteRepository extends JpaRepository<BusRouteEntity, Long> 
 
 	Optional<BusRouteEntity> findByApiRouteId(String apiRouteId);
 
-	List<BusRouteEntity> findAllByRouteNameLikeOrderByRouteNameAsc(String routeName);
+	List<BusRouteEntity> findAllByRouteNameStartingWithOrderByRouteNameAsc(String routeName);
 
 }

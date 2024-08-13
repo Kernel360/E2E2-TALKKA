@@ -30,7 +30,7 @@ public class BusRouteService {
 	}
 
 	public List<BusRouteRespDto> getRoutesByRouteName(String routeName) {
-		return busRouteRepository.findAllByRouteNameLikeOrderByRouteNameAsc(routeName).stream()
+		return busRouteRepository.findAllByRouteNameStartingWithOrderByRouteNameAsc(routeName).stream()
 			.map(BusRouteRespDto::of)
 			.toList();
 	}

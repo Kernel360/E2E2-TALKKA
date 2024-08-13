@@ -104,12 +104,13 @@ class BusStationServiceTest {
 				getBusStationEntity(1L),
 				getBusStationEntity(12L)
 			);
-			given(busStationRepository.findByStationNameLikeOrderByStationNameAsc(anyString())).willReturn(entityList);
+			given(busStationRepository.findByStationNameStartingWithOrderByStationNameAsc(anyString())).willReturn(
+				entityList);
 			// when
 			var result = busStationService.getStationsByStationName(stationName);
 			// then
 			assertThat(result).containsAll(expected);
-			verify(busStationRepository, times(1)).findByStationNameLikeOrderByStationNameAsc(anyString());
+			verify(busStationRepository, times(1)).findByStationNameStartingWithOrderByStationNameAsc(anyString());
 		}
 	}
 
