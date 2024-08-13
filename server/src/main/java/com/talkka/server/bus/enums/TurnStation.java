@@ -6,7 +6,7 @@ import lombok.Getter;
 
 @Getter
 public enum TurnStation implements EnumCodeInterface {
-	TURN_STATION("1"), NOT_TURN_STATION("0");
+	TURN_STATION("Y"), NOT_TURN_STATION("N");
 
 	private final String code;
 

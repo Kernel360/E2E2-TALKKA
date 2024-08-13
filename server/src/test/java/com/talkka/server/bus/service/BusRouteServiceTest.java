@@ -103,14 +103,14 @@ public class BusRouteServiceTest {
 			String routeName = "7800";
 			var entityList = List.of(getBusRouteEntity(1L), getBusRouteEntity(2L));
 			var expectedList = List.of(getBusRouteRespDto(1L), getBusRouteRespDto(2L));
-			given(busRouteRepository.findAllByRouteNameLikeOrderByRouteNameAsc(any(String.class))).willReturn(
+			given(busRouteRepository.findAllByRouteNameStartingWithOrderByRouteNameAsc(any(String.class))).willReturn(
 				entityList);
 
 			// when
 			var resultList = busRouteService.getRoutesByRouteName(routeName);
 
 			// then
-			verify(busRouteRepository, times(1)).findAllByRouteNameLikeOrderByRouteNameAsc(anyString());
+			verify(busRouteRepository, times(1)).findAllByRouteNameStartingWithOrderByRouteNameAsc(anyString());
 			assertThat(resultList).containsAll(expectedList);
 
 		}

@@ -6,8 +6,8 @@ import lombok.Getter;
 
 @Getter
 public enum CenterStation implements EnumCodeInterface {
-	NOT_CENTER_STATION("0"),
-	CENTER_STATION("1");
+	NOT_CENTER_STATION("N"),
+	CENTER_STATION("Y");
 
 	private final String code;
 
