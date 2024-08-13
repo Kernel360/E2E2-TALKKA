@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 public interface BusStationRepository extends JpaRepository<BusStationEntity, Long> {
 	Optional<BusStationEntity> findByApiStationId(String apiStationId);
 
-	List<BusStationEntity> findByStationNameLikeOrderByStationNameAsc(String stationName);
+	List<BusStationEntity> findByStationNameStartingWithOrderByStationNameAsc(String stationName);
 
 	boolean existsByApiStationId(String apiStationId);
 }

@@ -110,7 +110,7 @@ public class SubwayStationServiceTest {
 				SubwayStationRespDto.of(subwayStationEntities.get(1))
 			);
 
-			given(stationRepository.findByStationNameLikeOrderByStationNameAsc(anyString())).willReturn(
+			given(stationRepository.findByStationNameStartingWithOrderByStationNameAsc(anyString())).willReturn(
 				subwayStationEntities);
 
 			//when

@@ -26,7 +26,7 @@ public class SubwayStationService {
 	}
 
 	public List<SubwayStationRespDto> findByStationName(String stationName) {
-		return stationRepository.findByStationNameLikeOrderByStationNameAsc(stationName).stream()
+		return stationRepository.findByStationNameStartingWithOrderByStationNameAsc(stationName).stream()
 			.map(SubwayStationRespDto::of)
 			.toList();
 	}
