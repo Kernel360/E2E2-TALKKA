@@ -7,7 +7,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BusRouteStationRepository extends JpaRepository<BusRouteStationEntity, Long> {
-	List<BusRouteStationEntity> findByRouteId(Long routeId);
+	List<BusRouteStationEntity> findAllByRouteId(Long routeId);
 
-	List<BusRouteStationEntity> findByStationId(Long stationId);
+	List<BusRouteStationEntity> findAllByStationId(Long stationId);
+
+	List<BusRouteStationEntity> findAllByRouteIdAndStationId(Long routeId, Long stationId);
 }

@@ -1,6 +1,6 @@
 package com.talkka.server.bus.service;
 
-import static com.talkka.server.bus.service.BusFactory.*;
+import static com.talkka.server.bus.BusTestFactory.*;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
@@ -31,8 +31,8 @@ public class BusRouteServiceTest {
 	private BusRouteRepository busRouteRepository;
 
 	@Nested
-	@DisplayName("createBusRoute method")
-	public class CreateBusRouteTest {
+	@DisplayName("createRoute method")
+	public class CreateRouteTest {
 		@Test
 		void 버스_노선을_생성한다() {
 			// given
@@ -42,7 +42,7 @@ public class BusRouteServiceTest {
 			given(busRouteRepository.save(any(BusRouteEntity.class))).willReturn(busRouteEntity);
 			given(busRouteRepository.existsByApiRouteId(any(String.class))).willReturn(true);
 			// when
-			BusRouteRespDto result = busRouteService.createBusRoute(busRouteCreateDto);
+			BusRouteRespDto result = busRouteService.createRoute(busRouteCreateDto);
 			// then
 			assertThat(result).isEqualTo(busRouteRespDto);
 		}
@@ -55,15 +55,15 @@ public class BusRouteServiceTest {
 			// when
 			// then
 			assertThatThrownBy(
-				() -> busRouteService.createBusRoute(reqDto)
+				() -> busRouteService.createRoute(reqDto)
 			).isInstanceOf(BadRequestException.class)
 				.hasMessage("이미 등록된 버스 노선입니다.");
 		}
 	}
 
 	@Nested
-	@DisplayName("findByRouteId method")
-	public class FindByRouteIdTest {
+	@DisplayName("getRouteByRouteId method")
+	public class GetRouteByIdTest {
 		@Test
 		void ID를_기반으로_버스_노선을_요청하면_레포지토리를_통해_결과를_DTO로_반환한다() {
 			// given
@@ -71,7 +71,7 @@ public class BusRouteServiceTest {
 			BusRouteEntity foundEntity = getBusRouteEntity(routeId);
 			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(foundEntity));
 			// when
-			var BusRouteRespDto = busRouteService.findByRouteId(routeId);
+			var BusRouteRespDto = busRouteService.getRouteById(routeId);
 			// then
 			verify(busRouteRepository).findById(anyLong());
 			assertThat(BusRouteRespDto).isEqualTo(getBusRouteRespDto(routeId));
@@ -85,7 +85,7 @@ public class BusRouteServiceTest {
 			// when
 			// then
 			assertThatThrownBy(
-				() -> busRouteService.findByRouteId(1L)
+				() -> busRouteService.getRouteById(1L)
 			).isInstanceOf(exceptionClass)
 				.hasMessage("존재하지 않는 노선입니다.");
 			verify(busRouteRepository, times(1)).findById(anyLong());
@@ -93,8 +93,8 @@ public class BusRouteServiceTest {
 	}
 
 	@Nested
-	@DisplayName("findByRouteName method")
-	public class FindByRouteNameTest {
+	@DisplayName("getRoutesByRouteName method")
+	public class GetRoutesByRouteNameTest {
 
 		@Test
 		void 버스노선이름을_요청으로_받아_repository에서_조회하고_해당_이름으로_시작하는_노선들을_리스트로_반환한다() {
@@ -103,15 +103,33 @@ public class BusRouteServiceTest {
 			String routeName = "7800";
 			var entityList = List.of(getBusRouteEntity(1L), getBusRouteEntity(2L));
 			var expectedList = List.of(getBusRouteRespDto(1L), getBusRouteRespDto(2L));
-			given(busRouteRepository.findByRouteNameLikeOrderByRouteNameAsc(any(String.class))).willReturn(entityList);
+			given(busRouteRepository.findAllByRouteNameLikeOrderByRouteNameAsc(any(String.class))).willReturn(
+				entityList);
 
 			// when
-			var resultList = busRouteService.findByRouteName(routeName);
+			var resultList = busRouteService.getRoutesByRouteName(routeName);
 
 			// then
-			verify(busRouteRepository, times(1)).findByRouteNameLikeOrderByRouteNameAsc(anyString());
+			verify(busRouteRepository, times(1)).findAllByRouteNameLikeOrderByRouteNameAsc(anyString());
 			assertThat(resultList).containsAll(expectedList);
 
+		}
+	}
+
+	@Nested
+	@DisplayName("getRoutes method")
+	public class GetRoutesTest {
+		@Test
+		void 모든_버스_노선을_조회한다() {
+			// given
+			var entityList = List.of(getBusRouteEntity(1L), getBusRouteEntity(2L));
+			var expectedList = List.of(getBusRouteRespDto(1L), getBusRouteRespDto(2L));
+			given(busRouteRepository.findAll()).willReturn(entityList);
+			// when
+			var resultList = busRouteService.getRoutes();
+			// then
+			verify(busRouteRepository, times(1)).findAll();
+			assertThat(resultList).containsAll(expectedList);
 		}
 	}
 }

@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.talkka.server.bus.dto.BusRouteRespDto;
-import com.talkka.server.bus.service.BusRouteService;
+import com.talkka.server.bus.dto.BusStationRespDto;
+import com.talkka.server.bus.service.BusStationService;
 import com.talkka.server.common.dto.ApiRespDto;
 import com.talkka.server.common.enums.StatusCode;
 
@@ -18,36 +18,36 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/bus/route")
-public class BusRouteController {
-	private final BusRouteService busRouteService;
+@RequestMapping("/api/bus/station")
+public class BusStationController {
+	private final BusStationService stationService;
 
 	@GetMapping("")
-	public ResponseEntity<ApiRespDto<List<BusRouteRespDto>>> getRoutes(
-		@RequestParam(value = "search", required = false) String routeName) {
-		List<BusRouteRespDto> routeList;
+	public ResponseEntity<ApiRespDto<List<BusStationRespDto>>> getStations(
+		@RequestParam(value = "search", required = false) String stationName) {
+		List<BusStationRespDto> stationList;
 
-		if (routeName != null) {
-			routeList = busRouteService.getRoutesByRouteName(routeName);
+		if (stationName != null) {
+			stationList = stationService.getStationsByStationName(stationName);
 		} else {
-			routeList = busRouteService.getRoutes();
+			stationList = stationService.getStations();
 		}
 		return ResponseEntity.ok(
-			ApiRespDto.<List<BusRouteRespDto>>builder()
+			ApiRespDto.<List<BusStationRespDto>>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(routeList)
+				.data(stationList)
 				.build()
 		);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiRespDto<BusRouteRespDto>> getRouteById(@PathVariable("id") Long routeId) {
+	public ResponseEntity<ApiRespDto<BusStationRespDto>> getStationById(@PathVariable("id") Long stationId) {
 		return ResponseEntity.ok(
-			ApiRespDto.<BusRouteRespDto>builder()
+			ApiRespDto.<BusStationRespDto>builder()
 				.statusCode(StatusCode.OK.getCode())
 				.message(StatusCode.OK.getMessage())
-				.data(busRouteService.getRouteById(routeId))
+				.data(stationService.getStationById(stationId))
 				.build()
 		);
 	}

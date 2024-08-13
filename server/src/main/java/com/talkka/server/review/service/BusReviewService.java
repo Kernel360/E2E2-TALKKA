@@ -31,10 +31,11 @@ public class BusReviewService {
 	private final BusRouteStationRepository busRouteStationRepository;
 	private final BusRouteRepository busRouteRepository;
 
-	public List<BusReviewRespDto> getBusReviewList(
+	public List<BusReviewRespDto> getUsersBusReviewList(
 		Long userId, Long routeId, Long busRouteStationId, String timeSlot
 	) {
-		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlot(
+		// request param의 존재 유무에 따라 response가 변경되어야합니다.
+		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlotOrderByUpdatedAtDesc(
 			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
 
 		return reviewList.stream()
@@ -42,6 +43,30 @@ public class BusReviewService {
 			.toList();
 	}
 
+	public List<BusReviewRespDto> getBusReviewList(Long routeId) {
+		List<BusReviewEntity> reviewEntityList = busReviewRepository.findAllByRouteIdOrderByCreatedAtDesc(routeId);
+		return reviewEntityList.stream()
+			.map(BusReviewRespDto::of)
+			.toList();
+	}
+
+	public List<BusReviewRespDto> getBusReviewList(Long routeId, Long busRouteStationId) {
+		List<BusReviewEntity> reviewEntityList = busReviewRepository.findAllByRouteIdAndStationIdOrderByCreatedAtDesc(
+			routeId, busRouteStationId);
+		return reviewEntityList.stream()
+			.map(BusReviewRespDto::of)
+			.toList();
+	}
+
+	public List<BusReviewRespDto> getBusReviewList(Long routeId, Long busRouteStationId, String timeSlot) {
+		List<BusReviewEntity> reviewEntityList = busReviewRepository.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(
+			routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
+		return reviewEntityList.stream()
+			.map(BusReviewRespDto::of)
+			.toList();
+	}
+
+	@Transactional
 	public BusReviewRespDto createBusReview(Long userId, BusReviewReqDto busReviewReqDto) {
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
@@ -77,6 +102,7 @@ public class BusReviewService {
 		return BusReviewRespDto.of(review);
 	}
 
+	@Transactional
 	public Long deleteBusReview(Long userId, Long busReviewId) {
 		BusReviewEntity review = busReviewRepository.findById(busReviewId)
 			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
