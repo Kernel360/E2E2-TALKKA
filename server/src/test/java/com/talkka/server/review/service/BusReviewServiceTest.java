@@ -57,7 +57,7 @@ public class BusReviewServiceTest {
 			.busRouteStationId(1L)
 			.stationName("정류장 이름")
 			.content("리뷰 내용")
-			.timeSlot(TimeSlot.T_00_00.getCode())
+			.timeSlot(TimeSlot.T_00_00)
 			.rating(4)
 			.build();
 	}

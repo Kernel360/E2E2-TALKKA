@@ -8,4 +8,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SubwayStationRepository extends JpaRepository<SubwayStationEntity, Long> {
 	List<SubwayStationEntity> findByStationNameLikeOrderByStationNameAsc(String stationName);
+
+	boolean existsByStationCode(String stationCode);
 }
