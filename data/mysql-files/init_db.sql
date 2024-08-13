@@ -99,8 +99,8 @@ create table bus_review
     route_id             bigint       null,
     updated_at           datetime(6)  not null,
     user_id              bigint       null,
-    content              varchar(255) null,
-    time_slot            varchar(255) not null
+    content              varchar(400) null,
+    time_slot            varchar(3)   not null
 );
 
 drop table if exists subway_confusion;
@@ -108,42 +108,42 @@ CREATE TABLE subway_confusion
 (
     subway_confusion_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     station_id          BIGINT                NULL,
-    day_type            VARCHAR(255)          NOT NULL,
-    line_cd             VARCHAR(255)          NOT NULL,
-    fr_code             VARCHAR(255)          NOT NULL,
-    station_name        VARCHAR(255)          NOT NULL,
-    updown              VARCHAR(255)          NOT NULL,
-    time_slot           VARCHAR(255)          NOT NULL,
+    station_code        VARCHAR(10)           NOT NULL,
+    station_name        VARCHAR(50)           NOT NULL,
+    line_code           VARCHAR(4)            NOT NULL,
+    day_type            VARCHAR(3)            NOT NULL,
+    updown              VARCHAR(1)            NOT NULL,
+    time_slot           VARCHAR(2)            NOT NULL,
     confusion           DOUBLE                NULL
 );
 
 drop table if exists subway_station;
 CREATE TABLE subway_station
 (
-    station_id     BIGINT AUTO_INCREMENT NOT NULL primary key,
-    api_station_id VARCHAR(255)          NULL,
-    station_name   VARCHAR(255)          NOT NULL,
-    fr_code        VARCHAR(255)          NOT NULL,
-    line_code      VARCHAR(255)          NOT NULL
+    station_id   BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    station_name VARCHAR(50)           NOT NULL,
+    station_code VARCHAR(10)           NOT NULL,
+    line_code    VARCHAR(4)            NOT NULL
 );
 
 drop table if exists subway_timetable;
 CREATE TABLE subway_timetable
 (
-    subway_timetable_id BIGINT AUTO_INCREMENT NOT NULL primary key,
+    subway_timetable_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     station_id          BIGINT                NOT NULL,
-    line_code           VARCHAR(255)          NOT NULL,
-    fr_code             VARCHAR(255)          NOT NULL,
-    station_name        VARCHAR(255)          NOT NULL,
-    day_type            VARCHAR(255)          NOT NULL,
-    updown              VARCHAR(255)          NOT NULL,
-    is_express          VARCHAR(255)          NOT NULL,
-    train_code          VARCHAR(255)          NOT NULL,
+    station_code        VARCHAR(10)           NOT NULL,
+    station_name        VARCHAR(50)           NOT NULL,
+    line_code           VARCHAR(4)            NOT NULL,
+    day_type            VARCHAR(3)            NOT NULL,
+    updown              VARCHAR(1)            NOT NULL,
+    is_express          VARCHAR(1)            NOT NULL,
+    train_code          VARCHAR(10)           NOT NULL,
     arrival_time        time                  NOT NULL,
     depart_time         time                  NOT NULL,
-    start_station_name  VARCHAR(255)          NOT NULL,
-    end_station_name    VARCHAR(255)          NOT NULL
+    start_station_name  VARCHAR(50)           NOT NULL,
+    end_station_name    VARCHAR(50)           NOT NULL
 );
+
 
 -- BULK INSERT (STATIC DATA)
 # SOURCE /var/lib/mysql-files/bulk_insert_routes.sql;
