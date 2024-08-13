@@ -54,10 +54,10 @@ public class BusReviewEntity {
 	@JoinColumn(name = "route_id")
 	private BusRouteEntity route;
 
-	@Column(name = "content")
+	@Column(name = "content", length = 400)
 	private String content;
 
-	@Column(name = "time_slot", nullable = false)
+	@Column(name = "time_slot", nullable = false, length = 3)
 	@Convert(converter = TimeSlotConverter.class)
 	private TimeSlot timeSlot;
 
