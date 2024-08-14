@@ -25,11 +25,11 @@ public enum Line implements EnumCodeInterface {
 	LINE_SEOHAE("서해선", "1093"),
 	LINE_GTX_A("GTX-A", "1032");
 
-	private final String line;
+	private final String name;
 	private final String code;
 
-	Line(String line, String code) {
-		this.line = line;
+	Line(String name, String code) {
+		this.name = name;
 		this.code = code;
 	}
 }

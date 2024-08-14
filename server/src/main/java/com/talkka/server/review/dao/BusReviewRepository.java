@@ -9,9 +9,19 @@ import com.talkka.server.common.enums.TimeSlot;
 
 @Repository
 public interface BusReviewRepository extends JpaRepository<BusReviewEntity, Long> {
-	List<BusReviewEntity> findAllByWriterIdAndRouteIdAndStationIdAndTimeSlot(
+
+	List<BusReviewEntity> findAllByWriterIdAndRouteIdAndStationIdAndTimeSlotOrderByUpdatedAtDesc(
 		Long userId,
 		Long routeId,
 		Long busRouteStationId,
+		TimeSlot timeSlot);
+
+	List<BusReviewEntity> findAllByRouteIdOrderByCreatedAtDesc(Long routeId);
+
+	List<BusReviewEntity> findAllByRouteIdAndStationIdOrderByCreatedAtDesc(Long routeId, Long stationId);
+
+	List<BusReviewEntity> findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(
+		Long routeId,
+		Long stationId,
 		TimeSlot timeSlot);
 }

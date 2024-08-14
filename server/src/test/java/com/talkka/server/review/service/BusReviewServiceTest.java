@@ -3,6 +3,8 @@ package com.talkka.server.review.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -49,10 +51,13 @@ public class BusReviewServiceTest {
 	private BusReviewRespDto busReviewRespDtoFixture(Long userId) {
 		return BusReviewRespDto.builder()
 			.userId(userId)
+			.userName("유저 이름")
 			.routeId(236000050L)
+			.routeName("노선 이름")
 			.busRouteStationId(1L)
+			.stationName("정류장 이름")
 			.content("리뷰 내용")
-			.timeSlot(TimeSlot.T_00_00.getCode())
+			.timeSlot(TimeSlot.T_00_00)
 			.rating(4)
 			.build();
 	}
@@ -60,19 +65,157 @@ public class BusReviewServiceTest {
 	private UserEntity getUserFixture(Long userId) {
 		return UserEntity.builder()
 			.id(userId)
+			.name("유저 이름")
 			.build();
 	}
 
 	private BusRouteStationEntity getBusRouteStationFixture(Long busRouteStationId) {
 		return BusRouteStationEntity.builder()
 			.id(busRouteStationId)
+			.stationName("정류장 이름")
 			.build();
 	}
 
 	private BusRouteEntity getBusRouteFixture(Long routeId) {
 		return BusRouteEntity.builder()
 			.id(routeId)
+			.routeName("노선 이름")
 			.build();
+	}
+
+	private List<BusReviewEntity> getReviewEntity(Long routeId, Long busRouteStationId, TimeSlot timeSlot) {
+		if (busRouteStationId == null) {
+			return List.of(
+				BusReviewEntity.builder()
+					.id(1L)
+					.content("리뷰 내용")
+					.timeSlot(TimeSlot.T_00_00)
+					.rating(4)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(1L))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now().plusMinutes(1))
+					.updatedAt(LocalDateTime.now())
+					.build(),
+				BusReviewEntity.builder()
+					.id(2L)
+					.content("리뷰 내용")
+					.timeSlot(TimeSlot.T_00_00)
+					.rating(5)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(1L))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
+					.build()
+			);
+		} else if (timeSlot == null) {
+			return List.of(
+				BusReviewEntity.builder()
+					.id(1L)
+					.content("리뷰 내용")
+					.timeSlot(TimeSlot.T_00_00)
+					.rating(4)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(busRouteStationId))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now().plusMinutes(1))
+					.updatedAt(LocalDateTime.now())
+					.build(),
+				BusReviewEntity.builder()
+					.id(2L)
+					.content("리뷰 내용")
+					.timeSlot(TimeSlot.T_00_00)
+					.rating(5)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(busRouteStationId))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now().plusMinutes(1))
+					.updatedAt(LocalDateTime.now())
+					.build()
+			);
+		} else {
+			return List.of(
+				BusReviewEntity.builder()
+					.id(1L)
+					.content("리뷰 내용")
+					.timeSlot(timeSlot)
+					.rating(4)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(busRouteStationId))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
+					.build(),
+				BusReviewEntity.builder()
+					.id(2L)
+					.content("리뷰 내용")
+					.timeSlot(timeSlot)
+					.rating(5)
+					.writer(getUserFixture(1L))
+					.station(getBusRouteStationFixture(busRouteStationId))
+					.route(getBusRouteFixture(routeId))
+					.createdAt(LocalDateTime.now())
+					.updatedAt(LocalDateTime.now())
+					.build()
+			);
+		}
+	}
+
+	@Nested
+	@DisplayName("getBusReviewList 메서드 테스트")
+	public class GetBusReviewListTest {
+		@Test
+		void 버스_노선_아이디_대한_리뷰를_조회한다() {
+			// given
+			Long routeId = 236000050L;
+			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, null, null);
+			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
+
+			given(busReviewRepository.findAllByRouteIdOrderByCreatedAtDesc(anyLong())).willReturn(reviewEntityList);
+			// when
+			var result = busReviewService.getBusReviewList(routeId);
+			// then
+			verify(busReviewRepository, times(1)).findAllByRouteIdOrderByCreatedAtDesc(routeId);
+			assertThat(result).isEqualTo(expected);
+		}
+
+		@Test
+		void 버스_노선_아이디와_정거장에_대한_리뷰를_조회한다() {
+			// given
+			Long routeId = 236000050L;
+			Long busRouteStationId = 1L;
+
+			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, busRouteStationId, null);
+			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
+			given(busReviewRepository.findAllByRouteIdAndStationIdOrderByCreatedAtDesc(anyLong(), anyLong()))
+				.willReturn(reviewEntityList);
+			// when
+			var result = busReviewService.getBusReviewList(routeId, busRouteStationId);
+			// then
+			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdOrderByCreatedAtDesc(routeId,
+				busRouteStationId);
+			assertThat(result).isEqualTo(expected);
+		}
+
+		@Test
+		void 버스_노선_아이디와_정거장_그리고_타임슬롯에_대한_리뷰를_조회한다() {
+			// given
+			Long routeId = 236000050L;
+			Long busRouteStationId = 1L;
+			TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
+
+			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, busRouteStationId, timeSlot);
+			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
+			given(busReviewRepository.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(anyLong(), anyLong(),
+				any(TimeSlot.class))).willReturn(reviewEntityList);
+			// when
+			var result = busReviewService.getBusReviewList(routeId, busRouteStationId, TimeSlot.T_00_00.getCode());
+			// then
+			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(routeId,
+				busRouteStationId, timeSlot);
+			assertThat(result).isEqualTo(expected);
+		}
 	}
 
 	@Nested
@@ -80,7 +223,7 @@ public class BusReviewServiceTest {
 	public class CreateBusReviewTest {
 
 		@Test
-		void 제한된_요청에_따라_버스리뷰를_생성한다() {
+		void 제안된_요청에_따라_버스리뷰를_생성한다() {
 			//given
 			UserEntity user = getUserFixture(1L);
 			BusRouteStationEntity station = getBusRouteStationFixture(1L);
