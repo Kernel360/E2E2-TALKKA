@@ -6,6 +6,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bookmark.enums.BookmarkDetailType;
+import com.talkka.server.subway.enums.Updown;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -33,6 +34,9 @@ public class BookmarkDetailEntity {
 	@Column(name = "bookmark_detail_id", nullable = false)
 	private Long id;
 
+	@Column(name = "seq", nullable = false)
+	private Integer seq;
+
 	@Column(name = "type", nullable = false, length = 10)
 	@Convert(converter = BookmarkDetailType.class)
 	private BookmarkDetailType type;
@@ -40,6 +44,15 @@ public class BookmarkDetailEntity {
 	@ManyToOne
 	@JoinColumn(name = "bookmark_id")
 	private BookmarkEntity bookmark;
+
+	@JoinColumn(name = "subway_station_id")
+	private Long subwayStationId;
+
+	@Column(name = "subway_updown")
+	private Updown subwayUpdown;
+
+	@JoinColumn(name = "bus_route_station_id")
+	private Long busRouteStationId;
 
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
