@@ -9,7 +9,6 @@ import com.talkka.server.bookmark.enums.BookmarkDetailType;
 import com.talkka.server.subway.enums.Updown;
 
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
@@ -22,7 +21,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Entity(name = "bus_location")
+@Entity(name = "bookmark_detail")
 @Getter
 @Builder
 @NoArgsConstructor
@@ -38,7 +37,7 @@ public class BookmarkDetailEntity {
 	private Integer seq;
 
 	@Column(name = "type", nullable = false, length = 10)
-	@Convert(converter = BookmarkDetailType.class)
+	// @Convert(converter = BookmarkDetailType.class)
 	private BookmarkDetailType type;
 
 	@ManyToOne

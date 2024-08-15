@@ -24,7 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-@Entity(name = "bus_location")
+@Entity(name = "bookmark")
 @Getter
 @Builder
 @NoArgsConstructor
