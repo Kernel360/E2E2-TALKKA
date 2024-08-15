@@ -10,13 +10,17 @@ import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.exception.http.ForbiddenException;
-import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.common.util.EnumCodeConverterUtils;
+import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
-import com.talkka.server.review.dto.BusReviewReqDto;
+import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
+import com.talkka.server.review.exception.BusReviewNotFoundException;
+import com.talkka.server.review.exception.BusRouteNotFoundException;
+import com.talkka.server.review.exception.BusStationNotFoundException;
+import com.talkka.server.review.exception.ContentAccessException;
+import com.talkka.server.review.exception.UserNotFoundException;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -30,11 +34,11 @@ public class BusReviewService {
 	private final UserRepository userRepository;
 	private final BusRouteStationRepository busRouteStationRepository;
 	private final BusRouteRepository busRouteRepository;
+	private final ContentAccessValidator contentAccessValidator;
 
 	public List<BusReviewRespDto> getUsersBusReviewList(
 		Long userId, Long routeId, Long busRouteStationId, String timeSlot
 	) {
-		// request param의 존재 유무에 따라 response가 변경되어야합니다.
 		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlotOrderByUpdatedAtDesc(
 			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
 
@@ -67,54 +71,51 @@ public class BusReviewService {
 	}
 
 	@Transactional
-	public BusReviewRespDto createBusReview(Long userId, BusReviewReqDto busReviewReqDto) {
+	public BusReviewRespDto createBusReview(BusReviewDto busReviewDto)
+		throws UserNotFoundException, BusStationNotFoundException, BusRouteNotFoundException {
+		Long userId = busReviewDto.userId();
 		UserEntity user = userRepository.findById(userId)
-			.orElseThrow(() -> new NotFoundException("존재하지 않는 유저입니다."));
+			.orElseThrow(UserNotFoundException::new);
+		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewDto.busRouteStationId())
+			.orElseThrow(BusStationNotFoundException::new);
+		BusRouteEntity route = busRouteRepository.findById(busReviewDto.routeId())
+			.orElseThrow(BusRouteNotFoundException::new);
 
-		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewReqDto.busRouteStationId())
-			.orElseThrow(() -> new NotFoundException("존재하지 않는 경유 정류장입니다."));
-
-		BusRouteEntity route = busRouteRepository.findById(busReviewReqDto.routeId())
-			.orElseThrow(() -> new NotFoundException("존재하지 않는 노선입니다."));
-
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.timeSlot());
-
-		BusReviewEntity entity = busReviewReqDto.toEntity(user, station, route, timeSlot);
-
+		BusReviewEntity entity = busReviewDto.toEntity(user, station, route);
 		BusReviewEntity savedReview = busReviewRepository.save(entity);
-
 		return BusReviewRespDto.of(savedReview);
 	}
 
 	@Transactional
-	public BusReviewRespDto updateBusReview(Long userId, Long busReviewId, BusReviewReqDto busReviewReqDto) {
-		BusReviewEntity review = busReviewRepository.findById(busReviewId)
-			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
+	public BusReviewRespDto updateBusReview(BusReviewDto busReviewDto)
+		throws ContentAccessException, BusReviewNotFoundException, UserNotFoundException {
+		Long userId = busReviewDto.userId();
+		Long reviewId = busReviewDto.id();
 
-		if (!isReviewOwner(userId, review)) {
-			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
-		}
+		UserEntity user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
+		BusReviewEntity review = busReviewRepository.findById(reviewId)
+			.orElseThrow(BusReviewNotFoundException::new);
 
-		TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, busReviewReqDto.timeSlot());
-
-		review.updateReview(busReviewReqDto.content(), timeSlot, busReviewReqDto.rating());
-
-		return BusReviewRespDto.of(review);
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+		review.updateReview(busReviewDto.content(), busReviewDto.timeSlot(), busReviewDto.rating());
+		var saved = busReviewRepository.save(review);
+		return BusReviewRespDto.of(saved);
 	}
 
 	@Transactional
-	public Long deleteBusReview(Long userId, Long busReviewId) {
+	public Long deleteBusReview(Long userId, Long busReviewId) throws
+		ContentAccessException,
+		BusReviewNotFoundException, UserNotFoundException {
+		UserEntity user = userRepository.findById(userId)
+			.orElseThrow(UserNotFoundException::new);
 		BusReviewEntity review = busReviewRepository.findById(busReviewId)
-			.orElseThrow(() -> new NotFoundException("존재하지 않는 리뷰입니다."));
+			.orElseThrow(BusReviewNotFoundException::new);
 
-		if (!isReviewOwner(userId, review)) {
-			throw new ForbiddenException("작성자와 일치하지 않는 ID입니다.");
-		}
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+
 		busReviewRepository.deleteById(busReviewId);
 		return busReviewId;
 	}
 
-	private boolean isReviewOwner(long userId, BusReviewEntity busReviewEntity) {
-		return userId == busReviewEntity.getWriter().getId();
-	}
 }

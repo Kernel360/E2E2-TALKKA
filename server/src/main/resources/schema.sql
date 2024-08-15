@@ -100,7 +100,7 @@ create table bus_review
     updated_at           datetime(6)  not null,
     user_id              bigint       null,
     content              varchar(400) null,
-    time_slot            varchar(3)   not null
+    time_slot            varchar(20)  not null
 );
 
 drop table if exists subway_confusion;
@@ -113,7 +113,7 @@ CREATE TABLE subway_confusion
     line_code           VARCHAR(4)            NOT NULL,
     day_type            VARCHAR(3)            NOT NULL,
     updown              VARCHAR(1)            NOT NULL,
-    time_slot           VARCHAR(2)            NOT NULL,
+    time_slot           VARCHAR(20)           NOT NULL,
     confusion           DOUBLE                NULL
 );
 

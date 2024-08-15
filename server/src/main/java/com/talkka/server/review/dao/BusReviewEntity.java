@@ -10,13 +10,18 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.util.TimeSlotConverter;
+import com.talkka.server.review.util.RatingDbConverter;
+import com.talkka.server.review.util.ReviewContentDbConverter;
+import com.talkka.server.review.vo.Rating;
+import com.talkka.server.review.vo.ReviewContent;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -55,14 +60,16 @@ public class BusReviewEntity {
 	private BusRouteEntity route;
 
 	@Column(name = "content", length = 400)
-	private String content;
+	@Convert(converter = ReviewContentDbConverter.class)
+	private ReviewContent content;
 
-	@Column(name = "time_slot", nullable = false, length = 3)
-	@Convert(converter = TimeSlotConverter.class)
+	@Column(name = "time_slot", nullable = false, length = 20)
+	@Enumerated(EnumType.STRING)
 	private TimeSlot timeSlot;
 
 	@Column(name = "rating", nullable = false)
-	private Integer rating;
+	@Convert(converter = RatingDbConverter.class)
+	private Rating rating;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -87,7 +94,7 @@ public class BusReviewEntity {
 		return Objects.hashCode(id);
 	}
 
-	public void updateReview(String content, TimeSlot timeSlot, Integer rating) {
+	public void updateReview(ReviewContent content, TimeSlot timeSlot, Rating rating) {
 		this.content = content;
 		this.timeSlot = timeSlot;
 		this.rating = rating;
