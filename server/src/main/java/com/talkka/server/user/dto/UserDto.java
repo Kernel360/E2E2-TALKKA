@@ -45,6 +45,7 @@ public record UserDto(
 			grade,
 			createdAt,
 			updatedAt,
+			new ArrayList<>(),
 			new ArrayList<>()
 		);
 	}
