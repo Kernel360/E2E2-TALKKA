@@ -1,6 +1,7 @@
 package com.talkka.server.subway.enums;
 
 import com.talkka.server.common.util.EnumCodeInterface;
+import com.talkka.server.subway.exception.enums.InvalidLineEnumException;
 
 import lombok.Getter;
 
@@ -31,5 +32,13 @@ public enum Line implements EnumCodeInterface {
 	Line(String name, String code) {
 		this.name = name;
 		this.code = code;
+	}
+
+	public static Line valueOfEnumString(String enumCode) {
+		try {
+			return Line.valueOf(enumCode);
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidLineEnumException();
+		}
 	}
 }
