@@ -1,6 +1,7 @@
 package com.talkka.server.subway.dto;
 
 import com.talkka.server.subway.dao.SubwayStationEntity;
+import com.talkka.server.subway.enums.Line;
 
 import lombok.Builder;
 
@@ -9,14 +10,14 @@ public record SubwayStationRespDto(
 	Long stationId,
 	String stationName,
 	String stationCode,
-	String lineCode
+	Line line
 ) {
 	public static SubwayStationRespDto of(SubwayStationEntity subwayStationEntity) {
 		return new SubwayStationRespDto(
 			subwayStationEntity.getId(),
 			subwayStationEntity.getStationName(),
 			subwayStationEntity.getStationCode(),
-			subwayStationEntity.getLine().getCode()
+			subwayStationEntity.getLine()
 		);
 	}
 }
