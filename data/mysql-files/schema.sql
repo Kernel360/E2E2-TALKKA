@@ -93,7 +93,7 @@ create table bus_review
     updated_at           datetime(6)  not null,
     user_id              bigint       null,
     content              varchar(400) null,
-    time_slot            varchar(3)   not null
+    time_slot            varchar(20)  not null
 );
 
 drop table if exists subway_confusion;
@@ -106,7 +106,7 @@ CREATE TABLE subway_confusion
     line_code           VARCHAR(4)            NOT NULL,
     day_type            VARCHAR(3)            NOT NULL,
     updown              VARCHAR(1)            NOT NULL,
-    time_slot           VARCHAR(2)            NOT NULL,
+    time_slot           VARCHAR(20)           NOT NULL,
     confusion           DOUBLE                NULL
 );
 
@@ -135,4 +135,34 @@ CREATE TABLE subway_timetable
     depart_time         time                  NOT NULL,
     start_station_name  VARCHAR(50)           NOT NULL,
     end_station_name    VARCHAR(50)           NOT NULL
+);
+
+
+-- BULK INSERT (STATIC DATA)
+# SOURCE /var/lib/mysql-files/bulk_insert_routes.sql;
+-- 1. 임시 테이블 생성
+DROP TABLE IF EXISTS temp_bus_route;
+CREATE TABLE temp_bus_route
+(
+    route_id           BIGINT,
+    route_name         VARCHAR(100),
+    route_type_cd      VARCHAR(10),
+    route_type_name    VARCHAR(100),
+    start_station_id   BIGINT,
+    start_station_name VARCHAR(100),
+    start_mobile_no    VARCHAR(50),
+    end_station_id     BIGINT,
+    end_station_name   VARCHAR(100),
+    end_mobile_no      VARCHAR(50),
+    region_name        VARCHAR(100),
+    district_cd        VARCHAR(10),
+    up_first_time      VARCHAR(20),
+    up_last_time       VARCHAR(20),
+    down_first_time    VARCHAR(20),
+    down_last_time     VARCHAR(20),
+    peek_alloc         INT,
+    n_peek_alloc       INT,
+    company_id         BIGINT,
+    company_name       VARCHAR(100),
+    company_tel        VARCHAR(50)
 );

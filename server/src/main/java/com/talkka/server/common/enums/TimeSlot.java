@@ -1,5 +1,6 @@
 package com.talkka.server.common.enums;
 
+import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.common.util.EnumCodeInterface;
 
 import lombok.Getter;
@@ -61,5 +62,13 @@ public enum TimeSlot implements EnumCodeInterface {
 	TimeSlot(String timeSlot, String code) {
 		this.timeSlot = timeSlot;
 		this.code = code;
+	}
+
+	public static TimeSlot valueOfEnumString(String enumValue) {
+		try {
+			return TimeSlot.valueOf(enumValue);
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidTimeSlotEnumException();
+		}
 	}
 }
