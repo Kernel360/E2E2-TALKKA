@@ -10,8 +10,13 @@ import com.talkka.server.common.dto.ApiRespDto;
 import com.talkka.server.common.exception.enums.InvalidEnumCodeException;
 import com.talkka.server.common.exception.http.HttpBaseException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @ControllerAdvice
 public class RestControllerAdvice {
+	private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Server has some error";
+
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public ResponseEntity<String> handleMethodArgumentNotValidException(
 		MethodArgumentNotValidException exception) {
@@ -22,9 +27,8 @@ public class RestControllerAdvice {
 
 	@ExceptionHandler(InvalidEnumCodeException.class)
 	public ResponseEntity<String> handleInvalidEnumCodeException(InvalidEnumCodeException exception) {
-		String message = exception.getMessage();
-
-		return new ResponseEntity<>(message, HttpStatus.INTERNAL_SERVER_ERROR);
+		log.error("InvalidEnumCodeException: {}", exception.getMessage());
+		return new ResponseEntity<>(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Deprecated
