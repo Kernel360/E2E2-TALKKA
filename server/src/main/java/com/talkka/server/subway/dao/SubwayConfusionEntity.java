@@ -3,7 +3,6 @@ package com.talkka.server.subway.dao;
 import java.util.Objects;
 
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.util.TimeSlotConverter;
 import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Line;
 import com.talkka.server.subway.enums.Updown;
@@ -14,6 +13,8 @@ import com.talkka.server.subway.util.UpdownConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -61,7 +62,7 @@ public class SubwayConfusionEntity {
 	private Updown updown;
 
 	@Column(name = "time_slot", nullable = false, length = 2)
-	@Convert(converter = TimeSlotConverter.class)
+	@Enumerated(EnumType.STRING)
 	private TimeSlot timeSlot;
 
 	@Column(name = "confusion")
