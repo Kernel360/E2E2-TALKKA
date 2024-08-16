@@ -1,4 +1,4 @@
-package com.talkka.server.bookmark.dao;
+package com.talkka.server.bookmark.dao.entity;
 
 import java.time.LocalDateTime;
 

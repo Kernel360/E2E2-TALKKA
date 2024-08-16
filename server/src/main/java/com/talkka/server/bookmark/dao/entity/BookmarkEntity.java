@@ -1,4 +1,4 @@
-package com.talkka.server.bookmark.dao;
+package com.talkka.server.bookmark.dao.entity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,8 +7,10 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.talkka.server.bookmark.dao.dto.BookmarkReqDto;
 import com.talkka.server.user.dao.UserEntity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -43,9 +45,9 @@ public class BookmarkEntity {
 	@JoinColumn(name = "user_id")
 	private UserEntity user;
 
-	@OneToMany(mappedBy = "bookmark")
+	@OneToMany(mappedBy = "bookmark", cascade = CascadeType.ALL, orphanRemoval = true)
 	@ToString.Exclude
-	private List<BookmarkDetailEntity> bookmarkDetails;
+	private List<BookmarkDetailEntity> details;
 
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
@@ -54,4 +56,11 @@ public class BookmarkEntity {
 	@LastModifiedDate
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
+
+	public void updateBookmark(BookmarkReqDto dto) {
+		this.name = dto.name();
+		this.details = dto.details().stream()
+			.map(detail -> detail.toEntity(this))
+			.toList();
+	}
 }
