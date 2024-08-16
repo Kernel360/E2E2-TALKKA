@@ -24,7 +24,7 @@ public class SubwayConfusionService {
 
 	// TODO 추후 통계쪽으로 넘길지 논의 필요
 	public SubwayConfusionRespDto getSubwayConfusion(
-		Long stationId, String dayTypeCode, String updownCode, String typeSlotCode
+		Long stationId, String dayTypeCode, String updownCode, String timeSlot
 	) {
 		if (!stationRepository.existsById(stationId)) {
 			throw new NotFoundException("존재하지 않는 지하철 역입니다.");
@@ -34,7 +34,7 @@ public class SubwayConfusionService {
 			stationId,
 			EnumCodeConverterUtils.fromCode(DayType.class, dayTypeCode),
 			EnumCodeConverterUtils.fromCode(Updown.class, updownCode),
-			EnumCodeConverterUtils.fromCode(TimeSlot.class, typeSlotCode)
+			TimeSlot.valueOfEnumString(timeSlot)
 		).orElseThrow(() -> new NotFoundException("조회 가능한 혼잡도 정보가 없습니다."));
 
 		return SubwayConfusionRespDto.of(optionalConfusionEntity);
