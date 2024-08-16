@@ -187,14 +187,12 @@ public class SubwayStationServiceTest {
 		@Test
 		void 이미_존재하는_지하철_역_ID라면_Exception을_throw한다() {
 			//given
-			Class<?> exceptionClass = StationAlreadyExistsException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-
 			given(stationRepository.existsByStationCode(subwayStationReqDto.stationCode())).willReturn(true);
 
 			//when
 			//then
 			assertThatThrownBy(() -> stationService.createStation(stationDto))
-				.isInstanceOf(exceptionClass)
+				.isInstanceOf(StationAlreadyExistsException.class)
 				.hasMessage("이미 존재하는 지하철 역입니다. StationCode: " + subwayStationReqDto.stationCode());
 		}
 	}
