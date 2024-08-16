@@ -5,12 +5,14 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.talkka.server.bookmark.enums.BookmarkDetailType;
+import com.talkka.server.bookmark.enums.TransportType;
 import com.talkka.server.subway.enums.Updown;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -37,8 +39,8 @@ public class BookmarkDetailEntity {
 	private Integer seq;
 
 	@Column(name = "type", nullable = false, length = 10)
-	// @Convert(converter = BookmarkDetailType.class)
-	private BookmarkDetailType type;
+	@Enumerated(EnumType.STRING)
+	private TransportType type;
 
 	@ManyToOne
 	@JoinColumn(name = "bookmark_id")

@@ -1,12 +1,12 @@
 package com.talkka.server.bookmark.dao.dto;
 
 import com.talkka.server.bookmark.dao.BookmarkDetailEntity;
-import com.talkka.server.bookmark.enums.BookmarkDetailType;
+import com.talkka.server.bookmark.enums.TransportType;
 import com.talkka.server.subway.enums.Updown;
 
 public record BookmarkDetailRespDto(
 	Integer seq,
-	BookmarkDetailType type,
+	TransportType type,
 	Long subwayStationId,
 	Updown subwayUpdown,
 	Long busRouteStationId
