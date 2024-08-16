@@ -64,12 +64,11 @@ public enum TimeSlot implements EnumCodeInterface {
 		this.code = code;
 	}
 
-	public static TimeSlot valueOfEnumString(String code) {
-		for (TimeSlot timeSlot : TimeSlot.values()) {
-			if (timeSlot.getCode().equals(code)) {
-				return timeSlot;
-			}
+	public static TimeSlot valueOfEnumString(String enumValue) {
+		try {
+			return TimeSlot.valueOf(enumValue);
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidTimeSlotEnumException();
 		}
-		throw new InvalidTimeSlotEnumException();
 	}
 }
