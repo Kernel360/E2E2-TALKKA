@@ -1,25 +1,24 @@
 package com.talkka.server.user.controller;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.talkka.server.common.dto.ApiRespDto;
-import com.talkka.server.common.enums.StatusCode;
+import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
-import com.talkka.server.user.dto.UserCreateDto;
-import com.talkka.server.user.dto.UserCreateReqDto;
 import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.dto.UserRespDto;
+import com.talkka.server.user.dto.UserUpdateDto;
 import com.talkka.server.user.dto.UserUpdateReqDto;
-import com.talkka.server.user.enums.Grade;
+import com.talkka.server.user.exception.DuplicatedNicknameException;
+import com.talkka.server.user.exception.UserNotFoundException;
 import com.talkka.server.user.service.UserService;
 
 import jakarta.validation.Valid;
@@ -32,91 +31,73 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/{user_id}")
-	public ResponseEntity<ApiRespDto<UserRespDto>> getUser(
+	public ResponseEntity<?> getUser(
 		@PathVariable("user_id") Long userId
 	) {
-		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
-		return ResponseEntity.ok(
-			ApiRespDto.<UserRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(userRespDto)
-				.build()
-		);
-	}
-
-	// 현재는 AuthController 쪽에서 처리하고 있으나, 추후 FE 연결 이후 사용할 것임.
-	@PostMapping("")
-	public ResponseEntity<ApiRespDto<UserRespDto>> createUser(
-		@AuthenticationPrincipal OAuth2UserInfo userInfo,
-		@RequestBody @Valid UserCreateReqDto userCreateReqDto) {
-		UserCreateDto userCreateDto = new UserCreateDto(
-			userInfo.getName(),
-			userInfo.getEmail(),
-			userCreateReqDto.nickname(),
-			userInfo.getProvider(),
-			userInfo.getAccessToken(),
-			Grade.USER
-		);
-		UserRespDto userRespDto = UserRespDto.of(userService.createUser(userCreateDto));
-		return ResponseEntity.ok(
-			ApiRespDto.<UserRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(userRespDto)
-				.build()
-		);
+		ResponseEntity<?> response;
+		try {
+			UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
+			response = ResponseEntity.ok(userRespDto);
+		} catch (Exception exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		}
+		return response;
 	}
 
 	@PutMapping("/{user_id}")
-	public ResponseEntity<ApiRespDto<UserRespDto>> updateUser(@PathVariable("user_id") Long userId,
+	public ResponseEntity<?> updateUser(@PathVariable("user_id") Long userId,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
-		UserRespDto userRespDto = UserRespDto.of(
-			userService.updateUser(userId, userUpdateReqDto));
-		return ResponseEntity.ok(
-			ApiRespDto.<UserRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(userRespDto)
-				.build()
-		);
+		ResponseEntity<?> response;
+		try {
+			UserUpdateDto userUpdateDto = UserUpdateDto.of(userId, userUpdateReqDto);
+			UserRespDto userRespDto = UserRespDto.of(
+				userService.updateUser(userUpdateDto));
+
+			response = ResponseEntity.ok(userRespDto);
+		} catch (InvalidTypeException | DuplicatedNicknameException | UserNotFoundException exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		}
+		return response;
 	}
 
 	@DeleteMapping("/{user_id}")
-	public ResponseEntity<ApiRespDto<Long>> deleteUser(@PathVariable("user_id") Long userId) {
-		Long deletedUserId = userService.deleteUser(userId);
-		return ResponseEntity.ok(
-			ApiRespDto.<Long>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(null)
-				.build()
-		);
+	public ResponseEntity<?> deleteUser(@PathVariable("user_id") Long userId) {
+		ResponseEntity<?> response;
+		try {
+			Long deletedUserId = userService.deleteUser(userId);
+			response = ResponseEntity.ok(deletedUserId);
+		} catch (UserNotFoundException exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		}
+		return response;
 	}
 
 	@GetMapping("/me")
-	public ResponseEntity<ApiRespDto<UserRespDto>> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
-		UserRespDto userRespDto = UserRespDto.of(userService.getUser(userInfo.getUserId()));
-		return ResponseEntity.ok(
-			ApiRespDto.<UserRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(userRespDto)
-				.build()
-		);
+	public ResponseEntity<?> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
+		ResponseEntity<?> response;
+		try {
+			UserRespDto userRespDto = UserRespDto.of(userService.getUser(userInfo.getUserId()));
+			response = ResponseEntity.ok(userRespDto);
+		} catch (UserNotFoundException exception) {
+			response = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+		}
+		return response;
 	}
 
 	@PutMapping("/me")
-	public ResponseEntity<ApiRespDto<UserRespDto>> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
+	public ResponseEntity<?> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
-		UserDto userDto = userService.updateUser(userInfo.getUserId(), userUpdateReqDto);
-		UserRespDto userRespDto = UserRespDto.of(userDto);
-		return ResponseEntity.ok(
-			ApiRespDto.<UserRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(userRespDto)
-				.build()
-		);
+		ResponseEntity<?> response;
+		try {
+			UserUpdateDto userUpdateDto = UserUpdateDto.of(userInfo.getUserId(), userUpdateReqDto);
+			UserDto userDto = userService.updateUser(userUpdateDto);
+			UserRespDto userRespDto = UserRespDto.of(userDto);
+			response = ResponseEntity.ok(userRespDto);
+		} catch (InvalidTypeException | DuplicatedNicknameException exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		} catch (UserNotFoundException exception) {
+			response = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+		}
+		return response;
 	}
 }
