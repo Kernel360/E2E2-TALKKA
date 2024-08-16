@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.common.exception.InvalidTypeException;
+import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewReqDto;
@@ -38,19 +39,23 @@ public class BusReviewController {
 	private final BusReviewService busReviewService;
 
 	@GetMapping("")
-	public ResponseEntity<List<BusReviewRespDto>> getBusReviewList(
+	public ResponseEntity<?> getBusReviewList(
 		@RequestParam Long routeId,
 		@RequestParam(required = false) Long busRouteStationId,
 		@RequestParam(required = false) String timeSlot
 	) {
 		List<BusReviewRespDto> reviewData;
 
-		if (busRouteStationId != null && timeSlot != null) {
-			reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId, timeSlot);
-		} else if (busRouteStationId != null) {
-			reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId);
-		} else {
-			reviewData = busReviewService.getBusReviewList(routeId);
+		try {
+			if (busRouteStationId != null && timeSlot != null) {
+				reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId, timeSlot);
+			} else if (busRouteStationId != null) {
+				reviewData = busReviewService.getBusReviewList(routeId, busRouteStationId);
+			} else {
+				reviewData = busReviewService.getBusReviewList(routeId);
+			}
+		} catch (InvalidTimeSlotEnumException exception) {
+			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
 		return ResponseEntity.ok(reviewData);
 	}

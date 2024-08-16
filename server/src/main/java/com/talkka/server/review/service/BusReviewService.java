@@ -10,7 +10,7 @@ import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.util.EnumCodeConverterUtils;
+import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
@@ -38,9 +38,10 @@ public class BusReviewService {
 
 	public List<BusReviewRespDto> getUsersBusReviewList(
 		Long userId, Long routeId, Long busRouteStationId, String timeSlot
-	) {
-		List<BusReviewEntity> reviewList = busReviewRepository.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlotOrderByUpdatedAtDesc(
-			userId, routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
+	) throws InvalidTimeSlotEnumException {
+		List<BusReviewEntity> reviewList = busReviewRepository
+			.findAllByWriterIdAndRouteIdAndStationIdAndTimeSlotOrderByUpdatedAtDesc(
+				userId, routeId, busRouteStationId, TimeSlot.valueOfEnumString(timeSlot));
 
 		return reviewList.stream()
 			.map(BusReviewRespDto::of)
@@ -62,9 +63,11 @@ public class BusReviewService {
 			.toList();
 	}
 
-	public List<BusReviewRespDto> getBusReviewList(Long routeId, Long busRouteStationId, String timeSlot) {
-		List<BusReviewEntity> reviewEntityList = busReviewRepository.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(
-			routeId, busRouteStationId, EnumCodeConverterUtils.fromCode(TimeSlot.class, timeSlot));
+	public List<BusReviewRespDto> getBusReviewList(Long routeId, Long busRouteStationId, String timeSlot) throws
+		InvalidTimeSlotEnumException {
+		List<BusReviewEntity> reviewEntityList = busReviewRepository
+			.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(
+				routeId, busRouteStationId, TimeSlot.valueOfEnumString(timeSlot));
 		return reviewEntityList.stream()
 			.map(BusReviewRespDto::of)
 			.toList();
