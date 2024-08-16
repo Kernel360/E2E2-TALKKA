@@ -8,6 +8,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.talkka.server.bookmark.dao.BookmarkEntity;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.user.enums.Grade;
 
@@ -71,6 +72,10 @@ public class UserEntity {
 	@OneToMany(mappedBy = "writer")
 	@ToString.Exclude
 	private List<BusReviewEntity> busReviews;
+
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	private List<BookmarkEntity> bookmarks;
 
 	@Override
 	public boolean equals(Object o) {
