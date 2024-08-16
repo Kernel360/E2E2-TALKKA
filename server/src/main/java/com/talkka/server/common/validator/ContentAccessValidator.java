@@ -7,7 +7,8 @@ import com.talkka.server.user.enums.Grade;
 
 @Component
 public class ContentAccessValidator {
-	public boolean validateOwnerContentAccess(Long userId, Grade grade, Long contentUserId) {
+	public boolean validateOwnerContentAccess(Long userId, Grade grade, Long contentUserId) throws
+		ContentAccessException {
 		if (grade == Grade.ADMIN || userId.equals(contentUserId)) {
 			return true;
 		}
