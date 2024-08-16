@@ -20,7 +20,7 @@ public record SubwayConfusionRespDto(
 			subwayConfusionEntity.getLine(),
 			subwayConfusionEntity.getDayType().getCode(),
 			subwayConfusionEntity.getUpdown().getCode(),
-			subwayConfusionEntity.getTimeSlot().getCode(),
+			subwayConfusionEntity.getTimeSlot().toString(),
 			subwayConfusionEntity.getConfusion()
 		);
 	}

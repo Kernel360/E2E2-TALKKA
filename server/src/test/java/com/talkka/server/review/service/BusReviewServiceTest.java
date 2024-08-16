@@ -20,6 +20,7 @@ import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.common.enums.TimeSlot;
+import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
@@ -156,10 +157,20 @@ public class BusReviewServiceTest {
 			given(busReviewRepository.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(anyLong(), anyLong(),
 				any(TimeSlot.class))).willReturn(reviewEntityList);
 			// when
-			busReviewService.getBusReviewList(236000050L, 1L, TimeSlot.T_00_00.getCode());
+			busReviewService.getBusReviewList(236000050L, 1L, "T_00_00");
 			// then
 			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(anyLong(),
 				anyLong(), any(TimeSlot.class));
+		}
+
+		@Test
+		@DisplayName("TimeSlot이 잘못된 경우 InvalidTimeSlotEnumException을 발생시킨다.")
+		void testInvalidTimeSlotEnumException() {
+			// given
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.getBusReviewList(236000050L, 1L, "T_00_00_00"))
+				.isInstanceOf(InvalidTimeSlotEnumException.class);
 		}
 	}
 
