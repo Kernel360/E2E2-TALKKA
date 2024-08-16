@@ -2,9 +2,6 @@ package com.talkka.server.common.enums;
 
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 
-import lombok.Getter;
-
-@Getter
 public enum TimeSlot {
 	T_00_00,
 	T_00_30,
