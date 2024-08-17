@@ -4,6 +4,7 @@ import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.vo.Rating;
 import com.talkka.server.review.vo.ReviewContent;
+import com.talkka.server.user.vo.Nickname;
 
 import lombok.Builder;
 
@@ -11,7 +12,7 @@ import lombok.Builder;
 public record BusReviewRespDto(
 	Long id,
 	Long userId,
-	String userName,
+	Nickname userName,
 	Long routeId,
 	String routeName,
 	Long busRouteStationId,

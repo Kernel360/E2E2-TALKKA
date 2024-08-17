@@ -11,8 +11,13 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import com.talkka.server.bookmark.dao.BookmarkEntity;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.user.enums.Grade;
+import com.talkka.server.user.util.EmailDbConverter;
+import com.talkka.server.user.util.NicknameDbConverter;
+import com.talkka.server.user.vo.Email;
+import com.talkka.server.user.vo.Nickname;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -46,10 +51,12 @@ public class UserEntity {
 	private String name;
 
 	@Column(name = "email", length = 30, nullable = false)
-	private String email;
+	@Convert(converter = EmailDbConverter.class)
+	private Email email;
 
 	@Column(name = "nickname", length = 50, nullable = false)
-	private String nickname;
+	@Convert(converter = NicknameDbConverter.class)
+	private Nickname nickname;
 
 	@Column(name = "oauth_provider", length = 30, nullable = false, updatable = false)
 	private String oauthProvider;
@@ -92,9 +99,7 @@ public class UserEntity {
 		return Objects.hashCode(id);
 	}
 
-	public void updateUser(String nickname) {
-		if (nickname != null && !nickname.isEmpty()) {
-			this.nickname = nickname;
-		}
+	public void updateUser(Nickname nickname) {
+		this.nickname = nickname;
 	}
 }
