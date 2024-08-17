@@ -1,16 +1,19 @@
 package com.talkka.server.subway.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.exception.http.NotFoundException;
-import com.talkka.server.common.util.EnumCodeConverterUtils;
+import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.subway.dao.SubwayConfusionEntity;
 import com.talkka.server.subway.dao.SubwayConfusionRepository;
 import com.talkka.server.subway.dao.SubwayStationRepository;
 import com.talkka.server.subway.dto.SubwayConfusionRespDto;
 import com.talkka.server.subway.enums.DayType;
 import com.talkka.server.subway.enums.Updown;
+import com.talkka.server.subway.exception.ConfusionNotFoundException;
+import com.talkka.server.subway.exception.StationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,24 +22,46 @@ import lombok.RequiredArgsConstructor;
 public class SubwayConfusionService {
 
 	private final SubwayConfusionRepository confusionRepository;
-
 	private final SubwayStationRepository stationRepository;
 
 	// TODO 추후 통계쪽으로 넘길지 논의 필요
-	public SubwayConfusionRespDto getSubwayConfusion(
-		Long stationId, String dayTypeCode, String updownCode, String timeSlot
-	) {
-		if (!stationRepository.existsById(stationId)) {
-			throw new NotFoundException("존재하지 않는 지하철 역입니다.");
-		}
+	public SubwayConfusionRespDto getConfusion(
+		Long stationId, String dayType, String updown, String timeSlot
+	) throws StationNotFoundException, ConfusionNotFoundException, InvalidTypeException {
+		isExisted(stationId);
 
-		SubwayConfusionEntity optionalConfusionEntity = confusionRepository.findBySubwayStationIdAndDayTypeAndUpdownAndTimeSlot(
+		SubwayConfusionEntity entity = confusionRepository.findBySubwayStationIdAndDayTypeAndUpdownAndTimeSlot(
 			stationId,
-			EnumCodeConverterUtils.fromCode(DayType.class, dayTypeCode),
-			EnumCodeConverterUtils.fromCode(Updown.class, updownCode),
+			DayType.valueOfEnumString(dayType),
+			Updown.valueOfEnumString(updown),
 			TimeSlot.valueOfEnumString(timeSlot)
-		).orElseThrow(() -> new NotFoundException("조회 가능한 혼잡도 정보가 없습니다."));
+		).orElseThrow(ConfusionNotFoundException::new);
 
-		return SubwayConfusionRespDto.of(optionalConfusionEntity);
+		return SubwayConfusionRespDto.of(entity);
 	}
+
+	public List<SubwayConfusionRespDto> getConfusionList(
+		Long stationId, String dayType, String updown, String startTimeSlot, String endTimeSlot
+	) throws StationNotFoundException, InvalidTypeException {
+		isExisted(stationId);
+
+		List<SubwayConfusionEntity> entityList = confusionRepository.findBySubwayStationIdAndDayTypeAndUpdownAndTimeSlotBetween(
+			stationId,
+			DayType.valueOfEnumString(dayType),
+			Updown.valueOfEnumString(updown),
+			TimeSlot.valueOfEnumString(startTimeSlot),
+			TimeSlot.valueOfEnumString(endTimeSlot)
+		);
+
+		return entityList.stream()
+			.map(SubwayConfusionRespDto::of)
+			.toList();
+	}
+
+	private void isExisted(Long stationId) throws StationNotFoundException {
+		if (!stationRepository.existsById(stationId)) {
+			throw new StationNotFoundException(stationId);
+		}
+	}
+
 }
