@@ -7,11 +7,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.talkka.server.common.dto.ApiRespDto;
+import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
+import com.talkka.server.user.exception.DuplicatedNicknameException;
 import com.talkka.server.user.service.UserService;
+import com.talkka.server.user.vo.Email;
+import com.talkka.server.user.vo.Nickname;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -26,34 +29,31 @@ public class AuthController {
 	private final UserService userService;
 
 	@PostMapping("/register")
-	public ResponseEntity<ApiRespDto<Void>> register(
+	public ResponseEntity<?> register(
 		@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserCreateReqDto userCreateReqDto,
 		HttpServletRequest request) {
-		String nickname = userCreateReqDto.nickname();
-		if (userService.isDuplicatedNickname(nickname)) {
-			return ResponseEntity.badRequest().body(
-				ApiRespDto.<Void>builder()
-					.statusCode(400)
-					.message("중복된 닉네임입니다.")
-					.build()
-			);
-		}
+		ResponseEntity<?> response;
 
-		UserCreateDto userCreateDto = UserCreateDto.builder()
-			.name(userInfo.getName())
-			.email(userInfo.getEmail())
-			.oauthProvider(userInfo.getProvider())
-			.nickname(nickname)
-			.accessToken(userInfo.getAccessToken())
-			.build();
-		userService.createUser(userCreateDto);
-		request.getSession().invalidate();
-		return ResponseEntity.ok(
-			ApiRespDto.<Void>builder()
-				.statusCode(200)
-				.message("회원가입이 완료되었습니다.")
-				.build()
-		);
+		try {
+			Nickname nickname = new Nickname(userCreateReqDto.nickname());
+			Email email = new Email(userInfo.getEmail());
+			UserCreateDto userCreateDto = UserCreateDto.builder()
+				.name(userInfo.getName())
+				.email(email)
+				.oauthProvider(userInfo.getProvider())
+				.nickname(nickname)
+				.accessToken(userInfo.getAccessToken())
+				.build();
+			var result = userService.createUser(userCreateDto);
+
+			// invalidate UNREGISTERED_USER session
+			request.getSession().invalidate();
+
+			response = ResponseEntity.ok().build();
+		} catch (InvalidTypeException | DuplicatedNicknameException exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		}
+		return response;
 	}
 }

@@ -1,13 +1,16 @@
 package com.talkka.server.user.dto;
 
+import com.talkka.server.user.vo.Email;
+import com.talkka.server.user.vo.Nickname;
+
 import lombok.Builder;
 
 @Builder
 public record UserRespDto(
 	Long userId,
 	String name,
-	String email,
-	String nickname,
+	Email email,
+	Nickname nickname,
 	String oauthProvider
 ) {
 	public static UserRespDto of(UserDto userDto) {
