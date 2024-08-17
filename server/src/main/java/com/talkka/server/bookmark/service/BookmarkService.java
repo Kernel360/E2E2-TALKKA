@@ -27,18 +27,12 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 	private final ContentAccessValidator contentAccessValidator;
 
-	@Transactional
-	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException {
+	public BookmarkRespDto getByBookmarkId(Long userId, Long bookmarkId) throws BookmarkNotFoundException {
+		// 본인이 작성한 북마크만 조회 하도록 변경
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
-		BookmarkEntity bookmark = dto.toEntity(user);
-		dto.details().stream()
-			.map(detail -> detail.toEntity(bookmark))
-			.forEach(bookmark.getDetails()::add);
-		return BookmarkRespDto.of(bookmarkRepository.save(bookmark));
-	}
-
-	public BookmarkRespDto getByBookmarkId(Long id) throws BookmarkNotFoundException {
-		BookmarkEntity bookmark = bookmarkRepository.findById(id).orElseThrow(BookmarkUserNotFoundException::new);
+		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
+			.orElseThrow(BookmarkUserNotFoundException::new);
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), bookmark.getUser().getId());
 		return BookmarkRespDto.of(bookmark);
 	}
 
@@ -49,17 +43,27 @@ public class BookmarkService {
 	}
 
 	@Transactional
-	public BookmarkRespDto updateBookmark(BookmarkReqDto dto, Long bookmarkId, Long userId) throws
+	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException {
+		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
+		BookmarkEntity bookmark = dto.toEntity(user);
+		dto.details().stream()
+			.map(detail -> detail.toEntity(bookmark))
+			.forEach(bookmark.getDetails()::add);
+		return BookmarkRespDto.of(bookmarkRepository.save(bookmark));
+	}
+
+	@Transactional
+	public BookmarkRespDto updateBookmark(BookmarkReqDto dto, Long userId, Long bookmarkId) throws
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException,
 		ContentAccessException {
 
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
-			.orElseThrow(BookmarkUserNotFoundException::new);
+			.orElseThrow(BookmarkNotFoundException::new);
 
 		// 작성자거나 관리자가 아니면 ContentAccessException 발생
-		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getId());
+		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getUser().getId());
 
 		// 기존 북마크 상세를 전부 지우고 전체를 새로 저장함
 		bookmarkDetailRepository.deleteByBookmarkId(bookmarkId);
@@ -69,7 +73,7 @@ public class BookmarkService {
 	}
 
 	@Transactional
-	public Long deleteBookmark(Long bookmarkId, Long userId) throws
+	public Long deleteBookmark(Long userId, Long bookmarkId) throws
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException {
 
