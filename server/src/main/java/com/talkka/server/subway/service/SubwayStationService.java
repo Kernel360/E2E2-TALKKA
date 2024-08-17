@@ -4,11 +4,13 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.talkka.server.common.exception.http.BadRequestException;
 import com.talkka.server.subway.dao.SubwayStationEntity;
 import com.talkka.server.subway.dao.SubwayStationRepository;
-import com.talkka.server.subway.dto.SubwayStationReqDto;
+import com.talkka.server.subway.dto.SubwayStationDto;
 import com.talkka.server.subway.dto.SubwayStationRespDto;
+import com.talkka.server.subway.exception.StationAlreadyExistsException;
+import com.talkka.server.subway.exception.StationNotFoundException;
+import com.talkka.server.subway.exception.enums.InvalidLineEnumException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,24 +20,31 @@ public class SubwayStationService {
 
 	private final SubwayStationRepository stationRepository;
 
-	public SubwayStationRespDto findByStationId(Long stationId) {
+	public SubwayStationRespDto getStation(Long stationId) throws StationNotFoundException {
 		SubwayStationEntity entity = stationRepository.findById(stationId)
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 역입니다."));
+			.orElseThrow(() -> new StationNotFoundException(stationId));
 
 		return SubwayStationRespDto.of(entity);
 	}
 
-	public List<SubwayStationRespDto> findByStationName(String stationName) {
-		return stationRepository.findByStationNameStartingWithOrderByStationNameAsc(stationName).stream()
+	public List<SubwayStationRespDto> getStationListByStationName(String stationName) {
+		return stationRepository.findAllByStationNameStartingWithOrderByStationNameAsc(stationName).stream()
 			.map(SubwayStationRespDto::of)
 			.toList();
 	}
 
-	public SubwayStationRespDto createStation(SubwayStationReqDto reqDto) {
-		if (stationRepository.existsByStationCode(reqDto.stationCode())) {
-			throw new BadRequestException("이미 존재하는 지하철 역입니다");
+	public List<SubwayStationRespDto> getStationList() {
+		return stationRepository.findAllByOrderByStationNameAsc().stream()
+			.map(SubwayStationRespDto::of)
+			.toList();
+	}
+
+	public SubwayStationRespDto createStation(SubwayStationDto stationDto)
+		throws StationAlreadyExistsException, InvalidLineEnumException {
+		if (stationRepository.existsByStationCode(stationDto.stationCode())) {
+			throw new StationAlreadyExistsException(stationDto.stationCode());
 		}
 
-		return SubwayStationRespDto.of(stationRepository.save(SubwayStationReqDto.toEntity(reqDto)));
+		return SubwayStationRespDto.of(stationRepository.save(SubwayStationDto.toEntity(stationDto)));
 	}
 }

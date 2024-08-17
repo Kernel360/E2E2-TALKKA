@@ -1,6 +1,7 @@
 package com.talkka.server.subway.enums;
 
 import com.talkka.server.common.util.EnumCodeInterface;
+import com.talkka.server.subway.exception.enums.InvalidUpdownEnumException;
 
 import lombok.Getter;
 
@@ -14,5 +15,13 @@ public enum Updown implements EnumCodeInterface {
 	Updown(String direction, String code) {
 		this.direction = direction;
 		this.code = code;
+	}
+
+	public static Updown valueOfEnumString(String enumValue) {
+		try {
+			return Updown.valueOf(enumValue);
+		} catch (IllegalArgumentException exception) {
+			throw new InvalidUpdownEnumException();
+		}
 	}
 }
