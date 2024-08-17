@@ -7,7 +7,7 @@ import com.talkka.server.subway.enums.Updown;
 
 public record BookmarkDetailReqDto(
 	Integer seq,
-	TransportType type,
+	String type,
 	Long subwayStationId,
 	Updown subwayUpdown,
 	Long busRouteStationId
@@ -18,7 +18,7 @@ public record BookmarkDetailReqDto(
 		return BookmarkDetailEntity.builder()
 			.seq(seq)
 			.bookmark(bookmark)
-			.type(type)
+			.type(TransportType.valueOf(type))
 			.subwayStationId(subwayStationId)
 			.subwayUpdown(subwayUpdown)
 			.busRouteStationId(busRouteStationId)
