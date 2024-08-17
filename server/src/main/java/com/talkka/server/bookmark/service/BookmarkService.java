@@ -27,6 +27,7 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 	private final ContentAccessValidator contentAccessValidator;
 
+	@Transactional
 	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = dto.toEntity(user);
