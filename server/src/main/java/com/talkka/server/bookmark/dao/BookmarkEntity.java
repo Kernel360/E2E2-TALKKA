@@ -1,4 +1,4 @@
-package com.talkka.server.bookmark.dao.entity;
+package com.talkka.server.bookmark.dao;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -7,7 +7,7 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.talkka.server.bookmark.dao.dto.BookmarkReqDto;
+import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.CascadeType;

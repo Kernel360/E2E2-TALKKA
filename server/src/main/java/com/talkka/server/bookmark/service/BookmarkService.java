@@ -4,11 +4,11 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.talkka.server.bookmark.dao.dto.BookmarkReqDto;
-import com.talkka.server.bookmark.dao.dto.BookmarkRespDto;
-import com.talkka.server.bookmark.dao.entity.BookmarkEntity;
-import com.talkka.server.bookmark.dao.repository.BookmarkDetailRepository;
-import com.talkka.server.bookmark.dao.repository.BookmarkRepository;
+import com.talkka.server.bookmark.dao.BookmarkDetailRepository;
+import com.talkka.server.bookmark.dao.BookmarkEntity;
+import com.talkka.server.bookmark.dao.BookmarkRepository;
+import com.talkka.server.bookmark.dto.BookmarkReqDto;
+import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
 import com.talkka.server.common.validator.ContentAccessValidator;
