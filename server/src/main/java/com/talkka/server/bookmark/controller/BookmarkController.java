@@ -31,8 +31,7 @@ public class BookmarkController {
 	private final BookmarkService bookmarkService;
 
 	// 본인이 작성한 북마크 리스트만 조회
-	// 리스트로 반환되는것을 명확하게 드러내기 위해 /bookmark/list 로 설정
-	@GetMapping("/list")
+	@GetMapping("")
 	public ResponseEntity<?> getBookmarkList(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo) {
 		List<BookmarkRespDto> bookmarks = bookmarkService.getByUserId(oAuth2UserInfo.getUserId());
 		return ResponseEntity.ok(bookmarks);
@@ -66,7 +65,6 @@ public class BookmarkController {
 		return response;
 	}
 
-	@SuppressWarnings("checkstyle:OperatorWrap")
 	@PutMapping("{bookmarkId}")
 	public ResponseEntity<?> updateBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		BookmarkReqDto bookmarkReqDto, @PathVariable Long bookmarkId) {
@@ -75,8 +73,8 @@ public class BookmarkController {
 			BookmarkRespDto bookmark = bookmarkService.updateBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId(),
 				bookmarkId);
 			response = ResponseEntity.ok(bookmark);
-		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException |
-				 InvalidTransportTypeEnumException exception) {
+		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException
+				 | InvalidTransportTypeEnumException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		} catch (ContentAccessException exception) {
 			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
