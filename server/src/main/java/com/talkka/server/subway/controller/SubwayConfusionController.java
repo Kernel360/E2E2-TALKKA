@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/subway/confusion")
 public class SubwayConfusionController {
 
-	private final SubwayConfusionService subwayConfusionService;
+	private final SubwayConfusionService confusionService;
 
 	@GetMapping("/{stationId}")
 	public ResponseEntity<?> getConfusion(
@@ -32,7 +32,7 @@ public class SubwayConfusionController {
 		ResponseEntity<?> response;
 		try {
 			response = ResponseEntity.ok(
-				subwayConfusionService.getConfusion(stationId, dayType, updown, timeSlot));
+				confusionService.getConfusion(stationId, dayType, updown, timeSlot));
 		} catch (StationNotFoundException | InvalidTypeException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		} catch (ConfusionNotFoundException exception) {
@@ -52,7 +52,7 @@ public class SubwayConfusionController {
 		ResponseEntity<?> response;
 		try {
 			response = ResponseEntity.ok(
-				subwayConfusionService.getConfusionList(stationId, dayType, updown, startTimeSlot, endTimeSlot)
+				confusionService.getConfusionList(stationId, dayType, updown, startTimeSlot, endTimeSlot)
 			);
 		} catch (StationNotFoundException | InvalidTypeException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());

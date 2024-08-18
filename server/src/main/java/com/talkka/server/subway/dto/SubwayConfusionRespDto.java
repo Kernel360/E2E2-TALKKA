@@ -11,6 +11,7 @@ import lombok.Builder;
 @Builder
 public record SubwayConfusionRespDto(
 	Long stationId,
+	String stationName,
 	Line line,
 	DayType dayType,
 	Updown updown,
@@ -20,6 +21,7 @@ public record SubwayConfusionRespDto(
 	public static SubwayConfusionRespDto of(SubwayConfusionEntity subwayConfusionEntity) {
 		return new SubwayConfusionRespDto(
 			subwayConfusionEntity.getId(),
+			subwayConfusionEntity.getStationName(),
 			subwayConfusionEntity.getLine(),
 			subwayConfusionEntity.getDayType(),
 			subwayConfusionEntity.getUpdown(),

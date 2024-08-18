@@ -58,7 +58,7 @@ public class SubwayConfusionService {
 			.toList();
 	}
 
-	private void isExisted(Long stationId) throws StationNotFoundException {
+	private void isExisted(Long stationId) {
 		if (!stationRepository.existsById(stationId)) {
 			throw new StationNotFoundException(stationId);
 		}
