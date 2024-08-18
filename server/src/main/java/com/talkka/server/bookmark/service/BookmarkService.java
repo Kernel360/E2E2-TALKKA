@@ -11,6 +11,7 @@ import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
+import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.user.dao.UserEntity;
@@ -27,8 +28,27 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 	private final ContentAccessValidator contentAccessValidator;
 
+	public BookmarkRespDto getBookmarkById(Long userId, Long bookmarkId) throws
+		BookmarkNotFoundException,
+		BookmarkUserNotFoundException,
+		ContentAccessException {
+		// 본인이 작성한 북마크만 조회 하도록 변경
+		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
+		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
+			.orElseThrow(BookmarkUserNotFoundException::new);
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), bookmark.getUser().getId());
+		return BookmarkRespDto.of(bookmark);
+	}
+
+	public List<BookmarkRespDto> getBookmarkByUserId(Long userId) {
+		return bookmarkRepository.findByUserId(userId).stream()
+			.map(BookmarkRespDto::of)
+			.toList();
+	}
+
 	@Transactional
-	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException {
+	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException,
+		InvalidTransportTypeEnumException {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = dto.toEntity(user);
 		dto.details().stream()
@@ -37,29 +57,19 @@ public class BookmarkService {
 		return BookmarkRespDto.of(bookmarkRepository.save(bookmark));
 	}
 
-	public BookmarkRespDto getByBookmarkId(Long id) throws BookmarkNotFoundException {
-		BookmarkEntity bookmark = bookmarkRepository.findById(id).orElseThrow(BookmarkUserNotFoundException::new);
-		return BookmarkRespDto.of(bookmark);
-	}
-
-	public List<BookmarkRespDto> getByUserId(Long userId) {
-		return bookmarkRepository.findByUserId(userId).stream()
-			.map(BookmarkRespDto::of)
-			.toList();
-	}
-
 	@Transactional
-	public BookmarkRespDto updateBookmark(BookmarkReqDto dto, Long bookmarkId, Long userId) throws
+	public BookmarkRespDto updateBookmark(BookmarkReqDto dto, Long userId, Long bookmarkId) throws
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException,
+		InvalidTransportTypeEnumException,
 		ContentAccessException {
 
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
-			.orElseThrow(BookmarkUserNotFoundException::new);
+			.orElseThrow(BookmarkNotFoundException::new);
 
 		// 작성자거나 관리자가 아니면 ContentAccessException 발생
-		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getId());
+		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getUser().getId());
 
 		// 기존 북마크 상세를 전부 지우고 전체를 새로 저장함
 		bookmarkDetailRepository.deleteByBookmarkId(bookmarkId);
@@ -69,7 +79,7 @@ public class BookmarkService {
 	}
 
 	@Transactional
-	public Long deleteBookmark(Long bookmarkId, Long userId) throws
+	public Long deleteBookmark(Long userId, Long bookmarkId) throws
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException {
 
