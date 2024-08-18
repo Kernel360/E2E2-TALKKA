@@ -6,12 +6,9 @@ import lombok.Getter;
 
 @Getter
 public enum TransportType {
-	BUS("bus"), SUBWAY("subway");
+	BUS, SUBWAY;
 
-	private final String type;
-
-	TransportType(String type) {
-		this.type = type;
+	TransportType() {
 	}
 
 	public static TransportType valueOfEnumString(String enumValue) {
