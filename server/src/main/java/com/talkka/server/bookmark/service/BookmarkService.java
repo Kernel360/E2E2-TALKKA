@@ -28,9 +28,10 @@ public class BookmarkService {
 	private final UserRepository userRepository;
 	private final ContentAccessValidator contentAccessValidator;
 
-	public BookmarkRespDto getByBookmarkId(Long userId, Long bookmarkId) throws
+	public BookmarkRespDto getBookmarkById(Long userId, Long bookmarkId) throws
 		BookmarkNotFoundException,
-		BookmarkUserNotFoundException {
+		BookmarkUserNotFoundException,
+		InvalidTransportTypeEnumException {
 		// 본인이 작성한 북마크만 조회 하도록 변경
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
@@ -39,7 +40,7 @@ public class BookmarkService {
 		return BookmarkRespDto.of(bookmark);
 	}
 
-	public List<BookmarkRespDto> getByUserId(Long userId) {
+	public List<BookmarkRespDto> getBookmarkByUserId(Long userId) {
 		return bookmarkRepository.findByUserId(userId).stream()
 			.map(BookmarkRespDto::of)
 			.toList();

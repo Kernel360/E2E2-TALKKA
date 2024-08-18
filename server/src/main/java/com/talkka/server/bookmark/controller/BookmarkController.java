@@ -33,7 +33,7 @@ public class BookmarkController {
 	// 본인이 작성한 북마크 리스트만 조회
 	@GetMapping("")
 	public ResponseEntity<?> getBookmarkList(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo) {
-		List<BookmarkRespDto> bookmarks = bookmarkService.getByUserId(oAuth2UserInfo.getUserId());
+		List<BookmarkRespDto> bookmarks = bookmarkService.getBookmarkByUserId(oAuth2UserInfo.getUserId());
 		return ResponseEntity.ok(bookmarks);
 	}
 
@@ -42,7 +42,7 @@ public class BookmarkController {
 		@PathVariable Long bookmarkId) {
 		ResponseEntity<?> response;
 		try {
-			BookmarkRespDto bookmark = bookmarkService.getByBookmarkId(oAuth2UserInfo.getUserId(), bookmarkId);
+			BookmarkRespDto bookmark = bookmarkService.getBookmarkById(oAuth2UserInfo.getUserId(), bookmarkId);
 			response = ResponseEntity.ok(bookmark);
 		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
