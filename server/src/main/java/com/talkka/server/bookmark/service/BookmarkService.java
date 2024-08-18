@@ -31,7 +31,7 @@ public class BookmarkService {
 	public BookmarkRespDto getBookmarkById(Long userId, Long bookmarkId) throws
 		BookmarkNotFoundException,
 		BookmarkUserNotFoundException,
-		InvalidTransportTypeEnumException {
+		ContentAccessException {
 		// 본인이 작성한 북마크만 조회 하도록 변경
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
