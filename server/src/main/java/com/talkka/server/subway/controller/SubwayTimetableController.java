@@ -35,7 +35,9 @@ public class SubwayTimetableController {
 		try {
 			response = ResponseEntity.ok(
 				timetableService.getTimetable(stationId, dayTypeCode, updownCode, time));
-		} catch (StationNotFoundException | InvalidTypeException | DateTimeParseException exception) {
+		} catch (DateTimeParseException exception) {
+			response = ResponseEntity.badRequest().body("해당 시간 형식은 올바르지 않습니다.");
+		} catch (StationNotFoundException | InvalidTypeException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		} catch (TimetableNotFoundException exception) {
 			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
@@ -56,7 +58,9 @@ public class SubwayTimetableController {
 		try {
 			response = ResponseEntity.ok(
 				timetableService.getTimetableList(stationId, dayTypeCode, updownCode, startTime, endTime));
-		} catch (StationNotFoundException | InvalidTypeException | DateTimeParseException exception) {
+		} catch (DateTimeParseException exception) {
+			response = ResponseEntity.badRequest().body("해당 시간 형식은 올바르지 않습니다.");
+		} catch (StationNotFoundException | InvalidTypeException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		}
 		return response;
