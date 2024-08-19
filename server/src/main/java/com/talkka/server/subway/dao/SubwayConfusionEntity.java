@@ -61,7 +61,7 @@ public class SubwayConfusionEntity {
 	@Convert(converter = UpdownConverter.class)
 	private Updown updown;
 
-	@Column(name = "time_slot", nullable = false, length = 2)
+	@Column(name = "time_slot", nullable = false, length = 20)
 	@Enumerated(EnumType.STRING)
 	private TimeSlot timeSlot;
 

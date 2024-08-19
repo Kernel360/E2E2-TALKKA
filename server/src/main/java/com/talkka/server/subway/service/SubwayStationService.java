@@ -10,7 +10,6 @@ import com.talkka.server.subway.dto.SubwayStationDto;
 import com.talkka.server.subway.dto.SubwayStationRespDto;
 import com.talkka.server.subway.exception.StationAlreadyExistsException;
 import com.talkka.server.subway.exception.StationNotFoundException;
-import com.talkka.server.subway.exception.enums.InvalidLineEnumException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,7 +39,7 @@ public class SubwayStationService {
 	}
 
 	public SubwayStationRespDto createStation(SubwayStationDto stationDto)
-		throws StationAlreadyExistsException, InvalidLineEnumException {
+		throws StationAlreadyExistsException {
 		if (stationRepository.existsByStationCode(stationDto.stationCode())) {
 			throw new StationAlreadyExistsException(stationDto.stationCode());
 		}
