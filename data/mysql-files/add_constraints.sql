@@ -28,3 +28,10 @@ ALTER TABLE talkka_db.bus_review
         FOREIGN KEY (route_id) REFERENCES talkka_db.bus_route (route_id),
     ADD CONSTRAINT FKojkl7pwovnccu0txrbvxk97jd
         FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
+
+-- subway_review 테이블의 외래 키 추가
+ALTER TABLE talkka_db.subway_review
+    ADD CONSTRAINT FKjbnhvh0i4ey6y3bt2ipouhw41
+        FOREIGN KEY (station_id) REFERENCES talkka_db.subway_station (station_id),
+    ADD CONSTRAINT FKt1tn431cfkx0p8qvx8k6hd6i5
+        FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
