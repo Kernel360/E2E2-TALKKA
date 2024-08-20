@@ -32,7 +32,9 @@ public class SubwayTimetableService {
 		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("H:mm:ss");
 		LocalTime parseTime = LocalTime.parse(time, formatter);
 
-		isExisted(stationId);
+		if (!stationRepository.existsById(stationId)) {
+			throw new StationNotFoundException(stationId);
+		}
 
 		SubwayTimetableEntity entity = timetableRepository.findBySubwayStationIdAndDayTypeAndUpdownAndArrivalTime(
 			stationId, DayType.valueOfEnumString(dayTypeCode), Updown.valueOfEnumString(updownCode), parseTime
@@ -48,7 +50,9 @@ public class SubwayTimetableService {
 		LocalTime start = LocalTime.parse(startTime, formatter);
 		LocalTime end = LocalTime.parse(endTime, formatter);
 
-		isExisted(stationId);
+		if (!stationRepository.existsById(stationId)) {
+			throw new StationNotFoundException(stationId);
+		}
 
 		List<SubwayTimetableEntity> entityList = timetableRepository.findBySubwayStationIdAndDayTypeAndUpdownAndArrivalTimeBetween(
 			stationId, DayType.valueOfEnumString(dayTypeCode), Updown.valueOfEnumString(updownCode), start, end
@@ -57,11 +61,5 @@ public class SubwayTimetableService {
 		return entityList.stream()
 			.map(SubwayTimetableRespDto::of)
 			.toList();
-	}
-
-	private void isExisted(Long stationId) {
-		if (!stationRepository.existsById(stationId)) {
-			throw new StationNotFoundException(stationId);
-		}
 	}
 }
