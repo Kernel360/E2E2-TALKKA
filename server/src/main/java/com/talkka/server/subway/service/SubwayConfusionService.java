@@ -28,7 +28,9 @@ public class SubwayConfusionService {
 	public SubwayConfusionRespDto getConfusion(
 		Long stationId, String dayType, String updown, String timeSlot
 	) throws StationNotFoundException, ConfusionNotFoundException, InvalidTypeException {
-		isExisted(stationId);
+		if (!stationRepository.existsById(stationId)) {
+			throw new StationNotFoundException(stationId);
+		}
 
 		SubwayConfusionEntity entity = confusionRepository.findBySubwayStationIdAndDayTypeAndUpdownAndTimeSlot(
 			stationId,
@@ -43,7 +45,9 @@ public class SubwayConfusionService {
 	public List<SubwayConfusionRespDto> getConfusionList(
 		Long stationId, String dayType, String updown, String startTimeSlot, String endTimeSlot
 	) throws StationNotFoundException, InvalidTypeException {
-		isExisted(stationId);
+		if (!stationRepository.existsById(stationId)) {
+			throw new StationNotFoundException(stationId);
+		}
 
 		List<SubwayConfusionEntity> entityList = confusionRepository.findBySubwayStationIdAndDayTypeAndUpdownAndTimeSlotBetween(
 			stationId,
@@ -57,11 +61,4 @@ public class SubwayConfusionService {
 			.map(SubwayConfusionRespDto::of)
 			.toList();
 	}
-
-	private void isExisted(Long stationId) {
-		if (!stationRepository.existsById(stationId)) {
-			throw new StationNotFoundException(stationId);
-		}
-	}
-
 }
