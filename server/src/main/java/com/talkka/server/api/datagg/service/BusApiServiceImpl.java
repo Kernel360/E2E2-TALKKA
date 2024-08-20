@@ -10,6 +10,7 @@ import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.talkka.server.api.core.exception.ApiClientException;
 import com.talkka.server.api.datagg.config.BusApiKeyProperty;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.api.datagg.dto.BusLocationRespDto;
@@ -30,43 +31,59 @@ public class BusApiServiceImpl implements BusApiService {
 	private static final String host = "apis.data.go.kr";
 
 	@Override
-	public List<BusRouteSearchBodyDto> getSearchedRouteInfo(String keyword) {
+	public List<BusRouteSearchBodyDto> getSearchedRouteInfo(String keyword) throws ApiClientException {
 		final String path = "/6410000/busrouteservice/getBusRouteList";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("keyword", keyword);
-		URI uri = this.getOpenApiURI(path, params);
-		ResponseEntity<BusRouteSearchRespDto> resp = restTemplate.getForEntity(uri, BusRouteSearchRespDto.class);
-		return resp.getBody().msgBody();
+		try {
+			URI uri = this.getOpenApiUri(path, params);
+			ResponseEntity<BusRouteSearchRespDto> resp = restTemplate.getForEntity(uri, BusRouteSearchRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (Exception exception) {
+			throw new ApiClientException(exception.getMessage());
+		}
 	}
 
 	@Override
-	public List<BusRouteInfoBodyDto> getRouteInfo(String apiRouteId) {
+	public List<BusRouteInfoBodyDto> getRouteInfo(String apiRouteId) throws ApiClientException {
 		final String path = "/6410000/busrouteservice/getBusRouteInfoItem";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
-		URI uri = this.getOpenApiURI(path, params);
-		ResponseEntity<BusRouteInfoRespDto> resp = restTemplate.getForEntity(uri, BusRouteInfoRespDto.class);
-		return resp.getBody().msgBody();
+		try {
+			URI uri = this.getOpenApiUri(path, params);
+			ResponseEntity<BusRouteInfoRespDto> resp = restTemplate.getForEntity(uri, BusRouteInfoRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (Exception exception) {
+			throw new ApiClientException(exception.getMessage());
+		}
 	}
 
 	@Override
-	public List<BusRouteStationBodyDto> getRouteStationInfo(String apiRouteId) {
+	public List<BusRouteStationBodyDto> getRouteStationInfo(String apiRouteId) throws ApiClientException {
 		final String path = "/6410000/busrouteservice/getBusRouteStationList";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
-		URI uri = this.getOpenApiURI(path, params);
-		ResponseEntity<BusRouteStationRespDto> resp = restTemplate.getForEntity(uri, BusRouteStationRespDto.class);
-		return resp.getBody().msgBody();
+		try {
+			URI uri = this.getOpenApiUri(path, params);
+			ResponseEntity<BusRouteStationRespDto> resp = restTemplate.getForEntity(uri, BusRouteStationRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (Exception exception) {
+			throw new ApiClientException(exception.getMessage());
+		}
 	}
 
 	@Override
-	public List<BusLocationBodyDto> getBusLocationInfo(String apiRouteId) {
+	public List<BusLocationBodyDto> getBusLocationInfo(String apiRouteId) throws ApiClientException {
 		final String path = "/6410000/buslocationservice/getBusLocationList";
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
-		URI uri = this.getOpenApiURI(path, params);
-		ResponseEntity<BusLocationRespDto> resp = restTemplate.getForEntity(uri, BusLocationRespDto.class);
-		return resp.getBody().msgBody();
+		try {
+			URI uri = this.getOpenApiUri(path, params);
+			ResponseEntity<BusLocationRespDto> resp = restTemplate.getForEntity(uri, BusLocationRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (Exception exception) {
+			throw new ApiClientException(exception.getMessage());
+		}
 	}
 
 	// @Override
@@ -74,7 +91,7 @@ public class BusApiServiceImpl implements BusApiService {
 	// 	return null;
 	// }
 
-	private URI getOpenApiURI(String path, MultiValueMap<String, String> params) {
+	private URI getOpenApiUri(String path, MultiValueMap<String, String> params) {
 		final var builder = new DefaultUriBuilderFactory();
 		builder.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.NONE);
 		return builder.builder()
