@@ -103,6 +103,21 @@ create table bus_review
     time_slot            varchar(20)  not null
 );
 
+drop table if exists subway_review;
+create table subway_review
+(
+    subway_review_id     bigint auto_increment primary key,
+    user_id              bigint       null,
+    station_id           bigint       null,
+    line_code            VARCHAR(4)   not null,
+    updown               VARCHAR(1)   not null,
+    content              varchar(400) null,
+    time_slot            varchar(20)  not null,
+    rating               int          not null,
+    created_at           datetime(6)  not null,
+    updated_at           datetime(6)  not null
+);
+
 drop table if exists subway_confusion;
 CREATE TABLE subway_confusion
 (
@@ -335,4 +350,11 @@ ALTER TABLE talkka_db.bus_review
     ADD CONSTRAINT FKmh0qi58cvoq8ivcrmstjoauw5
         FOREIGN KEY (route_id) REFERENCES talkka_db.bus_route (route_id),
     ADD CONSTRAINT FKojkl7pwovnccu0txrbvxk97jd
+        FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
+
+-- subway_review 테이블의 외래 키 추가
+ALTER TABLE talkka_db.subway_review
+    ADD CONSTRAINT FKjbnhvh0i4ey6y3bt2ipouhw41
+        FOREIGN KEY (station_id) REFERENCES talkka_db.subway_station (station_id),
+    ADD CONSTRAINT FKt1tn431cfkx0p8qvx8k6hd6i5
         FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
