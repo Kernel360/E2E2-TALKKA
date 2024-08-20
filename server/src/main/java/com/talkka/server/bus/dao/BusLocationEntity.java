@@ -2,7 +2,6 @@ package com.talkka.server.bus.dao;
 
 import java.time.LocalDateTime;
 
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bus.enums.EndBus;
@@ -19,8 +18,6 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,12 +35,11 @@ public class BusLocationEntity {
 	@Column(name = "bus_location_id", nullable = false)
 	private Long busLocationId;
 
-	@ManyToOne
-	@JoinColumn(name = "route_id")
-	private BusRouteEntity route;
+	@Column(name = "api_route_id")
+	private Long apiRouteId;
 
-	@Column(name = "station_id", nullable = false)
-	private Long stationId;
+	@Column(name = "api_station_id")
+	private Long apiStationId;
 
 	@Column(name = "station_seq", nullable = false)
 	private Short stationSeq;
@@ -66,8 +62,10 @@ public class BusLocationEntity {
 	@Column(name = "remain_seat_count", nullable = false)
 	private Short remainSeatCount;
 
+	@Column(name = "api_call_no", nullable = false)
+	private Integer apiCallNo;
+
 	@Column(name = "created_at", nullable = false)
-	@CreatedDate
 	private LocalDateTime createdAt;
 
 	@Override

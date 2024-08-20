@@ -44,8 +44,9 @@ create table bus_location
     remain_seat_count smallint    not null,
     station_seq       smallint    not null,
     created_at        datetime(6) not null,
-    route_id          bigint      null,
-    station_id        bigint      not null,
+    api_route_id      bigint      null,
+    api_station_id    bigint      not null,
+    api_call_no       int         not null,
     plate_no          varchar(32) not null
 );
 
@@ -100,7 +101,22 @@ create table bus_review
     updated_at           datetime(6)  not null,
     user_id              bigint       null,
     content              varchar(400) null,
-    time_slot            varchar(3)   not null
+    time_slot            varchar(20)  not null
+);
+
+drop table if exists subway_review;
+create table subway_review
+(
+    subway_review_id bigint auto_increment primary key,
+    user_id          bigint       null,
+    station_id       bigint       null,
+    line_code        VARCHAR(4)   not null,
+    updown           VARCHAR(1)   not null,
+    content          varchar(400) null,
+    time_slot        varchar(20)  not null,
+    rating           int          not null,
+    created_at       datetime(6)  not null,
+    updated_at       datetime(6)  not null
 );
 
 drop table if exists subway_confusion;
@@ -113,7 +129,7 @@ CREATE TABLE subway_confusion
     line_code           VARCHAR(4)            NOT NULL,
     day_type            VARCHAR(3)            NOT NULL,
     updown              VARCHAR(1)            NOT NULL,
-    time_slot           VARCHAR(2)            NOT NULL,
+    time_slot           VARCHAR(20)           NOT NULL,
     confusion           DOUBLE                NULL
 );
 
@@ -142,6 +158,30 @@ CREATE TABLE subway_timetable
     depart_time         time                  NOT NULL,
     start_station_name  VARCHAR(50)           NOT NULL,
     end_station_name    VARCHAR(50)           NOT NULL
+);
+
+DROP TABLE IF EXISTS bookmark;
+CREATE TABLE bookmark
+(
+    bookmark_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name        VARCHAR(255)          NOT NULL,
+    user_id     BIGINT                NULL,
+    created_at  datetime              NOT NULL,
+    updated_at  datetime              NOT NULL
+);
+
+
+DROP TABLE IF EXISTS bookmark_detail;
+CREATE TABLE bookmark_detail
+(
+    bookmark_detail_id   BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    seq                  INT                   NOT NULL,
+    type                 VARCHAR(10)           NOT NULL,
+    bookmark_id          BIGINT                NULL,
+    subway_station_id    BIGINT                NULL,
+    subway_updown        VARCHAR(255)          NULL,
+    bus_route_station_id BIGINT                NULL,
+    created_at           datetime              NOT NULL
 );
 
 
@@ -306,11 +346,6 @@ DROP TABLE temp_bus_route_station;
 
 -- BULK INSERT 이후 DB 의 FK CONSTRAINT 를 잡아줌
 # SOURCE /var/lib/mysql-files/add_constraints.sql;
--- bus_location 테이블의 외래 키 추가
-ALTER TABLE talkka_db.bus_location
-    ADD CONSTRAINT FKohe5hrtdo44wqkqfc96kpb30m
-        FOREIGN KEY (route_id) REFERENCES talkka_db.bus_route (route_id);
-
 -- bus_route_station 테이블의 외래 키 추가
 ALTER TABLE talkka_db.bus_route_station
     ADD CONSTRAINT FKf66j4cjj3igamxvlxvbvm3shp
@@ -336,3 +371,18 @@ ALTER TABLE talkka_db.bus_review
         FOREIGN KEY (route_id) REFERENCES talkka_db.bus_route (route_id),
     ADD CONSTRAINT FKojkl7pwovnccu0txrbvxk97jd
         FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
+
+-- subway_review 테이블의 외래 키 추가
+ALTER TABLE talkka_db.subway_review
+    ADD CONSTRAINT FKjbnhvh0i4ey6y3bt2ipouhw41
+        FOREIGN KEY (station_id) REFERENCES talkka_db.subway_station (station_id),
+    ADD CONSTRAINT FKt1tn431cfkx0p8qvx8k6hd6i5
+        FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
+
+-- bookmark 테이블의 외래 키 추가
+ALTER TABLE bookmark
+    ADD CONSTRAINT FK_BOOKMARK_ON_USER FOREIGN KEY (user_id) REFERENCES users (user_id);
+
+-- bookmark_detail 테이블의 외래 키 추가
+ALTER TABLE bookmark_detail
+    ADD CONSTRAINT FK_BOOKMARK_DETAIL_ON_BOOKMARK FOREIGN KEY (bookmark_id) REFERENCES bookmark (bookmark_id);

@@ -1,8 +1,3 @@
--- bus_location 테이블의 외래 키 추가
-ALTER TABLE talkka_db.bus_location
-    ADD CONSTRAINT FKohe5hrtdo44wqkqfc96kpb30m
-        FOREIGN KEY (route_id) REFERENCES talkka_db.bus_route (route_id);
-
 -- bus_route_station 테이블의 외래 키 추가
 ALTER TABLE talkka_db.bus_route_station
     ADD CONSTRAINT FKf66j4cjj3igamxvlxvbvm3shp
@@ -35,3 +30,10 @@ ALTER TABLE talkka_db.subway_review
         FOREIGN KEY (station_id) REFERENCES talkka_db.subway_station (station_id),
     ADD CONSTRAINT FKt1tn431cfkx0p8qvx8k6hd6i5
         FOREIGN KEY (user_id) REFERENCES talkka_db.users (user_id);
+
+-- bookmark 테이블의 외래 키 추가
+ALTER TABLE bookmark
+    ADD CONSTRAINT FK_BOOKMARK_ON_USER FOREIGN KEY (user_id) REFERENCES users (user_id);
+
+ALTER TABLE bookmark_detail
+    ADD CONSTRAINT FK_BOOKMARK_DETAIL_ON_BOOKMARK FOREIGN KEY (bookmark_id) REFERENCES bookmark (bookmark_id);
