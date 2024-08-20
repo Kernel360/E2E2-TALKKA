@@ -37,8 +37,8 @@ create table bus_location
     remain_seat_count smallint    not null,
     station_seq       smallint    not null,
     created_at        datetime(6) not null,
-    api_route_id      bigint      null,
-    api_station_id    bigint      not null,
+    api_route_id      varchar(20) not null,
+    api_station_id    varchar(20) not null,
     api_call_no       int         not null,
     plate_no          varchar(32) not null
 );

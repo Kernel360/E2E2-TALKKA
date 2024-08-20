@@ -35,11 +35,11 @@ public class BusLocationEntity {
 	@Column(name = "bus_location_id", nullable = false)
 	private Long busLocationId;
 
-	@Column(name = "api_route_id")
-	private Long apiRouteId;
+	@Column(name = "api_route_id", nullable = false, length = 20)
+	private String apiRouteId;
 
-	@Column(name = "api_station_id")
-	private Long apiStationId;
+	@Column(name = "api_station_id", nullable = false, length = 20)
+	private String apiStationId;
 
 	@Column(name = "station_seq", nullable = false)
 	private Short stationSeq;

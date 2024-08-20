@@ -11,7 +11,7 @@ import com.talkka.server.common.util.EnumCodeConverterUtils;
 
 @JacksonXmlRootElement(localName = "busLocationList")
 public record BusLocationBodyDto(String endBus, String lowPlate, String plateNo, String plateType,
-								 Integer remainSeatCnt, Long routeId, Long stationId, Integer stationSeq) {
+								 Integer remainSeatCnt, String routeId, String stationId, Integer stationSeq) {
 
 	public BusLocationEntity toEntity(int apiCallNo, LocalDateTime createdAt) {
 		EndBus endBusEnum = EnumCodeConverterUtils.fromCode(EndBus.class, endBus);
