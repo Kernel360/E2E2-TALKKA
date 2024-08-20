@@ -96,6 +96,21 @@ create table bus_review
     time_slot            varchar(20)  not null
 );
 
+drop table if exists subway_review;
+create table subway_review
+(
+    subway_review_id     bigint auto_increment primary key,
+    user_id              bigint       null,
+    station_id           bigint       null,
+    line_code            VARCHAR(4)   not null,
+    updown               VARCHAR(1)   not null,
+    content              varchar(400) null,
+    time_slot            varchar(20)  not null,
+    rating               int          not null,
+    created_at           datetime(6)  not null,
+    updated_at           datetime(6)  not null
+);
+
 drop table if exists subway_confusion;
 CREATE TABLE subway_confusion
 (
