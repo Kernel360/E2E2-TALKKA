@@ -8,8 +8,8 @@ import lombok.Builder;
 
 @Builder
 public record BusRouteStationCreateDto(
-	String apiRouteId,
-	String apiStationId,
+	Long routeId,
+	Long stationId,
 	Short stationSeq,
 	String stationName
 ) {

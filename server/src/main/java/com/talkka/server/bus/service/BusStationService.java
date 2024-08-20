@@ -8,7 +8,8 @@ import com.talkka.server.bus.dao.BusStationEntity;
 import com.talkka.server.bus.dao.BusStationRepository;
 import com.talkka.server.bus.dto.BusStationCreateDto;
 import com.talkka.server.bus.dto.BusStationRespDto;
-import com.talkka.server.common.exception.http.BadRequestException;
+import com.talkka.server.bus.exception.BusStationAlreadyExistsException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class BusStationService {
 	private final BusStationRepository busStationRepository;
 
-	public BusStationRespDto getStationById(Long stationId) {
+	public BusStationRespDto getStationById(Long stationId) throws BusStationNotFoundException {
 		BusStationEntity busStationEntity = busStationRepository.findById(stationId)
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 정거장입니다."));
+			.orElseThrow(() -> new BusStationNotFoundException(stationId));
 		return BusStationRespDto.of(busStationEntity);
 	}
 
@@ -35,10 +36,14 @@ public class BusStationService {
 			.toList();
 	}
 
-	public BusStationRespDto createStation(BusStationCreateDto busStationCreateDto) {
-		if (busStationRepository.existsByApiStationId(busStationCreateDto.apiStationId())) {
-			throw new BadRequestException("이미 등록된 정거장입니다.");
+	// TODO 아직 controller 없음
+	public BusStationRespDto createStation(BusStationCreateDto busStationCreateDto)
+		throws BusStationAlreadyExistsException {
+		String apiStationId = busStationCreateDto.apiStationId();
+		if (busStationRepository.existsByApiStationId(apiStationId)) {
+			throw new BusStationAlreadyExistsException(apiStationId);
 		}
+
 		return BusStationRespDto.of(busStationRepository.save(busStationCreateDto.toEntity()));
 	}
 }

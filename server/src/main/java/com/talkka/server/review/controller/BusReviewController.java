@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
@@ -22,8 +24,6 @@ import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewReqDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.exception.BusReviewNotFoundException;
-import com.talkka.server.review.exception.BusRouteNotFoundException;
-import com.talkka.server.review.exception.BusStationNotFoundException;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.review.exception.UserNotFoundException;
 import com.talkka.server.review.service.BusReviewService;

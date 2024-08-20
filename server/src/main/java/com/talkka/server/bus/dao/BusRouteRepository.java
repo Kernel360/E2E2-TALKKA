@@ -8,11 +8,9 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BusRouteRepository extends JpaRepository<BusRouteEntity, Long> {
-
 	boolean existsByApiRouteId(String apiRouteId);
 
 	Optional<BusRouteEntity> findByApiRouteId(String apiRouteId);
 
 	List<BusRouteEntity> findAllByRouteNameStartingWithOrderByRouteNameAsc(String routeName);
-
 }

@@ -9,6 +9,7 @@ import lombok.Builder;
 @Builder
 public record BusRouteRespDto(
 	Long routeId,
+	String apiRouteId,
 	String routeName,       // 노선 번호
 	BusRouteType routeTypeCd,        // 노선 유형 코드
 	String routeTypeName,   // 노선 유형명
@@ -31,6 +32,7 @@ public record BusRouteRespDto(
 	public static BusRouteRespDto of(BusRouteEntity busRouteEntity) {
 		return new BusRouteRespDto(
 			busRouteEntity.getId(),
+			busRouteEntity.getApiRouteId(),
 			busRouteEntity.getRouteName(),
 			busRouteEntity.getRouteTypeCd(),
 			busRouteEntity.getRouteTypeName(),

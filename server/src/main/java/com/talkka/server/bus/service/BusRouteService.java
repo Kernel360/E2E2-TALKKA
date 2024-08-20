@@ -8,7 +8,8 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dto.BusRouteCreateDto;
 import com.talkka.server.bus.dto.BusRouteRespDto;
-import com.talkka.server.common.exception.http.BadRequestException;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.RouteAlreadyExistsException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +18,9 @@ import lombok.RequiredArgsConstructor;
 public class BusRouteService {
 	private final BusRouteRepository busRouteRepository;
 
-	public BusRouteRespDto getRouteById(Long routeId) {
+	public BusRouteRespDto getRouteById(Long routeId) throws BusRouteNotFoundException {
 		BusRouteEntity busRouteEntity = busRouteRepository.findById(routeId)
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선입니다."));
+			.orElseThrow(() -> new BusRouteNotFoundException(routeId));
 		return BusRouteRespDto.of(busRouteEntity);
 	}
 
@@ -35,10 +36,14 @@ public class BusRouteService {
 			.toList();
 	}
 
-	public BusRouteRespDto createRoute(BusRouteCreateDto busRouteCreateDto) {
-		if (!busRouteRepository.existsByApiRouteId(busRouteCreateDto.apiRouteId())) {
-			throw new BadRequestException("이미 등록된 버스 노선입니다.");
+	// TODO 아직 컨트롤러 없음, 관리자만 가능한 로직 필요
+	public BusRouteRespDto createRoute(BusRouteCreateDto busRouteCreateDto)
+		throws RouteAlreadyExistsException {
+		String apiRouteId = busRouteCreateDto.apiRouteId();
+		if (!busRouteRepository.existsByApiRouteId(apiRouteId)) {
+			throw new RouteAlreadyExistsException(apiRouteId);
 		}
+
 		return BusRouteRespDto.of(busRouteRepository.save(busRouteCreateDto.toEntity()));
 	}
 
