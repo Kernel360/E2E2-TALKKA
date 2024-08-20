@@ -37,8 +37,9 @@ create table bus_location
     remain_seat_count smallint    not null,
     station_seq       smallint    not null,
     created_at        datetime(6) not null,
-    route_id          bigint      null,
-    station_id        bigint      not null,
+    api_route_id      varchar(20) not null,
+    api_station_id    varchar(20) not null,
+    api_call_no       int         not null,
     plate_no          varchar(32) not null
 );
 
@@ -99,16 +100,16 @@ create table bus_review
 drop table if exists subway_review;
 create table subway_review
 (
-    subway_review_id     bigint auto_increment primary key,
-    user_id              bigint       null,
-    station_id           bigint       null,
-    line_code            VARCHAR(4)   not null,
-    updown               VARCHAR(1)   not null,
-    content              varchar(400) null,
-    time_slot            varchar(20)  not null,
-    rating               int          not null,
-    created_at           datetime(6)  not null,
-    updated_at           datetime(6)  not null
+    subway_review_id bigint auto_increment primary key,
+    user_id          bigint       null,
+    station_id       bigint       null,
+    line_code        VARCHAR(4)   not null,
+    updown           VARCHAR(1)   not null,
+    content          varchar(400) null,
+    time_slot        varchar(20)  not null,
+    rating           int          not null,
+    created_at       datetime(6)  not null,
+    updated_at       datetime(6)  not null
 );
 
 drop table if exists subway_confusion;
@@ -152,32 +153,25 @@ CREATE TABLE subway_timetable
     end_station_name    VARCHAR(50)           NOT NULL
 );
 
-
--- BULK INSERT (STATIC DATA)
-# SOURCE /var/lib/mysql-files/bulk_insert_routes.sql;
--- 1. 임시 테이블 생성
-DROP TABLE IF EXISTS temp_bus_route;
-CREATE TABLE temp_bus_route
+DROP TABLE IF EXISTS bookmark;
+CREATE TABLE bookmark
 (
-    route_id           BIGINT,
-    route_name         VARCHAR(100),
-    route_type_cd      VARCHAR(10),
-    route_type_name    VARCHAR(100),
-    start_station_id   BIGINT,
-    start_station_name VARCHAR(100),
-    start_mobile_no    VARCHAR(50),
-    end_station_id     BIGINT,
-    end_station_name   VARCHAR(100),
-    end_mobile_no      VARCHAR(50),
-    region_name        VARCHAR(100),
-    district_cd        VARCHAR(10),
-    up_first_time      VARCHAR(20),
-    up_last_time       VARCHAR(20),
-    down_first_time    VARCHAR(20),
-    down_last_time     VARCHAR(20),
-    peek_alloc         INT,
-    n_peek_alloc       INT,
-    company_id         BIGINT,
-    company_name       VARCHAR(100),
-    company_tel        VARCHAR(50)
+    bookmark_id BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    name        VARCHAR(255)          NOT NULL,
+    user_id     BIGINT                NULL,
+    created_at  datetime              NOT NULL,
+    updated_at  datetime              NOT NULL
+);
+
+DROP TABLE IF EXISTS bookmark_detail;
+CREATE TABLE bookmark_detail
+(
+    bookmark_detail_id   BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
+    seq                  INT                   NOT NULL,
+    type                 VARCHAR(10)           NOT NULL,
+    bookmark_id          BIGINT                NULL,
+    subway_station_id    BIGINT                NULL,
+    subway_updown        VARCHAR(255)          NULL,
+    bus_route_station_id BIGINT                NULL,
+    created_at           datetime              NOT NULL
 );

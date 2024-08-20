@@ -3,6 +3,8 @@ package com.talkka.server.api.datagg.service;
 import java.net.URI;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
@@ -25,7 +27,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BusApiServiceImpl implements BusApiService {
+public class SimpleBusApiService implements BusApiService {
+	private static final Logger log = LoggerFactory.getLogger(SimpleBusApiService.class);
 	private final BusApiKeyProperty busApiKeyProperty;
 	private final RestTemplate restTemplate = new RestTemplate();
 	private static final String host = "apis.data.go.kr";
@@ -38,7 +41,11 @@ public class BusApiServiceImpl implements BusApiService {
 		try {
 			URI uri = this.getOpenApiUri(path, params);
 			ResponseEntity<BusRouteSearchRespDto> resp = restTemplate.getForEntity(uri, BusRouteSearchRespDto.class);
-			return resp.getBody().msgBody();
+			var body = resp.getBody().msgBody();
+			if (body == null) {
+				throw new ApiClientException("결과가 없습니다.");
+			}
+			return body;
 		} catch (Exception exception) {
 			throw new ApiClientException(exception.getMessage());
 		}
@@ -52,7 +59,11 @@ public class BusApiServiceImpl implements BusApiService {
 		try {
 			URI uri = this.getOpenApiUri(path, params);
 			ResponseEntity<BusRouteInfoRespDto> resp = restTemplate.getForEntity(uri, BusRouteInfoRespDto.class);
-			return resp.getBody().msgBody();
+			var body = resp.getBody().msgBody();
+			if (body == null) {
+				throw new ApiClientException("결과가 없습니다.");
+			}
+			return body;
 		} catch (Exception exception) {
 			throw new ApiClientException(exception.getMessage());
 		}
@@ -66,7 +77,11 @@ public class BusApiServiceImpl implements BusApiService {
 		try {
 			URI uri = this.getOpenApiUri(path, params);
 			ResponseEntity<BusRouteStationRespDto> resp = restTemplate.getForEntity(uri, BusRouteStationRespDto.class);
-			return resp.getBody().msgBody();
+			var body = resp.getBody().msgBody();
+			if (body == null) {
+				throw new ApiClientException("결과가 없습니다.");
+			}
+			return body;
 		} catch (Exception exception) {
 			throw new ApiClientException(exception.getMessage());
 		}
@@ -80,7 +95,11 @@ public class BusApiServiceImpl implements BusApiService {
 		try {
 			URI uri = this.getOpenApiUri(path, params);
 			ResponseEntity<BusLocationRespDto> resp = restTemplate.getForEntity(uri, BusLocationRespDto.class);
-			return resp.getBody().msgBody();
+			var body = resp.getBody().msgBody();
+			if (body == null) {
+				throw new ApiClientException("결과가 없습니다.");
+			}
+			return body;
 		} catch (Exception exception) {
 			throw new ApiClientException(exception.getMessage());
 		}
