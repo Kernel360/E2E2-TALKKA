@@ -19,6 +19,8 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
 import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
@@ -27,8 +29,6 @@ import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.exception.BusReviewNotFoundException;
-import com.talkka.server.review.exception.BusRouteNotFoundException;
-import com.talkka.server.review.exception.BusStationNotFoundException;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.review.exception.UserNotFoundException;
 import com.talkka.server.review.vo.Rating;
@@ -217,7 +217,7 @@ public class BusReviewServiceTest {
 		}
 
 		@Test
-		@DisplayName("리뷰 생성시, BusRouteStationEntity가 없을 경우 BusStationNotFoundException을 발생시킨다.")
+		@DisplayName("리뷰 생성시, BusRouteStationEntity가 없을 경우 BusRouteStationNotFoundException을 발생시킨다.")
 		void testBusStationNotFoundException() {
 			// given
 			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
@@ -225,7 +225,7 @@ public class BusReviewServiceTest {
 			// when
 			// then
 			assertThatThrownBy(() -> busReviewService.createBusReview(busReviewDto))
-				.isInstanceOf(BusStationNotFoundException.class);
+				.isInstanceOf(BusRouteStationNotFoundException.class);
 		}
 
 		@Test

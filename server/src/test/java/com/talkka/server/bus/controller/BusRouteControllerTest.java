@@ -15,10 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
-import com.talkka.server.bus.dto.BusRouteRespDto;
 import com.talkka.server.bus.service.BusRouteService;
-import com.talkka.server.common.dto.ApiRespDto;
-import com.talkka.server.common.enums.StatusCode;
 
 @ExtendWith(MockitoExtension.class)
 public class BusRouteControllerTest {
@@ -36,13 +33,7 @@ public class BusRouteControllerTest {
 		void routeId를_받아_해당_아이디의_노선을_조회한다() {
 			// given
 			Long id = 1L;
-			var expected = ResponseEntity.ok(
-				ApiRespDto.<BusRouteRespDto>builder()
-					.statusCode(StatusCode.OK.getCode())
-					.message(StatusCode.OK.getMessage())
-					.data(getBusRouteRespDto(id))
-					.build()
-			);
+			var expected = ResponseEntity.ok(getBusRouteRespDto(id));
 			given(routeService.getRouteById(anyLong())).willReturn(getBusRouteRespDto(id));
 			// when
 			var result = routeController.getRouteById(id);
@@ -62,17 +53,11 @@ public class BusRouteControllerTest {
 			Long id2 = 2L;
 			Long id3 = 3L;
 			var expected = ResponseEntity.ok(
-				ApiRespDto.<List<BusRouteRespDto>>builder()
-					.statusCode(StatusCode.OK.getCode())
-					.message(StatusCode.OK.getMessage())
-					.data(
-						List.of(
-							getBusRouteRespDto(id1),
-							getBusRouteRespDto(id2),
-							getBusRouteRespDto(id3)
-						)
-					)
-					.build()
+				List.of(
+					getBusRouteRespDto(id1),
+					getBusRouteRespDto(id2),
+					getBusRouteRespDto(id3)
+				)
 			);
 			given(routeService.getRoutesByRouteName(anyString())).willReturn(
 				List.of(

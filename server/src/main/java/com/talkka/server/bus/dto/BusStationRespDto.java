@@ -13,6 +13,7 @@ import lombok.Builder;
 @Builder
 public record BusStationRespDto(
 	Long stationId,
+	String apiStationId,
 	String stationName,
 	String regionName,
 	DistrictCode districtCd,
@@ -25,6 +26,7 @@ public record BusStationRespDto(
 	public static BusStationRespDto of(BusStationEntity busStationEntity) {
 		return new BusStationRespDto(
 			busStationEntity.getId(),
+			busStationEntity.getApiStationId(),
 			busStationEntity.getStationName(),
 			busStationEntity.getRegionName(),
 			busStationEntity.getDistrictCd(),

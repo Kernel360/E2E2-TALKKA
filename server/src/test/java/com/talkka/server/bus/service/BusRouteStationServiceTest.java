@@ -20,7 +20,9 @@ import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.bus.dao.BusStationRepository;
-import com.talkka.server.common.exception.http.BadRequestException;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 public class BusRouteStationServiceTest {
@@ -35,20 +37,27 @@ public class BusRouteStationServiceTest {
 	@Mock
 	private BusRouteStationRepository routeStationRepository;
 
+	private final Long routeId = 1L;
+	private final Long stationId = 1L;
+	private final Long busRouteStationId = 1L;
+
 	@Nested
 	@DisplayName("createStation method")
 	public class CreateStationTest {
+
 		@Test
 		void BusRouteStationReqDto를_요청으로_받아_BusRouteStationRepository에_저장한다() {
 			/// given
-			Long id = 1L;
-			var createDto = getBusRouteStationCreateDto(id);
-			var expected = getBusRouteStationRespDto(id, getBusRouteRespDto(id), getBusStationRespDto(id));
-			given(routeRepository.findByApiRouteId(any(String.class))).willReturn(Optional.of(getBusRouteEntity(id)));
-			given(stationRepository.findByApiStationId(any(String.class))).willReturn(
-				Optional.of(getBusStationEntity(id)));
+			var createDto = getBusRouteStationCreateDto(routeId, stationId);
+			var expected = getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+				getBusStationRespDto(stationId));
+			given(routeRepository.findById(anyLong())).willReturn(
+				Optional.of(getBusRouteEntity(routeId)));
+			given(stationRepository.findById(anyLong())).willReturn(
+				Optional.of(getBusStationEntity(stationId)));
 			given(routeStationRepository.save(any(BusRouteStationEntity.class))).willReturn(
-				getBusRouteStationEntity(id, getBusRouteEntity(id), getBusStationEntity(id)));
+				getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId)));
 			// when
 			var result = routeStationService.createRouteStation(createDto);
 			// then
@@ -58,24 +67,28 @@ public class BusRouteStationServiceTest {
 		@Test
 		void 존재하지_않는_Route면_Exception을_발생시킨다() {
 			// given
-			var createDto = getBusRouteStationCreateDto(1L);
-			given(routeRepository.findByApiRouteId(any())).willReturn(Optional.empty());
+			Long wrongRouteId = 2L;
+			var createDto = getBusRouteStationCreateDto(wrongRouteId, stationId);
+			given(routeRepository.findById(any())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto)).isInstanceOf(
-				BadRequestException.class).hasMessage("존재하지 않는 노선입니다.");
+			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto))
+				.isInstanceOf(BusRouteNotFoundException.class)
+				.hasMessage("존재하지 않는 노선입니다. routeId: " + wrongRouteId);
 		}
 
 		@Test
 		void 존재하지_않는_Station이면_Exception을_발생시킨다() {
 			// given
-			var createDto = getBusRouteStationCreateDto(1L);
-			given(routeRepository.findByApiRouteId(any())).willReturn(Optional.of(getBusRouteEntity(1L)));
-			given(stationRepository.findByApiStationId(any())).willReturn(Optional.empty());
+			Long wrongStationId = 2L;
+			var createDto = getBusRouteStationCreateDto(routeId, wrongStationId);
+			given(routeRepository.findById(any())).willReturn(Optional.of(getBusRouteEntity(routeId)));
+			given(stationRepository.findById(any())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto)).isInstanceOf(
-				BadRequestException.class).hasMessage("존재하지 않는 정류장입니다.");
+			assertThatThrownBy(() -> routeStationService.createRouteStation(createDto))
+				.isInstanceOf(BusStationNotFoundException.class)
+				.hasMessage("존재하지 않는 정거장입니다. stationId: " + wrongStationId);
 		}
 	}
 
@@ -85,11 +98,11 @@ public class BusRouteStationServiceTest {
 		@Test
 		void RouteId와_StationId를_받아_해당_아이디의_노선정류장을_조회한다() {
 			// given
-			Long routeId = 1L;
-			Long stationId = 1L;
-			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			var expected = List.of(getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+				getBusStationRespDto(stationId)));
 			given(routeStationRepository.findAllByRouteIdAndStationId(anyLong(), anyLong())).willReturn(
-				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+				List.of(getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId))));
 			// when
 			var result = routeStationService.getRouteStationsByRouteIdAndStationId(routeId, stationId);
 			// then
@@ -104,10 +117,11 @@ public class BusRouteStationServiceTest {
 		@Test
 		void RouteId를_받아_해당_아이디의_노선정류장을_조회한다() {
 			// given
-			Long routeId = 1L;
-			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			var expected = List.of(getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+				getBusStationRespDto(stationId)));
 			given(routeStationRepository.findAllByRouteId(anyLong())).willReturn(
-				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+				List.of(getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId))));
 			// when
 			var result = routeStationService.getRouteStationsByRouteId(routeId);
 			// then
@@ -122,10 +136,12 @@ public class BusRouteStationServiceTest {
 		@Test
 		void StationId를_받아_해당_아이디의_노선정류장을_조회한다() {
 			// given
-			Long stationId = 1L;
-			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			var expected = List.of(
+				getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+					getBusStationRespDto(stationId)));
 			given(routeStationRepository.findAllByStationId(anyLong())).willReturn(
-				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+				List.of(getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId))));
 			// when
 			var result = routeStationService.getRouteStationsByStationId(stationId);
 			// then
@@ -140,9 +156,11 @@ public class BusRouteStationServiceTest {
 		@Test
 		void 모든_노선정류장을_조회한다() {
 			// given
-			var expected = List.of(getBusRouteStationRespDto(1L, getBusRouteRespDto(1L), getBusStationRespDto(1L)));
+			var expected = List.of(getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+				getBusStationRespDto(stationId)));
 			given(routeStationRepository.findAll()).willReturn(
-				List.of(getBusRouteStationEntity(1L, getBusRouteEntity(1L), getBusStationEntity(1L))));
+				List.of(getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId))));
 			// when
 			var result = routeStationService.getRouteStations();
 			// then
@@ -157,12 +175,13 @@ public class BusRouteStationServiceTest {
 		@Test
 		void ID를_받아_해당_아이디의_노선정류장을_조회한다() {
 			// given
-			Long id = 1L;
-			var expected = getBusRouteStationRespDto(id, getBusRouteRespDto(id), getBusStationRespDto(id));
+			var expected = getBusRouteStationRespDto(busRouteStationId, getBusRouteRespDto(routeId),
+				getBusStationRespDto(stationId));
 			given(routeStationRepository.findById(anyLong())).willReturn(
-				Optional.of(getBusRouteStationEntity(id, getBusRouteEntity(id), getBusStationEntity(id))));
+				Optional.of(getBusRouteStationEntity(busRouteStationId, getBusRouteEntity(routeId),
+					getBusStationEntity(stationId))));
 			// when
-			var result = routeStationService.getRouteStationById(id);
+			var result = routeStationService.getRouteStationById(busRouteStationId);
 			// then
 			assertThat(result).isEqualTo(expected);
 			verify(routeStationRepository, times(1)).findById(anyLong());
@@ -171,14 +190,13 @@ public class BusRouteStationServiceTest {
 		@Test
 		void ID가_존재하지_않으면_Exception을_throw한다() {
 			// given
-			Class<?> exceptionClass = BadRequestException.class;
+
 			given(routeStationRepository.findById(anyLong())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(
-				() -> routeStationService.getRouteStationById(1L)
-			).isInstanceOf(exceptionClass)
-				.hasMessage("존재하지 않는 노선정류장입니다.");
+			assertThatThrownBy(() -> routeStationService.getRouteStationById(busRouteStationId))
+				.isInstanceOf(BusRouteStationNotFoundException.class)
+				.hasMessage("존재하지 않는 경유 정류장입니다. busRouteStationId: " + busRouteStationId);
 			verify(routeStationRepository, times(1)).findById(anyLong());
 		}
 	}

@@ -9,6 +9,9 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
@@ -17,8 +20,6 @@ import com.talkka.server.review.dao.BusReviewRepository;
 import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
 import com.talkka.server.review.exception.BusReviewNotFoundException;
-import com.talkka.server.review.exception.BusRouteNotFoundException;
-import com.talkka.server.review.exception.BusStationNotFoundException;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.review.exception.UserNotFoundException;
 import com.talkka.server.user.dao.UserEntity;
@@ -77,12 +78,15 @@ public class BusReviewService {
 	public BusReviewRespDto createBusReview(BusReviewDto busReviewDto)
 		throws UserNotFoundException, BusStationNotFoundException, BusRouteNotFoundException {
 		Long userId = busReviewDto.userId();
+		Long busRouteStationId = busReviewDto.busRouteStationId();
+		Long routeId = busReviewDto.routeId();
+
 		UserEntity user = userRepository.findById(userId)
 			.orElseThrow(UserNotFoundException::new);
-		BusRouteStationEntity station = busRouteStationRepository.findById(busReviewDto.busRouteStationId())
-			.orElseThrow(BusStationNotFoundException::new);
-		BusRouteEntity route = busRouteRepository.findById(busReviewDto.routeId())
-			.orElseThrow(BusRouteNotFoundException::new);
+		BusRouteStationEntity station = busRouteStationRepository.findById(busRouteStationId)
+			.orElseThrow(() -> new BusRouteStationNotFoundException(busRouteStationId));
+		BusRouteEntity route = busRouteRepository.findById(routeId)
+			.orElseThrow(() -> new BusRouteNotFoundException(routeId));
 
 		BusReviewEntity entity = busReviewDto.toEntity(user, station, route);
 		BusReviewEntity savedReview = busReviewRepository.save(entity);

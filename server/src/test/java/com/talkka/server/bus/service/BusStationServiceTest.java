@@ -19,7 +19,8 @@ import com.talkka.server.bus.dao.BusStationEntity;
 import com.talkka.server.bus.dao.BusStationRepository;
 import com.talkka.server.bus.dto.BusStationCreateDto;
 import com.talkka.server.bus.dto.BusStationRespDto;
-import com.talkka.server.common.exception.http.BadRequestException;
+import com.talkka.server.bus.exception.BusStationAlreadyExistsException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 
 @ExtendWith(MockitoExtension.class)
 class BusStationServiceTest {
@@ -29,12 +30,14 @@ class BusStationServiceTest {
 	@Mock
 	private BusStationRepository busStationRepository;
 
+	private final Long stationId = 1L;
+	private final String apiStationId = "apiStationId";
+
 	@Nested
 	@DisplayName("getStationByStationId method")
 	public class GetStationByStationId {
 		@Test
 		void ID를_기반으로_버스_정류장을_요청하면_레포지토리를_통해_조회하여_결과를_DTO로_반환한다() {
-			Long stationId = 1L;
 			BusStationEntity busStationEntity = getBusStationEntity(stationId);
 			BusStationRespDto expected = getBusStationRespDto(stationId);
 			given(busStationRepository.findById(stationId)).willReturn(Optional.of(busStationEntity));
@@ -48,15 +51,12 @@ class BusStationServiceTest {
 		@Test
 		void ID가_존재하지_않으면_Exception을_throw한다() {
 			// given
-			Long stationId = 1L;
-			Class<?> exceptionCLass = BadRequestException.class;
 			given(busStationRepository.findById(anyLong())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(
-				() -> busStationService.getStationById(stationId)
-			).isInstanceOf(exceptionCLass)
-				.hasMessage("존재하지 않는 정거장입니다.");
+			assertThatThrownBy(() -> busStationService.getStationById(stationId))
+				.isInstanceOf(BusStationNotFoundException.class)
+				.hasMessage("존재하지 않는 정거장입니다. stationId: " + stationId);
 			verify(busStationRepository, times(1)).findById(anyLong());
 		}
 	}
@@ -67,7 +67,7 @@ class BusStationServiceTest {
 		@Test
 		void BusStationReqDto를_요청으로_받아_BusStationRepository에_저장한다() {
 			// given
-			BusStationCreateDto createDto = getBusStationCreateDto(1L);
+			BusStationCreateDto createDto = getBusStationCreateDto(apiStationId);
 			given(busStationRepository.save(any(BusStationEntity.class))).willReturn(getBusStationEntity(1L));
 			// when
 			var result = busStationService.createStation(createDto);
@@ -79,13 +79,13 @@ class BusStationServiceTest {
 		@Test
 		void 이미_등록된_정거장일_경우_Exception을_발생시킨다() {
 			// given
-			var createDto = getBusStationCreateDto(1L);
-			Class<?> exceptionClass = BadRequestException.class;
+			var createDto = getBusStationCreateDto(apiStationId);
 			given(busStationRepository.existsByApiStationId(createDto.apiStationId())).willReturn(true);
 			// when
 			// then
 			assertThatThrownBy(() -> busStationService.createStation(createDto))
-				.isInstanceOf(exceptionClass).hasMessage("이미 등록된 정거장입니다.");
+				.isInstanceOf(BusStationAlreadyExistsException.class)
+				.hasMessage("이미 존재하는 정거장입니다. apiStationId: " + apiStationId);
 		}
 	}
 

@@ -9,21 +9,19 @@ import lombok.Builder;
 @Builder
 public record BusRouteStationRespDto(
 	Long busRouteStationId,
+	Long routeId,
+	Long stationId,
 	Short stationSeq,
 	String stationName,
-	Long routeId,
-	String routeName,
-	Long stationId,
 	LocalDateTime createdAt
 ) {
 	public static BusRouteStationRespDto of(BusRouteStationEntity busRouteStationEntity) {
 		return new BusRouteStationRespDto(
 			busRouteStationEntity.getId(),
+			busRouteStationEntity.getRoute().getId(),
+			busRouteStationEntity.getStation().getId(),
 			busRouteStationEntity.getStationSeq(),
 			busRouteStationEntity.getStation().getStationName(),
-			busRouteStationEntity.getRoute().getId(),
-			busRouteStationEntity.getRoute().getRouteName(),
-			busRouteStationEntity.getStation().getId(),
 			busRouteStationEntity.getCreatedAt()
 		);
 	}

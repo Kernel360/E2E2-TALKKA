@@ -10,9 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.dto.BusStationRespDto;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 import com.talkka.server.bus.service.BusStationService;
-import com.talkka.server.common.dto.ApiRespDto;
-import com.talkka.server.common.enums.StatusCode;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +22,7 @@ public class BusStationController {
 	private final BusStationService stationService;
 
 	@GetMapping("")
-	public ResponseEntity<ApiRespDto<List<BusStationRespDto>>> getStations(
+	public ResponseEntity<List<BusStationRespDto>> getStations(
 		@RequestParam(value = "search", required = false) String stationName) {
 		List<BusStationRespDto> stationList;
 
@@ -32,23 +31,18 @@ public class BusStationController {
 		} else {
 			stationList = stationService.getStations();
 		}
-		return ResponseEntity.ok(
-			ApiRespDto.<List<BusStationRespDto>>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(stationList)
-				.build()
-		);
+
+		return ResponseEntity.ok(stationList);
 	}
 
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiRespDto<BusStationRespDto>> getStationById(@PathVariable("id") Long stationId) {
-		return ResponseEntity.ok(
-			ApiRespDto.<BusStationRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(stationService.getStationById(stationId))
-				.build()
-		);
+	public ResponseEntity<?> getStationById(@PathVariable("id") Long stationId) {
+		ResponseEntity<?> response;
+		try {
+			response = ResponseEntity.ok(stationService.getStationById(stationId));
+		} catch (BusStationNotFoundException exception) {
+			response = ResponseEntity.badRequest().body(exception.getMessage());
+		}
+		return response;
 	}
 }
