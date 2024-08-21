@@ -21,6 +21,10 @@ public class DevLoginController {
 
 	private final DevLoginService loginService;
 
+	/*
+	 * User 세션 생성 : localhost:8080/dev-login?authRole=user
+	 * Admin 세션 생성 : localhost:8080/dev-login?authRole=admin
+	 * */
 	@GetMapping("/dev-login")
 	public ResponseEntity<String> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
 		ResponseEntity<String> response;
