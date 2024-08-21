@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.review.exception.ContentAccessException;
-import com.talkka.server.user.enums.Grade;
 
 class ContentAccessValidatorTest {
 
@@ -16,11 +16,11 @@ class ContentAccessValidatorTest {
 		// given
 		Long userId = 1L;
 		Long contentUserId = 2L;
-		Grade grade = Grade.ADMIN;
+		AuthRole authRole = AuthRole.ADMIN;
 		ContentAccessValidator validator = new ContentAccessValidator();
 
 		// when
-		boolean result = validator.validateOwnerContentAccess(userId, grade, contentUserId);
+		boolean result = validator.validateOwnerContentAccess(userId, authRole, contentUserId);
 
 		// then
 		assertTrue(result);
@@ -32,11 +32,11 @@ class ContentAccessValidatorTest {
 		// given
 		Long userId = 1L;
 		Long contentUserId = 1L;
-		Grade grade = Grade.USER;
+		AuthRole authRole = AuthRole.USER;
 		ContentAccessValidator validator = new ContentAccessValidator();
 
 		// when
-		boolean result = validator.validateOwnerContentAccess(userId, grade, contentUserId);
+		boolean result = validator.validateOwnerContentAccess(userId, authRole, contentUserId);
 
 		// then
 		assertTrue(result);
@@ -48,11 +48,11 @@ class ContentAccessValidatorTest {
 		// given
 		Long userId = 1L;
 		Long contentUserId = 2L;
-		Grade grade = Grade.USER;
+		AuthRole authRole = AuthRole.USER;
 		ContentAccessValidator validator = new ContentAccessValidator();
 
 		// when, then
 		assertThrows(ContentAccessException.class,
-			() -> validator.validateOwnerContentAccess(userId, grade, contentUserId));
+			() -> validator.validateOwnerContentAccess(userId, authRole, contentUserId));
 	}
 }

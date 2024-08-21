@@ -104,7 +104,7 @@ public class BusReviewService {
 		BusReviewEntity review = busReviewRepository.findById(reviewId)
 			.orElseThrow(BusReviewNotFoundException::new);
 
-		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), review.getWriter().getId());
 		review.updateReview(busReviewDto.content(), busReviewDto.timeSlot(), busReviewDto.rating());
 		var saved = busReviewRepository.save(review);
 		return BusReviewRespDto.of(saved);
@@ -119,7 +119,7 @@ public class BusReviewService {
 		BusReviewEntity review = busReviewRepository.findById(busReviewId)
 			.orElseThrow(BusReviewNotFoundException::new);
 
-		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), review.getWriter().getId());
 
 		busReviewRepository.deleteById(busReviewId);
 		return busReviewId;

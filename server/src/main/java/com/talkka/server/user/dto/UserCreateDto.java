@@ -1,7 +1,7 @@
 package com.talkka.server.user.dto;
 
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.user.dao.UserEntity;
-import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.vo.Email;
 import com.talkka.server.user.vo.Nickname;
 
@@ -14,7 +14,7 @@ public record UserCreateDto(
 	Nickname nickname,
 	String oauthProvider,
 	String accessToken,
-	Grade grade
+	AuthRole authRole
 ) {
 	public UserEntity toEntity() {
 		return UserEntity.builder()
@@ -23,7 +23,7 @@ public record UserCreateDto(
 			.nickname(nickname)
 			.oauthProvider(oauthProvider)
 			.accessToken(accessToken)
-			.grade(grade)
+			.authRole(authRole)
 			.build();
 	}
 }

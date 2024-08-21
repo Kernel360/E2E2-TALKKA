@@ -3,8 +3,8 @@ package com.talkka.server.user.dto;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.user.dao.UserEntity;
-import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.vo.Email;
 import com.talkka.server.user.vo.Nickname;
 
@@ -18,11 +18,11 @@ public record UserDto(
 	Nickname nickname,
 	String oauthProvider,
 	String accessToken,
-	Grade grade,
+	AuthRole authRole,
 	LocalDateTime createdAt,
 	LocalDateTime updatedAt
 ) {
-	
+
 	public static UserDto of(UserEntity userEntity) {
 		return new UserDto(
 			userEntity.getId(),
@@ -31,7 +31,7 @@ public record UserDto(
 			userEntity.getNickname(),
 			userEntity.getOauthProvider(),
 			userEntity.getAccessToken(),
-			userEntity.getGrade(),
+			userEntity.getAuthRole(),
 			userEntity.getCreatedAt(),
 			userEntity.getUpdatedAt()
 		);
@@ -45,7 +45,7 @@ public record UserDto(
 			nickname,
 			oauthProvider,
 			accessToken,
-			grade,
+			authRole,
 			createdAt,
 			updatedAt,
 			new ArrayList<>(),

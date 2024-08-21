@@ -9,8 +9,8 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.talkka.server.bookmark.dao.BookmarkEntity;
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.review.dao.BusReviewEntity;
-import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.util.EmailDbConverter;
 import com.talkka.server.user.util.NicknameDbConverter;
 import com.talkka.server.user.vo.Email;
@@ -64,9 +64,9 @@ public class UserEntity {
 	@Column(name = "access_token", length = 255, nullable = false)
 	private String accessToken;
 
-	@Column(name = "grade", length = 20, nullable = true)
+	@Column(name = "auth_role", length = 20, nullable = true)
 	@Enumerated(EnumType.STRING)
-	private Grade grade;
+	private AuthRole authRole;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)

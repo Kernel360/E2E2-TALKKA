@@ -87,7 +87,7 @@ create table users
     nickname       varchar(50)            not null,
     access_token   varchar(255)           not null,
     name           varchar(255)           not null,
-    grade          enum ('ADMIN', 'USER') null
+    auth_role      varchar(20)            null
 );
 
 drop table if exists bus_review;
