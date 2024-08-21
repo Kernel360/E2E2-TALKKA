@@ -34,7 +34,7 @@ export default function TransportSelection({
       <Link href={`${baseUrl + busUrl}`}>
         <button
           className={`p-2 rounded-lg w-[140px] ${
-            selectedTransport === TransportType.BUS
+            selectedTransport === "BUS"
               ? "bg-slate-400  text-slate-50 font-extrabold"
               : ""
           }`}
@@ -45,7 +45,7 @@ export default function TransportSelection({
       <Link href={`${baseUrl + subwayUrl}`}>
         <button
           className={`p-2 rounded-lg w-[140px] ${
-            selectedTransport === TransportType.SUBWAY
+            selectedTransport === "SUBWAY"
               ? "bg-slate-400  text-slate-50 font-extrabold"
               : ""
           }`}

@@ -1,7 +1,7 @@
 import React from "react"
 
 import { TransportType } from "@/types/api/domain/TransportType"
-import TransportSelection from "@/components/custom/TransportSelection"
+import TransportSelection from "@/app/review/components/TransportSelection"
 
 
 
