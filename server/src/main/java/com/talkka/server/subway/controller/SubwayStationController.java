@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -55,9 +56,9 @@ public class SubwayStationController {
 
 		return ResponseEntity.ok(stationList);
 	}
-
-	// TODO 관리자만 생성 가능하게 하는 로직 필요
+	
 	@PostMapping("")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> createStation(
 		@RequestBody @Valid SubwayStationReqDto subwayStationReqDto
 	) {

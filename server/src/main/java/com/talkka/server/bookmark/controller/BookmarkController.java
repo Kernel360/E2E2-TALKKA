@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,12 +33,14 @@ public class BookmarkController {
 
 	// 본인이 작성한 북마크 리스트만 조회
 	@GetMapping("")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> getBookmarkList(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo) {
 		List<BookmarkRespDto> bookmarks = bookmarkService.getBookmarkByUserId(oAuth2UserInfo.getUserId());
 		return ResponseEntity.ok(bookmarks);
 	}
 
 	@GetMapping("/{bookmarkId}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> getBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable Long bookmarkId) {
 		ResponseEntity<?> response;
@@ -53,6 +56,7 @@ public class BookmarkController {
 	}
 
 	@PostMapping("")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> createBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		BookmarkReqDto bookmarkReqDto) {
 		ResponseEntity<?> response;
@@ -66,6 +70,7 @@ public class BookmarkController {
 	}
 
 	@PutMapping("{bookmarkId}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		BookmarkReqDto bookmarkReqDto, @PathVariable Long bookmarkId) {
 		ResponseEntity<?> response;
@@ -83,6 +88,7 @@ public class BookmarkController {
 	}
 
 	@DeleteMapping("/{bookmarkId}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable Long bookmarkId) {
 		ResponseEntity<?> response;
