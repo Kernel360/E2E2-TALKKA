@@ -1,5 +1,5 @@
 import BusReviewResponse from "@/types/api/bus-review/BusReviewResponse"
-import { timeSlotMapping } from "@/types/api/domain/TimeSlot"
+import { getTimeSlotFromString } from "@/types/api/domain/TimeSlot"
 import {
   Card,
   CardContent,
@@ -32,9 +32,9 @@ export default function BusReview({ review }: BusReviewProps) {
       <CardHeader>
         <CardTitle>{`${review.stationName}`}</CardTitle>
         <CardDescription>{`${getRatingString(review.rating)}`}</CardDescription>
-        <CardDescription>{`${
-          timeSlotMapping[review.timeSlot]
-        }`}</CardDescription>
+        <CardDescription>{`${getTimeSlotFromString(
+          review.timeSlot
+        )}`}</CardDescription>
       </CardHeader>
       <CardContent>
         <div>{review.content}</div>

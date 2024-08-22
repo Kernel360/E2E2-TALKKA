@@ -6,6 +6,7 @@ import { BusRouteResponse } from "@/types/api/bus/route/BusRouteResponse"
 import BaseReviewContainer from "@/app/review/components/BaseReviewContainer"
 import BusCard from "@/app/review/components/BusInfoCard"
 import BusReviewListContainer from "@/app/review/components/BusReviewListContainer"
+import ReviewCreateButton from "@/app/review/components/ReviewCreateButton"
 import RouteStationSelect from "@/app/review/components/RouteStationSelect"
 import SearchBusRoute from "@/app/review/components/SearchBusRoute"
 
@@ -81,6 +82,7 @@ export default async function BusReviewPage({
       {routeId && <RouteStationSelect routeId={routeId} />}
       <BusCard busRoute={busRoute}></BusCard>
       <p className={`font-extrabold`}>리뷰 모아보기</p>
+      <ReviewCreateButton />
       <BusReviewListContainer reviews={reviews} />
     </BaseReviewContainer>
   )
