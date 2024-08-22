@@ -56,9 +56,9 @@ public class SubwayStationController {
 
 		return ResponseEntity.ok(stationList);
 	}
-	
+
 	@PostMapping("")
-	@Secured({"USER", "ADMIN"})
+	@Secured("ADMIN")
 	public ResponseEntity<?> createStation(
 		@RequestBody @Valid SubwayStationReqDto subwayStationReqDto
 	) {
