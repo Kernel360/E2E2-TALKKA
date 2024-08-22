@@ -88,7 +88,7 @@ public class SubwayReviewService {
 		SubwayReviewEntity review = subwayReviewRepository.findById(reviewId)
 			.orElseThrow(SubwayReviewNotFoundException::new);
 
-		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), review.getWriter().getId());
 		review.updateReview(subwayReviewDto.content(), subwayReviewDto.timeSlot(), subwayReviewDto.rating());
 		var saved = subwayReviewRepository.save(review);
 		return SubwayReviewRespDto.of(saved);
@@ -102,7 +102,7 @@ public class SubwayReviewService {
 		SubwayReviewEntity review = subwayReviewRepository.findById(reviewId)
 			.orElseThrow(SubwayReviewNotFoundException::new);
 
-		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), review.getWriter().getId());
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), review.getWriter().getId());
 
 		subwayReviewRepository.deleteById(reviewId);
 		return reviewId;

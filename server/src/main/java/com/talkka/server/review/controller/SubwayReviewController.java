@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -58,6 +59,7 @@ public class SubwayReviewController {
 	}
 
 	@PostMapping("")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> createSubwayReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody @Valid SubwayReviewReqDto subwayReviewReqDto
@@ -75,6 +77,7 @@ public class SubwayReviewController {
 	}
 
 	@PutMapping("/{subway_review_id}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateSubwayReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "subway_review_id") Long subwayReviewId,
@@ -97,6 +100,7 @@ public class SubwayReviewController {
 	}
 
 	@DeleteMapping("/{subway_review_id}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteSubwayReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "subway_review_id") Long subwayReviewId

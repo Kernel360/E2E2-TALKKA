@@ -25,7 +25,6 @@ import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.dto.UserRespDto;
 import com.talkka.server.user.dto.UserUpdateDto;
 import com.talkka.server.user.dto.UserUpdateReqDto;
-import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.exception.DuplicatedNicknameException;
 import com.talkka.server.user.exception.UserNotFoundException;
 import com.talkka.server.user.service.UserService;
@@ -67,7 +66,7 @@ class UserControllerTest {
 			.nickname(nickname)
 			.oauthProvider("oauthProvider")
 			.accessToken("accessToken")
-			.grade(Grade.USER)
+			.authRole(AuthRole.USER)
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.build();

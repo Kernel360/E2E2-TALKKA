@@ -15,12 +15,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.dto.UserUpdateDto;
-import com.talkka.server.user.enums.Grade;
 import com.talkka.server.user.exception.DuplicatedNicknameException;
 import com.talkka.server.user.exception.UserNotFoundException;
 import com.talkka.server.user.vo.Email;
@@ -45,7 +45,7 @@ class UserServiceTest {
 			nickname,
 			"oauthProvider",
 			"accessToken",
-			Grade.USER,
+			AuthRole.USER,
 			LocalDateTime.now(),
 			LocalDateTime.now()
 		);
@@ -62,7 +62,7 @@ class UserServiceTest {
 			.nickname(nickname)
 			.oauthProvider("oauthProvider")
 			.accessToken("accessToken")
-			.grade(Grade.USER)
+			.authRole(AuthRole.USER)
 			.createdAt(LocalDateTime.now())
 			.updatedAt(LocalDateTime.now())
 			.build();
@@ -78,7 +78,7 @@ class UserServiceTest {
 			nickname,
 			"oauthProvider",
 			"accessToken",
-			Grade.USER
+			AuthRole.USER
 		);
 	}
 

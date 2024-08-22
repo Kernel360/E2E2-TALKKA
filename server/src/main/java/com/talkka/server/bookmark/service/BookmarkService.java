@@ -36,7 +36,7 @@ public class BookmarkService {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
 			.orElseThrow(BookmarkUserNotFoundException::new);
-		contentAccessValidator.validateOwnerContentAccess(userId, user.getGrade(), bookmark.getUser().getId());
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), bookmark.getUser().getId());
 		return BookmarkRespDto.of(bookmark);
 	}
 
@@ -69,7 +69,7 @@ public class BookmarkService {
 			.orElseThrow(BookmarkNotFoundException::new);
 
 		// 작성자거나 관리자가 아니면 ContentAccessException 발생
-		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getUser().getId());
+		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getAuthRole(), bookmark.getUser().getId());
 
 		// 기존 북마크 상세를 전부 지우고 전체를 새로 저장함
 		bookmarkDetailRepository.deleteByBookmarkId(bookmarkId);
@@ -88,7 +88,7 @@ public class BookmarkService {
 			.orElseThrow(BookmarkUserNotFoundException::new);
 
 		// 작성자거나 관리자가 아니면 ContentAccessException 발생
-		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getGrade(), bookmark.getId());
+		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getAuthRole(), bookmark.getId());
 
 		// 북마크와 북마크 상세를 삭제
 		bookmarkRepository.delete(bookmark);

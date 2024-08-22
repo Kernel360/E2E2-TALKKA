@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -61,6 +62,7 @@ public class BusReviewController {
 	}
 
 	@PostMapping("")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> saveBusReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody @Valid BusReviewReqDto busReviewReqDto
@@ -78,6 +80,7 @@ public class BusReviewController {
 	}
 
 	@PutMapping("{bus_review_id}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBusReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "bus_review_id") Long busReviewId,
@@ -99,6 +102,7 @@ public class BusReviewController {
 	}
 
 	@DeleteMapping("{bus_review_id}")
+	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteBusReview(
 		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@PathVariable(name = "bus_review_id") Long busReviewId
