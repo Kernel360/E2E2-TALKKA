@@ -3,14 +3,8 @@
 import { useCallback, useState } from "react"
 import { fetch } from "next/dist/compiled/@edge-runtime/primitives"
 import { useRouter, useSearchParams } from "next/navigation"
-import checkLogin from "@/utils/CheckLogin"
-
-
-
-
 
 export default function CreateBusReviewPage() {
-  checkLogin()
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryRouteId = searchParams.get("routeId")

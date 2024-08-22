@@ -1,21 +1,15 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import checkLogin from "@/utils/CheckLogin"
 
 import { Button } from "@/components/ui/button"
-
-
-
-
 
 // NOTE: 아직 구현 제대로 안함.
 
 export default function ReviewCreateButton() {
-  checkLogin()
   const router = useRouter()
-  const userData = localStorage.getItem("userData")
-  if (userData === null) {
+  const isLogined = localStorage.getItem("isLogin")
+  if (isLogined !== "true") {
     return <></>
   }
 
