@@ -19,6 +19,7 @@ import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
+import com.talkka.server.bookmark.exception.DuplicatedBookmarkNameException;
 import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
 import com.talkka.server.bookmark.service.BookmarkService;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
@@ -65,7 +66,8 @@ public class BookmarkController {
 		try {
 			BookmarkRespDto bookmark = bookmarkService.createBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId());
 			return ResponseEntity.ok(bookmark);
-		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException exception) {
+		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException |
+				 DuplicatedBookmarkNameException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		}
 		return response;
@@ -80,7 +82,7 @@ public class BookmarkController {
 			BookmarkRespDto bookmark = bookmarkService.updateBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId(),
 				bookmarkId);
 			response = ResponseEntity.ok(bookmark);
-		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException
+		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException | DuplicatedBookmarkNameException
 				 | InvalidTransportTypeEnumException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		} catch (ContentAccessException exception) {
