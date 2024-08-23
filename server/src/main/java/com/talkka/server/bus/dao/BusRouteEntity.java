@@ -112,6 +112,11 @@ public class BusRouteEntity {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
+	// 집계용 엔티티이므로 연관관계 설정 안함
+	// @OneToMany(mappedBy = "route")
+	// @Builder.Default
+	// private List<BusLocationEntity> routeLocations = new ArrayList<>();
+
 	@OneToMany(mappedBy = "route")
 	@Builder.Default
 	private List<BusRouteStationEntity> stations = new ArrayList<>();
