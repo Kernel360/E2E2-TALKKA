@@ -32,7 +32,7 @@ public class LoggingFilter extends OncePerRequestFilter {
 
 		try {
 			var logMessage = HttpLogMessage.create(cachingRequestWrapper, cachingResponseWrapper,
-					(endTime - startTime) / 1000.0)
+					(endTime - startTime))
 				.beatify();
 			log.info(logMessage);
 			cachingResponseWrapper.copyBodyToResponse();

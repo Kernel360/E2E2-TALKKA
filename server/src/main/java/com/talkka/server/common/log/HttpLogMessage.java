@@ -7,9 +7,9 @@ import lombok.Builder;
 
 @Builder
 public record HttpLogMessage(String httpMethod, String requestUri, Integer httpStatus, String clientIp,
-							 Double elapsedTimeMs, String requestParam, String requestBody, String responseBody) {
+							 Long elapsedTimeMs, String requestParam, String requestBody, String responseBody) {
 	public static HttpLogMessage create(ContentCachingRequestWrapper request, ContentCachingResponseWrapper response,
-		Double elapsedTimeMs) {
+		Long elapsedTimeMs) {
 		return HttpLogMessage.builder()
 			.httpMethod(request.getMethod())
 			.requestUri(request.getRequestURI())
@@ -26,7 +26,7 @@ public record HttpLogMessage(String httpMethod, String requestUri, Integer httpS
 		String format = """
 			HTTP REQUEST %s %s %s
 			| ClientIp: %s
-			| ElapsedTimeMs: %s
+			| ElapsedTimeMs: %sms
 			| RequestParam: %s
 			| RequestBody: %s
 			| ResponseBody: %s
