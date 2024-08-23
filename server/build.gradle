@@ -33,6 +33,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // XML Parser
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+    // Spring Retry
+    implementation 'org.springframework.retry:spring-retry'
     
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
