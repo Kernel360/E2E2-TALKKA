@@ -1,6 +1,7 @@
 package com.talkka.server.oauth.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -29,6 +30,7 @@ public class AuthController {
 	private final UserService userService;
 
 	@PostMapping("/register")
+	@Secured("UNREGISTERED")
 	public ResponseEntity<?> register(
 		@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserCreateReqDto userCreateReqDto,

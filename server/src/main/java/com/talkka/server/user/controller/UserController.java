@@ -2,6 +2,7 @@ package com.talkka.server.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ public class UserController {
 	private final UserService userService;
 
 	@GetMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> getUser(
 		@PathVariable("user_id") Long userId
 	) {
@@ -45,6 +47,7 @@ public class UserController {
 	}
 
 	@PutMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> updateUser(@PathVariable("user_id") Long userId,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		ResponseEntity<?> response;
@@ -61,6 +64,7 @@ public class UserController {
 	}
 
 	@DeleteMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> deleteUser(@PathVariable("user_id") Long userId) {
 		ResponseEntity<?> response;
 		try {
@@ -73,6 +77,7 @@ public class UserController {
 	}
 
 	@GetMapping("/me")
+	@Secured({"USER"})
 	public ResponseEntity<?> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
 		ResponseEntity<?> response;
 		try {
@@ -85,6 +90,7 @@ public class UserController {
 	}
 
 	@PutMapping("/me")
+	@Secured({"USER"})
 	public ResponseEntity<?> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		ResponseEntity<?> response;
