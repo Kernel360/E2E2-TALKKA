@@ -31,12 +31,6 @@ public class RestControllerAdvice {
 		return new ResponseEntity<>(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
-	@ExceptionHandler(Exception.class)
-	public ResponseEntity<String> handleException(Exception exception) {
-		log.error("Exception: {}", exception.getMessage());
-		return new ResponseEntity<>(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
-	}
-
 	@Deprecated
 	@ExceptionHandler(HttpBaseException.class)
 	public ResponseEntity<ApiRespDto<Void>> handleHttpException(HttpBaseException exception) {
