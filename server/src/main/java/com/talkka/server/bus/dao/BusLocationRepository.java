@@ -1,5 +1,6 @@
 package com.talkka.server.bus.dao;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -16,4 +17,7 @@ public interface BusLocationRepository extends JpaRepository<BusLocationEntity, 
 	Integer getRowNum();
 
 	List<BusLocationEntity> findByApiCallNo(Integer apiCallNo);
+
+	List<BusLocationEntity> findByCreatedAtBetween(LocalDateTime startTime, LocalDateTime endTime);
+
 }
