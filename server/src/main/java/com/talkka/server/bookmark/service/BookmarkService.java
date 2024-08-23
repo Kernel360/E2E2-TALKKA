@@ -11,6 +11,7 @@ import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
+import com.talkka.server.bookmark.exception.DuplicatedBookmarkNameException;
 import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.exception.ContentAccessException;
@@ -48,7 +49,11 @@ public class BookmarkService {
 
 	@Transactional
 	public BookmarkRespDto createBookmark(BookmarkReqDto dto, Long userId) throws BookmarkUserNotFoundException,
+		DuplicatedBookmarkNameException,
 		InvalidTransportTypeEnumException {
+		if (bookmarkRepository.existsByNameAndUserId(dto.name(), userId)) {
+			throw new DuplicatedBookmarkNameException();
+		}
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = dto.toEntity(user);
 		dto.details().stream()
@@ -62,8 +67,11 @@ public class BookmarkService {
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException,
 		InvalidTransportTypeEnumException,
+		DuplicatedBookmarkNameException,
 		ContentAccessException {
-
+		if (bookmarkRepository.existsByNameAndUserId(dto.name(), userId)) {
+			throw new DuplicatedBookmarkNameException();
+		}
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
 			.orElseThrow(BookmarkNotFoundException::new);
@@ -82,7 +90,6 @@ public class BookmarkService {
 	public Long deleteBookmark(Long userId, Long bookmarkId) throws
 		BookmarkUserNotFoundException,
 		BookmarkNotFoundException {
-
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
 			.orElseThrow(BookmarkUserNotFoundException::new);
