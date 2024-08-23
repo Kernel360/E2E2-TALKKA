@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -18,16 +19,18 @@ import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
+import com.talkka.server.bookmark.exception.DuplicatedBookmarkNameException;
 import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
 import com.talkka.server.bookmark.service.BookmarkService;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.review.exception.ContentAccessException;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/bookmark")
+@RequestMapping("/api/bookmark")
 public class BookmarkController {
 	private final BookmarkService bookmarkService;
 
@@ -58,12 +61,13 @@ public class BookmarkController {
 	@PostMapping("")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> createBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
-		BookmarkReqDto bookmarkReqDto) {
+		@RequestBody @Valid BookmarkReqDto bookmarkReqDto) {
 		ResponseEntity<?> response;
 		try {
 			BookmarkRespDto bookmark = bookmarkService.createBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId());
 			return ResponseEntity.ok(bookmark);
-		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException exception) {
+		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException |
+				 DuplicatedBookmarkNameException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		}
 		return response;
@@ -72,13 +76,13 @@ public class BookmarkController {
 	@PutMapping("{bookmarkId}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
-		BookmarkReqDto bookmarkReqDto, @PathVariable Long bookmarkId) {
+		@RequestBody @Valid BookmarkReqDto bookmarkReqDto, @PathVariable Long bookmarkId) {
 		ResponseEntity<?> response;
 		try {
 			BookmarkRespDto bookmark = bookmarkService.updateBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId(),
 				bookmarkId);
 			response = ResponseEntity.ok(bookmark);
-		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException
+		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException | DuplicatedBookmarkNameException
 				 | InvalidTransportTypeEnumException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		} catch (ContentAccessException exception) {
