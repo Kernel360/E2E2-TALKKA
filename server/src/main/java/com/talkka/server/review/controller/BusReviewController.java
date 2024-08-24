@@ -35,7 +35,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/bus-review")
 @RequiredArgsConstructor
-public class BusReviewController {
+public class BusReviewController implements BusReviewApi {
 
 	private final BusReviewService busReviewService;
 
