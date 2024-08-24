@@ -76,9 +76,8 @@ public interface BusReviewApi {
 			))
 	})
 	ResponseEntity<?> saveBusReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
-		@Parameter(description = "버스 리뷰 생성 요청 DTO", required = true)
+		@RequestBody(description = "버스 리뷰 생성 요청 DTO", required = true)
 		BusReviewReqDto busReviewReqDto);
 
 	// 버스 리뷰 수정 (USER, ADMIN 인증 필요)
@@ -113,7 +112,6 @@ public interface BusReviewApi {
 			))
 	})
 	ResponseEntity<?> updateBusReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "버스 리뷰 ID", required = true)
 		Long busReviewId,
@@ -148,7 +146,6 @@ public interface BusReviewApi {
 			))
 	})
 	ResponseEntity<?> deleteBusReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "버스 리뷰 ID", required = true)
 		Long busReviewId);

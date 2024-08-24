@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -67,7 +68,7 @@ public interface UserApi {
 	})
 	ResponseEntity<?> updateUser(
 		@Parameter(description = "User ID", required = true) Long userId,
-		@Parameter(description = "User Update Request", required = true) UserUpdateReqDto userUpdateReqDto
+		@RequestBody(description = "User Update Request", required = true) UserUpdateReqDto userUpdateReqDto
 	);
 
 	@Operation(
@@ -113,7 +114,7 @@ public interface UserApi {
 			))
 	})
 	ResponseEntity<?> getMe(
-		@Parameter(hidden = true) OAuth2UserInfo userInfo
+		OAuth2UserInfo userInfo
 	);
 
 	@Operation(
@@ -145,7 +146,7 @@ public interface UserApi {
 			))
 	})
 	ResponseEntity<?> updateMe(
-		@Parameter(hidden = true) OAuth2UserInfo userInfo,
-		@Parameter(description = "User Update Request", required = true) UserUpdateReqDto userUpdateReqDto
+		OAuth2UserInfo userInfo,
+		@RequestBody(description = "User Update Request", required = true) UserUpdateReqDto userUpdateReqDto
 	);
 }

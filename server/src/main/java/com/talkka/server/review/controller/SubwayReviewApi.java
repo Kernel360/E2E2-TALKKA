@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -74,9 +75,8 @@ public interface SubwayReviewApi {
 			))
 	})
 	ResponseEntity<?> createSubwayReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
-		@Parameter(description = "지하철 리뷰 생성 정보", required = true)
+		@RequestBody(description = "지하철 리뷰 생성 정보", required = true)
 		SubwayReviewReqDto subwayReviewReqDto
 	);
 
@@ -112,11 +112,10 @@ public interface SubwayReviewApi {
 			))
 	})
 	ResponseEntity<?> updateSubwayReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "지하철 리뷰 ID", required = true)
 		Long subwayReviewId,
-		@Parameter(description = "지하철 리뷰 수정 정보", required = true)
+		@RequestBody(description = "지하철 리뷰 수정 정보", required = true)
 		SubwayReviewReqDto subwayReviewReqDto
 	);
 
@@ -148,7 +147,6 @@ public interface SubwayReviewApi {
 			))
 	})
 	ResponseEntity<?> deleteSubwayReview(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "지하철 리뷰 ID", required = true)
 		Long subwayReviewId

@@ -10,6 +10,7 @@ import com.talkka.server.user.dto.UserRespDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -41,6 +42,7 @@ public interface AuthApi {
 	})
 	ResponseEntity<?> register(
 		OAuth2UserInfo userInfo,
+		@RequestBody(description = "회원가입 정보", required = true)
 		UserCreateReqDto userCreateReqDto,
 		HttpServletRequest request);
 }

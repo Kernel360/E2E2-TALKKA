@@ -36,7 +36,6 @@ public interface BookmarkApi {
 			description = "정상적으로 북마크 목록을 조회했습니다.")
 	})
 	ResponseEntity<List<BookmarkRespDto>> getBookmarkList(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo);
 
 	@Operation(
@@ -78,7 +77,6 @@ public interface BookmarkApi {
 			)),
 	})
 	ResponseEntity<?> getBookmark(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "북마크 ID", required = true)
 		Long bookmarkId);
@@ -108,7 +106,6 @@ public interface BookmarkApi {
 			))
 	})
 	ResponseEntity<?> createBookmark(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody(description = "북마크 생성 정보", required = true)
 		BookmarkReqDto bookmarkReqDto);
@@ -145,7 +142,6 @@ public interface BookmarkApi {
 			))
 	})
 	ResponseEntity<?> updateBookmark(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody(description = "북마크 수정 정보", required = true)
 		BookmarkReqDto bookmarkReqDto, Long bookmarkId);
@@ -178,7 +174,6 @@ public interface BookmarkApi {
 			))
 	})
 	ResponseEntity<?> deleteBookmark(
-		@Parameter(hidden = true)
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "북마크 ID", required = true)
 		Long bookmarkId);
