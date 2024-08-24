@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserDto;
@@ -28,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApiDocs {
 	private final UserService userService;
 
 	@GetMapping("/{user_id}")
@@ -40,8 +41,8 @@ public class UserController {
 		try {
 			UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
 			response = ResponseEntity.ok(userRespDto);
-		} catch (Exception exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+		} catch (UserNotFoundException exception) {
+			response = new ResponseEntity<>(ErrorRespDto.of(exception), HttpStatus.NOT_FOUND);
 		}
 		return response;
 	}
@@ -58,7 +59,7 @@ public class UserController {
 
 			response = ResponseEntity.ok(userRespDto);
 		} catch (InvalidTypeException | DuplicatedNicknameException | UserNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
@@ -71,7 +72,7 @@ public class UserController {
 			Long deletedUserId = userService.deleteUser(userId);
 			response = ResponseEntity.ok(deletedUserId);
 		} catch (UserNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
@@ -100,7 +101,7 @@ public class UserController {
 			UserRespDto userRespDto = UserRespDto.of(userDto);
 			response = ResponseEntity.ok(userRespDto);
 		} catch (InvalidTypeException | DuplicatedNicknameException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException exception) {
 			response = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 		}
