@@ -74,11 +74,8 @@ public class BusStatEntity {
 	@Column(name = "day_of_week", nullable = false)
 	private Integer dayOfWeek;
 
-	@Column(name = "hour", nullable = false)
-	private Integer hour;
-
-	@Column(name = "minute", nullable = false)
-	private Integer minute;
+	@Column(name = "time", nullable = false)
+	private Integer time;
 
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate

@@ -43,6 +43,21 @@ public class BusStatService {
 			.toList();
 	}
 
+	public List<BusStatRespDto> getBusStatNow(Long routeId, Long stationId) {
+		LocalDateTime now = LocalDateTime.now();
+		int startTime = getTime(now.minusMinutes(30));
+		int endTime = getTime(now.plusMinutes(30));
+		return busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenNow(
+				routeId,
+				stationId,
+				now.getDayOfWeek().getValue(),
+				startTime,
+				endTime
+			).stream()
+			.map(BusStatRespDto::of)
+			.toList();
+	}
+
 	// 생성된 위치정보 중 start~end 기간에 있는 것들만 가공
 	@Transactional
 	public void makeStatDataBetween(LocalDateTime start, LocalDateTime end) {
@@ -101,9 +116,13 @@ public class BusStatService {
 			.plateNo(after.getPlateNo())
 			.plateType(after.getPlateType())
 			.dayOfWeek(before.getCreatedAt().getDayOfWeek().getValue())
-			.hour(before.getCreatedAt().getHour())
-			.minute(before.getCreatedAt().getMinute())
+			.time(getTime(before.getCreatedAt()))
 			.build();
+	}
+
+	// 시간, 분을 이어붙인 int 값 ex) 23:59 -> 2359, 08:27->827
+	private static int getTime(LocalDateTime localDateTime) {
+		return localDateTime.getHour() * 100 + localDateTime.getMinute();
 	}
 
 	// old logic
