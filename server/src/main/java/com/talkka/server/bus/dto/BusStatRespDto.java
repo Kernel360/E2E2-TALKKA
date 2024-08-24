@@ -16,6 +16,9 @@ public record BusStatRespDto(
 	LocalDateTime afterTime,
 	String plateNo,
 	PlateType plateType,
+	Integer dayOfWeek,
+	Integer hour,
+	Integer minute,
 	LocalDateTime createdAt
 ) {
 	public static BusStatRespDto of(BusStatEntity busStatEntity) {
@@ -30,6 +33,9 @@ public record BusStatRespDto(
 			busStatEntity.getAfterTime(),
 			busStatEntity.getPlateNo(),
 			busStatEntity.getPlateType(),
+			busStatEntity.getDayOfWeek(),
+			busStatEntity.getHour(),
+			busStatEntity.getMinute(),
 			busStatEntity.getCreatedAt()
 		);
 	}

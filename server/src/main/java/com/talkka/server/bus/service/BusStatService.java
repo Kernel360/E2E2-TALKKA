@@ -85,6 +85,9 @@ public class BusStatService {
 			.afterTime(after.getCreatedAt())
 			.plateNo(after.getPlateNo())
 			.plateType(after.getPlateType())
+			.dayOfWeek(before.getCreatedAt().getDayOfWeek().getValue())
+			.hour(before.getCreatedAt().getHour())
+			.minute(before.getCreatedAt().getMinute())
 			.build();
 	}
 

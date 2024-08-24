@@ -61,6 +61,15 @@ public class BusStatEntity {
 	@Convert(converter = PlateTypeConverter.class)
 	private PlateType plateType;
 
+	@Column(name = "day_of_week", nullable = false)
+	private Integer dayOfWeek;
+
+	@Column(name = "hour", nullable = false)
+	private Integer hour;
+
+	@Column(name = "minute", nullable = false)
+	private Integer minute;
+
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
