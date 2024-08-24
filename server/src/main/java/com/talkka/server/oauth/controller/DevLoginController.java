@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class DevLoginController {
+public class DevLoginController implements DevLoginApi {
 
 	private final DevLoginService loginService;
 
@@ -25,6 +25,7 @@ public class DevLoginController {
 	 * User 세션 생성 : localhost:8080/dev-login?authRole=user
 	 * Admin 세션 생성 : localhost:8080/dev-login?authRole=admin
 	 * */
+	@Override
 	@GetMapping("/dev-login")
 	public ResponseEntity<String> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
 		ResponseEntity<String> response;
