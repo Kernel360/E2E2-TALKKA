@@ -56,7 +56,6 @@ public class SimpleBusApiService implements BusApiService {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
 			ResponseEntity<BusRouteInfoRespDto> resp = apiCallWithRetry(path, params, BusRouteInfoRespDto.class);
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
