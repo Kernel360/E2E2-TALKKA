@@ -38,7 +38,7 @@ public class DevLoginController {
 			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
 				SecurityContextHolder.getContext());
 
-			response = ResponseEntity.ok("Success Login " + authRole);
+			response = ResponseEntity.ok("Success Login " + authRole + " cookie: " + session.getId());
 		} catch (IllegalArgumentException exception) {
 			response = ResponseEntity.badRequest().body(exception.getMessage());
 		}
