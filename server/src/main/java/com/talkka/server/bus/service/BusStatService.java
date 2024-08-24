@@ -13,8 +13,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.bus.dao.BusLocationEntity;
 import com.talkka.server.bus.dao.BusLocationRepository;
+import com.talkka.server.bus.dao.BusRouteEntity;
+import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusStatEntity;
 import com.talkka.server.bus.dao.BusStatRepository;
+import com.talkka.server.bus.dao.BusStationEntity;
+import com.talkka.server.bus.dao.BusStationRepository;
 import com.talkka.server.bus.dto.BusStatReqDto;
 import com.talkka.server.bus.dto.BusStatRespDto;
 
@@ -23,8 +27,10 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BusStatService {
-	private final BusStatRepository busStatRepository;
+	private final BusRouteRepository busRouteRepository;
+	private final BusStationRepository busStationRepository;
 	private final BusLocationRepository busLocationRepository;
+	private final BusStatRepository busStatRepository;
 
 	public List<BusStatRespDto> getBusStat(BusStatReqDto busStatReqDto) {
 		return busStatRepository.findByApiRouteIdAndApiStationIdAndBeforeTimeBetween(
@@ -42,6 +48,10 @@ public class BusStatService {
 	public void makeStatDataBetween(LocalDateTime start, LocalDateTime end) {
 		List<BusLocationEntity> locationList = busLocationRepository.findByCreatedAtBetween(start, end);
 		Map<String, BusLocationEntity> locationMap = new HashMap<>();
+		Map<String, BusRouteEntity> routeMap = new HashMap<>();
+		Map<String, BusStationEntity> stationMap = new HashMap<>();
+		busRouteRepository.findAll().forEach(route -> routeMap.put(route.getApiRouteId(), route));
+		busStationRepository.findAll().forEach(station -> stationMap.put(station.getApiStationId(), station));
 		// 가공하려는 기간에 속하는 통계정보를 가져와 엔티티의 해시코드를 set 에 저장
 		Set<Integer> statIdentifierSet = new HashSet<>();
 		busStatRepository.findByBeforeTimeBetween(start, end).forEach(stat -> statIdentifierSet.add(stat.identifier()));
@@ -61,7 +71,9 @@ public class BusStatService {
 						// 위치정보들 둘다 좌석정보를 가지고 있어야함
 						&& beforeLocation.getRemainSeatCount() != -1 && afterLocation.getRemainSeatCount() != -1
 				) {
-					BusStatEntity statEntity = toBusStatEntity(beforeLocation, afterLocation);
+					BusRouteEntity route = routeMap.get(beforeLocation.getApiRouteId());
+					BusStationEntity station = stationMap.get(beforeLocation.getApiStationId());
+					BusStatEntity statEntity = toBusStatEntity(beforeLocation, afterLocation, route, station);
 					// 이미 존재하는 통계 정보인지 확인한 후 db에 저장
 					if (!statIdentifierSet.contains(statEntity.identifier())) {
 						busStatRepository.save(statEntity);
@@ -74,8 +86,11 @@ public class BusStatService {
 	}
 
 	// 두개의 위치정보를 가지고 BusStatEntity 를 생성
-	private static BusStatEntity toBusStatEntity(BusLocationEntity before, BusLocationEntity after) {
+	private static BusStatEntity toBusStatEntity(BusLocationEntity before, BusLocationEntity after,
+		BusRouteEntity route, BusStationEntity station) {
 		return BusStatEntity.builder()
+			.route(route)
+			.station(station)
 			.apiRouteId(after.getApiRouteId())
 			.apiStationId(before.getApiStationId())
 			.beforeSeat(before.getRemainSeatCount().intValue())

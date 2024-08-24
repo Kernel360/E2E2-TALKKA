@@ -16,6 +16,8 @@ import jakarta.persistence.EntityListeners;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -32,6 +34,14 @@ public class BusStatEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+
+	@ManyToOne
+	@JoinColumn(name = "route_id", nullable = true)
+	private BusRouteEntity route;
+
+	@ManyToOne
+	@JoinColumn(name = "station_id", nullable = true)
+	private BusStationEntity station;
 
 	@Column(name = "api_route_id", nullable = false)
 	private String apiRouteId;

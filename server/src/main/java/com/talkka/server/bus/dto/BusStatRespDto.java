@@ -7,6 +7,8 @@ import com.talkka.server.bus.enums.PlateType;
 
 public record BusStatRespDto(
 	Long statId,
+	Long routeId,
+	Long stationId,
 	String apiRouteId,
 	String apiStationId,
 	Integer beforeSeat,
@@ -24,6 +26,8 @@ public record BusStatRespDto(
 	public static BusStatRespDto of(BusStatEntity busStatEntity) {
 		return new BusStatRespDto(
 			busStatEntity.getId(),
+			busStatEntity.getRoute().getId(),
+			busStatEntity.getStation().getId(),
 			busStatEntity.getApiRouteId(),
 			busStatEntity.getApiStationId(),
 			busStatEntity.getBeforeSeat(),
