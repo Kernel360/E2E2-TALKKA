@@ -45,14 +45,12 @@ public class BusStatService {
 
 	public List<BusStatRespDto> getBusStatNow(Long routeId, Long stationId) {
 		LocalDateTime now = LocalDateTime.now();
-		int startTime = getTime(now.minusMinutes(30));
-		int endTime = getTime(now.plusMinutes(30));
 		return busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenNow(
 				routeId,
 				stationId,
-				now.getDayOfWeek().getValue(),
-				startTime,
-				endTime
+				getDayOfWeek(now),
+				getTime(now.minusMinutes(30)),
+				getTime(now.plusMinutes(30))
 			).stream()
 			.map(BusStatRespDto::of)
 			.toList();
@@ -115,7 +113,7 @@ public class BusStatService {
 			.afterTime(after.getCreatedAt())
 			.plateNo(after.getPlateNo())
 			.plateType(after.getPlateType())
-			.dayOfWeek(before.getCreatedAt().getDayOfWeek().getValue())
+			.dayOfWeek(getDayOfWeek(before.getCreatedAt()))
 			.time(getTime(before.getCreatedAt()))
 			.build();
 	}
@@ -123,6 +121,13 @@ public class BusStatService {
 	// 시간, 분을 이어붙인 int 값 ex) 23:59 -> 2359, 08:27->827
 	private static int getTime(LocalDateTime localDateTime) {
 		return localDateTime.getHour() * 100 + localDateTime.getMinute();
+	}
+
+	private static int getDayOfWeek(LocalDateTime localDateTime) {
+		if (localDateTime.getHour() < 3) {
+			return localDateTime.getDayOfWeek().getValue() - 1;
+		}
+		return localDateTime.getDayOfWeek().getValue();
 	}
 
 	// old logic
