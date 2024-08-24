@@ -6,4 +6,8 @@ public record ErrorRespDto(
 	public static ErrorRespDto of(Exception exception) {
 		return new ErrorRespDto(exception.getMessage());
 	}
+
+	public static ErrorRespDto of(String message) {
+		return new ErrorRespDto(message);
+	}
 }
