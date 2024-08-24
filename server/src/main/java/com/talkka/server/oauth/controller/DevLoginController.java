@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.oauth.service.DevLoginService;
 
@@ -27,8 +28,8 @@ public class DevLoginController implements DevLoginApi {
 	 * */
 	@Override
 	@GetMapping("/dev-login")
-	public ResponseEntity<String> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
-		ResponseEntity<String> response;
+	public ResponseEntity<?> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
+		ResponseEntity<?> response;
 
 		try {
 			Authentication authentication = loginService.getAuthentication(AuthRole.valueOf(authRole.toUpperCase()));
@@ -41,7 +42,7 @@ public class DevLoginController implements DevLoginApi {
 
 			response = ResponseEntity.ok("Success Login " + authRole + " cookie: " + session.getId());
 		} catch (IllegalArgumentException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 
 		return response;

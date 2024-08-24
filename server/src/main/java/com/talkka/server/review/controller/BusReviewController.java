@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.exception.BusRouteNotFoundException;
 import com.talkka.server.bus.exception.BusStationNotFoundException;
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
@@ -56,7 +57,7 @@ public class BusReviewController implements BusReviewApi {
 				reviewData = busReviewService.getBusReviewList(routeId);
 			}
 		} catch (InvalidTimeSlotEnumException exception) {
-			return ResponseEntity.badRequest().body(exception.getMessage());
+			return ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return ResponseEntity.ok(reviewData);
 	}
@@ -74,7 +75,7 @@ public class BusReviewController implements BusReviewApi {
 			response = ResponseEntity.ok(createdReview);
 		} catch (UserNotFoundException | BusStationNotFoundException
 				 | BusRouteNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
@@ -94,9 +95,9 @@ public class BusReviewController implements BusReviewApi {
 			response = ResponseEntity.ok(updatedReview);
 		} catch (ContentAccessException exception) {
 			response = ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body(exception.getMessage());
+				.body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException | BusReviewNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
@@ -113,9 +114,9 @@ public class BusReviewController implements BusReviewApi {
 			busReviewService.deleteBusReview(oAuth2UserInfo.getUserId(), busReviewId);
 			response = ResponseEntity.ok().build();
 		} catch (ContentAccessException exception) {
-			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
+			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException | BusReviewNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
