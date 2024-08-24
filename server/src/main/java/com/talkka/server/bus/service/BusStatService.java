@@ -33,9 +33,9 @@ public class BusStatService {
 	private final BusStatRepository busStatRepository;
 
 	public List<BusStatRespDto> getBusStat(BusStatReqDto busStatReqDto) {
-		return busStatRepository.findByApiRouteIdAndApiStationIdAndBeforeTimeBetween(
-				busStatReqDto.apiRouteId(),
-				busStatReqDto.apiStationId(),
+		return busStatRepository.findByRouteIdAndStationIdAndBeforeTimeBetween(
+				busStatReqDto.routeId(),
+				busStatReqDto.stationId(),
 				busStatReqDto.startDateTime(),
 				busStatReqDto.endDateTime()
 			).stream()
