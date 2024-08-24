@@ -17,7 +17,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 @Tag(name = "유저 API", description = "유저 API")
-public interface UserApiDocs {
+public interface UserApi {
 
 	@Operation(
 		summary = "유저 ID를 바탕으로 조회 ",

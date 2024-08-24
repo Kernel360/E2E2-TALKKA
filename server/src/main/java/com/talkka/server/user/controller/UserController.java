@@ -29,7 +29,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController implements UserApiDocs {
+public class UserController implements UserApi {
 	private final UserService userService;
 
 	@GetMapping("/{user_id}")
