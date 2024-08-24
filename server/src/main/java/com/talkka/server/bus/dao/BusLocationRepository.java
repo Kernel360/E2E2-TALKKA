@@ -13,7 +13,7 @@ public interface BusLocationRepository extends JpaRepository<BusLocationEntity, 
 	@Query(value = "select distinct l.apiCallNo from bus_location l")
 	List<Integer> getDistinctApiCallNoList();
 
-	@Query(value = "select count(*) from bus_location  l")
+	@Query(value = "select count(*) from bus_location")
 	Integer getRowNum();
 
 	List<BusLocationEntity> findByApiCallNo(Integer apiCallNo);
