@@ -19,8 +19,8 @@ public interface BusStatRepository extends JpaRepository<BusStatEntity, Long> {
 		LocalDateTime endTime
 	);
 
-	@Query("SELECT b FROM bus_stat b WHERE b.route.id = :routeId AND b.station.id = :stationId AND b.dayOfWeek = :dayOfWeek AND (b.time >= :startTime OR b.time <= :endTime)")
-	List<BusStatEntity> findByRouteIdAndStationIdAndDayOfWeekBetweenNow(
+	@Query("SELECT b FROM bus_stat b WHERE b.route.id = :routeId AND b.station.id = :stationId AND b.dayOfWeek = :dayOfWeek AND (b.time >= :startTime AND b.time <= :endTime)")
+	List<BusStatEntity> findByRouteIdAndStationIdAndDayOfWeekBetweenTime(
 		@Param("routeId") Long routeId,
 		@Param("stationId") Long stationId,
 		@Param("dayOfWeek") Integer dayOfWeek,

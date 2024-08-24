@@ -45,13 +45,35 @@ public class BusStatService {
 
 	public List<BusStatRespDto> getBusStatNow(Long routeId, Long stationId) {
 		LocalDateTime now = LocalDateTime.now();
-		return busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenNow(
+		int startTime = getTime(now.minusMinutes(30));
+		int endTime = getTime(now.plusMinutes(30));
+		List<BusStatEntity> result;
+		// 두 날짜에 겹쳐있는 경우 ex) 2349 ~ 0049
+		if (startTime > endTime) {
+			result = busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenTime(
 				routeId,
 				stationId,
 				getDayOfWeek(now),
-				getTime(now.minusMinutes(30)),
-				getTime(now.plusMinutes(30))
-			).stream()
+				startTime,
+				2359
+			);
+			result.addAll(busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenTime(
+				routeId,
+				stationId,
+				getDayOfWeek(now),
+				0,
+				endTime
+			));
+		} else {
+			result = busStatRepository.findByRouteIdAndStationIdAndDayOfWeekBetweenTime(
+				routeId,
+				stationId,
+				getDayOfWeek(now),
+				startTime,
+				endTime
+			);
+		}
+		return result.stream()
 			.map(BusStatRespDto::of)
 			.toList();
 	}
@@ -123,10 +145,11 @@ public class BusStatService {
 		return localDateTime.getHour() * 100 + localDateTime.getMinute();
 	}
 
-	// 새벽 3시 기준으로 요일 변경
+	// 새벽 3시 기준으로 요일 변경 1-7 사이 값을 가짐
 	private static int getDayOfWeek(LocalDateTime localDateTime) {
 		if (localDateTime.getHour() < 3) {
-			return (localDateTime.getDayOfWeek().getValue() + 6) % 7;
+			int beforeDayOfWeek = localDateTime.getDayOfWeek().getValue() - 1;
+			return beforeDayOfWeek == 0 ? 7 : beforeDayOfWeek;
 		}
 		return localDateTime.getDayOfWeek().getValue();
 	}
