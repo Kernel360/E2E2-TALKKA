@@ -31,7 +31,10 @@ public interface BusReviewApi {
 			description = "정상적으로 버스 리뷰를 조회했습니다.",
 			content = @Content(
 				mediaType = "application/json",
-				schema = @Schema(implementation = BusReviewRespDto.class)
+				array = @ArraySchema(
+					schema = @Schema(implementation = BusReviewRespDto.class),
+					maxItems = 10
+				)
 			)),
 		@ApiResponse(
 			responseCode = "400",
@@ -49,10 +52,9 @@ public interface BusReviewApi {
 		@Parameter(description = "시간대", schema = @Schema(implementation = TimeSlot.class))
 		String timeSlot);
 
-	// 버스 리뷰 조회 (USER, ADMIN 인증 필요)
 	@Operation(
-		summary = "버스 리뷰 조회",
-		description = "버스 리뷰를 조회합니다.",
+		summary = "버스 리뷰 생성",
+		description = "버스 리뷰를 생성합니다.",
 		security = {
 			@SecurityRequirement(name = "user"),
 			@SecurityRequirement(name = "admin")
@@ -60,10 +62,10 @@ public interface BusReviewApi {
 	@ApiResponses(value = {
 		@ApiResponse(
 			responseCode = "200",
-			description = "정상적으로 버스 리뷰를 조회했습니다.",
+			description = "정상적으로 버스 리뷰를 생성했습니다.",
 			content = @Content(
 				mediaType = "application/json",
-				array = @ArraySchema(schema = @Schema(implementation = BusReviewRespDto.class))
+				schema = @Schema(implementation = BusReviewRespDto.class)
 			)),
 		@ApiResponse(
 			responseCode = "400",
