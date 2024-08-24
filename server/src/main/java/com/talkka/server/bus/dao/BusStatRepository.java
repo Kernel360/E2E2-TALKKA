@@ -9,4 +9,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface BusStatRepository extends JpaRepository<BusStatEntity, Long> {
 	List<BusStatEntity> findByBeforeTimeBetween(LocalDateTime startTime, LocalDateTime endTime);
+
+	List<BusStatEntity> findByApiRouteIdAndApiStationIdAndBeforeTimeBetween(String apiRouteId, String apiStationId,
+		LocalDateTime startTime,
+		LocalDateTime endTime);
 }

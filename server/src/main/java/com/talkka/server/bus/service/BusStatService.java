@@ -15,6 +15,8 @@ import com.talkka.server.bus.dao.BusLocationEntity;
 import com.talkka.server.bus.dao.BusLocationRepository;
 import com.talkka.server.bus.dao.BusStatEntity;
 import com.talkka.server.bus.dao.BusStatRepository;
+import com.talkka.server.bus.dto.BusStatReqDto;
+import com.talkka.server.bus.dto.BusStatRespDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,17 @@ import lombok.RequiredArgsConstructor;
 public class BusStatService {
 	private final BusStatRepository busStatRepository;
 	private final BusLocationRepository busLocationRepository;
+
+	public List<BusStatRespDto> getBusStat(BusStatReqDto busStatReqDto) {
+		return busStatRepository.findByApiRouteIdAndApiStationIdAndBeforeTimeBetween(
+				busStatReqDto.apiRouteId(),
+				busStatReqDto.apiStationId(),
+				busStatReqDto.startDateTime(),
+				busStatReqDto.endDateTime()
+			).stream()
+			.map(BusStatRespDto::of)
+			.toList();
+	}
 
 	// 생성된 위치정보 중 start~end 기간에 있는 것들만 가공
 	@Transactional
@@ -63,14 +76,14 @@ public class BusStatService {
 	// 두개의 위치정보를 가지고 BusStatEntity 를 생성
 	private static BusStatEntity toBusStatEntity(BusLocationEntity before, BusLocationEntity after) {
 		return BusStatEntity.builder()
-			.routeId(after.getApiRouteId())
-			.stationId(before.getApiStationId())
+			.apiRouteId(after.getApiRouteId())
+			.apiStationId(before.getApiStationId())
 			.beforeSeat(before.getRemainSeatCount().intValue())
 			.afterSeat(after.getRemainSeatCount().intValue())
 			.seatDiff(after.getRemainSeatCount() - before.getRemainSeatCount())
-			.plateNo(after.getPlateNo())
 			.beforeTime(before.getCreatedAt())
 			.afterTime(after.getCreatedAt())
+			.plateNo(after.getPlateNo())
 			.plateType(after.getPlateType())
 			.build();
 	}

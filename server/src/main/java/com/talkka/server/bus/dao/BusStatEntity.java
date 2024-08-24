@@ -33,11 +33,11 @@ public class BusStatEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
-	@Column(name = "route_id", nullable = false)
-	private String routeId;
+	@Column(name = "api_route_id", nullable = false)
+	private String apiRouteId;
 
-	@Column(name = "station_id", nullable = false)
-	private String stationId;
+	@Column(name = "api_station_id", nullable = false)
+	private String apiStationId;
 
 	@Column(name = "before_seat", nullable = false)
 	private Integer beforeSeat;
@@ -48,14 +48,14 @@ public class BusStatEntity {
 	@Column(name = "seat_diff", nullable = false)
 	private Integer seatDiff;
 
-	@Column(name = "plate_no", nullable = false, length = 32)
-	private String plateNo;
-
 	@Column(name = "before_time", nullable = false)
 	private LocalDateTime beforeTime;
 
 	@Column(name = "after_time", nullable = false)
 	private LocalDateTime afterTime;
+
+	@Column(name = "plate_no", nullable = false, length = 32)
+	private String plateNo;
 
 	@Column(name = "plate_type", nullable = false, length = 1)
 	@Convert(converter = PlateTypeConverter.class)
@@ -85,8 +85,8 @@ public class BusStatEntity {
 	// 내용이 중복된 BusStatEntity 식별을 위한 메소드
 	public int identifier() {
 		return Objects.hash(
-			this.getRouteId(),
-			this.getStationId(),
+			this.getApiRouteId(),
+			this.getApiStationId(),
 			this.getBeforeSeat(),
 			this.getBeforeTime(),
 			this.getAfterSeat(),
