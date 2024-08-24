@@ -9,13 +9,13 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.bus.dao.BusLocationEntity;
 import com.talkka.server.bus.dao.BusLocationRepository;
 import com.talkka.server.bus.dao.BusStatEntity;
 import com.talkka.server.bus.dao.BusStatRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service

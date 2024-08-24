@@ -4,12 +4,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.bus.dao.BusLocationEntity;
 import com.talkka.server.bus.dao.BusLocationRepository;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Service
