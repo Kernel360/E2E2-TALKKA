@@ -43,7 +43,7 @@ public class BusStatController {
 		return ResponseEntity.ok(statList);
 	}
 
-	// 현재 시간 전후 30분 구간의
+	// 현재 시간 기준 이전30분 이후30분 구간의 같은 요일 통계 조회
 	@GetMapping("/now")
 	public ResponseEntity<List<BusStatRespDto>> getBusStatsNow(
 		@RequestParam(name = "routeId", required = false) Long routeId,

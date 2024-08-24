@@ -123,9 +123,10 @@ public class BusStatService {
 		return localDateTime.getHour() * 100 + localDateTime.getMinute();
 	}
 
+	// 새벽 3시 기준으로 요일 변경
 	private static int getDayOfWeek(LocalDateTime localDateTime) {
 		if (localDateTime.getHour() < 3) {
-			return localDateTime.getDayOfWeek().getValue() - 1;
+			return (localDateTime.getDayOfWeek().getValue() + 6) % 7;
 		}
 		return localDateTime.getDayOfWeek().getValue();
 	}
