@@ -67,7 +67,33 @@ public class BusStatEntity {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(routeId, stationId, beforeSeat, afterSeat, seatDiff, plateNo, beforeTime, afterTime,
-			plateType);
+		return getId().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null || getClass() != obj.getClass()) {
+			return false;
+		}
+		BusStatEntity that = (BusStatEntity)obj;
+		return getId().equals(that.getId());
+	}
+
+	// 내용이 중복된 BusStatEntity 식별을 위한 메소드
+	public int identifier() {
+		return Objects.hash(
+			this.getRouteId(),
+			this.getStationId(),
+			this.getBeforeSeat(),
+			this.getBeforeTime(),
+			this.getAfterSeat(),
+			this.getAfterTime(),
+			this.getSeatDiff(),
+			this.getPlateNo(),
+			this.getPlateType()
+		);
 	}
 }

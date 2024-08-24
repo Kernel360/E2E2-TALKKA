@@ -30,8 +30,8 @@ public class BusStatService {
 		List<BusLocationEntity> locationList = busLocationRepository.findByCreatedAtBetween(start, end);
 		Map<String, BusLocationEntity> locationMap = new HashMap<>();
 		// 가공하려는 기간에 속하는 통계정보를 가져와 엔티티의 해시코드를 set 에 저장
-		Set<Integer> statHashSet = new HashSet<>();
-		busStatRepository.findByBeforeTimeBetween(start, end).forEach(stat -> statHashSet.add(stat.hashCode()));
+		Set<Integer> statIdentifierSet = new HashSet<>();
+		busStatRepository.findByBeforeTimeBetween(start, end).forEach(stat -> statIdentifierSet.add(stat.identifier()));
 
 		for (BusLocationEntity afterLocation : locationList) {
 			// 같은 버스의 위치정보가 map 에 없으면 넣고 넘김
@@ -50,7 +50,7 @@ public class BusStatService {
 				) {
 					BusStatEntity statEntity = toBusStatEntity(beforeLocation, afterLocation);
 					// 이미 존재하는 통계 정보인지 확인한 후 db에 저장
-					if (!statHashSet.contains(statEntity.hashCode())) {
+					if (!statIdentifierSet.contains(statEntity.identifier())) {
 						busStatRepository.save(statEntity);
 					}
 				}
