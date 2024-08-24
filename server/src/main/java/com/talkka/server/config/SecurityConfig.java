@@ -51,7 +51,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/api/subway/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/bus-review/**").permitAll()
 				.requestMatchers("/swagger-ui/**").permitAll()
-				.requestMatchers("/v3/api-docs/**").permitAll()
+				.requestMatchers("/api-docs/**").permitAll()
 				.anyRequest().authenticated() //.hasAuthority(AuthRole.USER.getName())
 			)
 			.addFilterAfter(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
