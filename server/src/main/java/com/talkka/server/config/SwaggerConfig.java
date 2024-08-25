@@ -20,6 +20,10 @@ public class SwaggerConfig {
 			.info(apiInfo());
 	}
 
+	/**
+	 * Swagger Security 설정 추가
+	 * - AuthRole 에 해당하는 Authentication 을 OpenAPI 에 추가
+	 */
 	private Components components() {
 		return new Components()
 			.addSecuritySchemes("unregistered", securityScheme())
@@ -27,6 +31,10 @@ public class SwaggerConfig {
 			.addSecuritySchemes("user", securityScheme());
 	}
 
+	/**
+	 * Swagger Security 설정 추가
+	 *  Authentication 방식을 OpenAPI 에 추가
+	 */
 	private SecurityScheme securityScheme() {
 		return new SecurityScheme()
 			.type(SecurityScheme.Type.APIKEY)
@@ -34,12 +42,19 @@ public class SwaggerConfig {
 			.in(SecurityScheme.In.COOKIE);
 	}
 
+	/**
+	 * Swagger Security 설정 추가
+	 * - AuthRole 에 해당하는 Authentication 을 OpenAPI 에 추가
+	 */
 	private SecurityRequirement securityRequirement() {
 		return new SecurityRequirement()
 			.addList("user")
 			.addList("admin");
 	}
 
+	/**
+	 * Swagger API 정보 설정
+	 */
 	private Info apiInfo() {
 		return new Info()
 			.title("탈까 API")
