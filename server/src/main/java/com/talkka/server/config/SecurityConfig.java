@@ -93,7 +93,7 @@ public class SecurityConfig {
 					response.sendRedirect("http://localhost:3000/register");
 					return;
 				}
-				response.sendRedirect("http://localhost:3000");
+				response.sendRedirect("http://localhost:3000/login/ok");
 			}
 
 			private boolean isUnregisteredUser(Authentication authentication) {
