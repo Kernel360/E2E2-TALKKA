@@ -50,6 +50,7 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/api/bus/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/subway/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/bus-review/**").permitAll()
+				.requestMatchers("/admin/**").hasAuthority(AuthRole.ADMIN.getName())
 				.anyRequest().authenticated() //.hasAuthority(AuthRole.USER.getName())
 			)
 			.addFilterAfter(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
