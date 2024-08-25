@@ -1,41 +1,32 @@
 "use client"
 
 import { useState } from "react"
+import { paths } from "@/api/v1"
+import createClient from "openapi-fetch"
 
 import { Button } from "@/components/ui/button"
 
-
-
-
-
 export default function RegisterPage() {
   const [nickname, setNickname] = useState("")
+  const client = createClient<paths>({
+    baseUrl: process.env.NEXT_PUBLIC_SERVER_URL,
+    credentials: "include",
+  })
 
   const handleRegister = async () => {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/register`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ nickname }),
-        credentials: "include",
-      }
-    )
-
-    const json = await res.json()
-
-    if (res.ok) {
-      // 회원가입 성공 시, 로그아웃 페이지로 리다이렉트
-      alert("회원가입 성공 재로그인 해주세요")
-      window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/logout`
-    } else {
-      const error = json.message
+    const { data, error } = await client.POST("/api/auth/register", {
+      body: {
+        nickname,
+      },
+    })
+    if (error) {
       // 실패 처리 (예: 에러 메시지 표시)
-      alert(`회원가입 실패: ${error}`)
+      alert(`회원가입 실패: ${error.message}`)
       console.error("회원가입 실패")
+      return
     }
+    alert("회원가입 성공 재로그인 해주세요")
+    window.location.href = `${process.env.NEXT_PUBLIC_SERVER_URL}/api/auth/logout`
   }
 
   return (

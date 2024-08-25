@@ -1,37 +1,26 @@
 "use client"
 
-import UserMeModifyRequest from "@/types/api/users/UserMeModifyRequest"
+import useClient from "@/api/useClient"
+import { components } from "@/api/v1"
+
 import { Button } from "@/components/ui/button"
 
-
-
-
-
 interface AcceptButtonProps {
-  data: UserMeModifyRequest
+  data: components["schemas"]["UserUpdateReqDto"]
 }
 
 export default function AcceptButton(props: AcceptButtonProps) {
+  const client = useClient()
   const handleClick = async () => {
-    console.log(process.env.NEXT_PUBLIC_SERVER_URL)
-    const resp = await fetch(
-      `${process.env.NEXT_PUBLIC_SERVER_URL}/api/users/me`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ ...props.data }),
-        credentials: "include",
-      }
-    )
-    if (resp.ok) {
-      alert("수정 완료")
-      window.location.href = `/mypage`
-    } else {
-      const errorResponse: string = await resp.json()
-      alert(`수정 실패: ${errorResponse}`)
+    const { data, response } = await client.PUT("/api/users/me", {
+      body: props.data,
+    })
+    if (!response.ok) {
+      alert("수정 실패")
+      return
     }
+    alert("수정 완료")
+    window.location.href = `/mypage`
   }
   return <Button onClick={handleClick}>수정하기</Button>
 }

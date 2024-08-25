@@ -1,7 +1,9 @@
 "use client"
 
+import { components } from "@/api/v1"
+
 interface BookmarkProps {
-  bookmark: any
+  bookmark: components["schemas"]["BookmarkRespDto"]
 }
 
 export default function Bookmark({ bookmark }: BookmarkProps) {

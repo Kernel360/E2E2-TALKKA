@@ -2,11 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import useClient from "@/api/useClient"
+import { components } from "@/api/v1"
 
-import {
-  BusRouteResponse,
-  mockBusRoutes,
-} from "@/types/api/bus/route/BusRouteResponse"
 import {
   Command,
   CommandEmpty,
@@ -15,44 +13,30 @@ import {
   CommandList,
 } from "@/components/ui/command"
 
-
-
-
+type BusRoute = components["schemas"]["BusRouteRespDto"]
 
 interface SearchBusRouteProps {}
 
 export default function SearchBusRoute() {
   const [searchKeyword, setSearchKeyword] = useState<string>("")
-  const [busRouteList, setBusRouteList] = useState<BusRouteResponse[]>([])
+  const [busRouteList, setBusRouteList] = useState<BusRoute[]>([])
   const [onSearchBar, setOnSearchBar] = useState<boolean>(false)
   const router = useRouter()
+  const client = useClient()
   const fetchSearch = useCallback(async () => {
     if (searchKeyword.length == 0) {
       setBusRouteList([])
       return
     }
-    try {
-      const resp = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/bus/route?search=${searchKeyword}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      )
-      if (!resp.ok) {
-        setBusRouteList(mockBusRoutes)
-        console.error(resp.status)
-        return
-      }
-
-      const respData: BusRouteResponse[] = await resp.json()
-      setBusRouteList(respData)
-    } catch (error) {
-      setBusRouteList([])
+    const { data, response } = await client.GET(`/api/bus/route`, {
+      search: searchKeyword,
+    })
+    if (response.status !== 200) {
+      console.error(response.status)
       return
+    }
+    if (data) {
+      setBusRouteList(data)
     }
   }, [searchKeyword])
 

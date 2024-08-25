@@ -1,4 +1,5 @@
-import { BusRouteResponse } from "@/types/api/bus/route/BusRouteResponse"
+import { components } from "@/api/v1"
+
 import {
   Card,
   CardContent,
@@ -7,12 +8,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-
-
-
-
 interface BusCardProps {
-  busRoute: BusRouteResponse | null
+  busRoute: components["schemas"]["BusRouteRespDto"] | null
 }
 
 export default function BusCard({ busRoute }: BusCardProps) {

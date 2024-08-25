@@ -1,24 +1,19 @@
-import { cookies } from "next/headers"
+"use client"
+
 import Image from "next/image"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 
 import { api } from "@/config/api"
 
-
-
-
-
 export default function LoginPage() {
-  const naverUrl = `${api.baseUrl}${api.login.naver}`
-  const cookieStore = cookies()
-  const token = cookieStore.get("JSESSIONID")
+  const naverUrl = `${process.env.NEXT_PUBLIC_SERVER_URL}${api.login.naver}`
+  const isLogin = localStorage.getItem("isLogin")
 
-  if (token) {
-    // 이미 로그인된 유저일 경우 로그아웃 처리를 수행한다.
+  if (isLogin) {
     redirect("/logout")
+    return null
   }
-
   return (
     <section className="container items-center justify-center pb-8 pt-6 md:py-10 min-h-full">
       <div className="flex max-w-[980px] flex-col items-center justify-center gap-2">

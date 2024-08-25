@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation"
-import serverFetch, { FetchResult } from "@/utils/serverFetch"
+import useClient from "@/api/useClient"
+import { components } from "@/api/v1"
 
-import BusReviewResponse from "@/types/api/bus-review/BusReviewResponse"
-import { BusRouteResponse } from "@/types/api/bus/route/BusRouteResponse"
+import { TimeSlot } from "@/types/api/domain/TimeSlot"
 import BaseReviewContainer from "@/app/review/components/BaseReviewContainer"
 import BusCard from "@/app/review/components/BusInfoCard"
 import BusReviewListContainer from "@/app/review/components/BusReviewListContainer"
@@ -10,9 +10,8 @@ import ReviewCreateButton from "@/app/review/components/ReviewCreateButton"
 import RouteStationSelect from "@/app/review/components/RouteStationSelect"
 import SearchBusRoute from "@/app/review/components/SearchBusRoute"
 
-
-
-
+type BusReview = components["schemas"]["BusReviewRespDto"]
+type BusRoute = components["schemas"]["BusRouteRespDto"]
 
 const getQuery = (routeId?: string, stationId?: string, timeSlot?: string) => {
   if (!routeId) return new URLSearchParams()
@@ -40,40 +39,45 @@ export default async function BusReviewPage({
   params: { slug: string }
   searchParams: SearchParams
 }) {
+  const client = useClient()
   let routeId = searchParams?.routeId ?? undefined
   let stationId = searchParams?.stationId ?? undefined
   let timeSlot = searchParams.timeSlot ?? undefined
-  let reviews: BusReviewResponse[] = []
-  let busRoute: BusRouteResponse | null = null
+  let reviews: BusReview[] = []
+  let busRoute: BusRoute | null = null
   if (routeId) {
     // review list
     const query = getQuery(routeId, stationId, timeSlot)
     const apiUrl = createUrl("/api/bus-review", query)
-    const resp: FetchResult<BusReviewResponse[]> = await serverFetch<
-      BusReviewResponse[]
-    >(apiUrl, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
+    const { data, error, response } = await client.GET("/api/bus-review", {
+      params: {
+        query: {
+          routeId: +routeId,
+          stationId: stationId ? +stationId : undefined,
+          timeSlot: timeSlot ? (timeSlot as TimeSlot) : undefined,
+        },
       },
     })
-    if (resp.data) {
-      reviews = resp.data
+    if (data) {
+      reviews = data
     }
 
-    const routeUrl = `/api/bus/route/${routeId}`
-    const routeResp: FetchResult<BusRouteResponse> =
-      await serverFetch<BusRouteResponse>(routeUrl, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
+    const {
+      data: routeData,
+      error: routeError,
+      response: routeResponse,
+    } = await client.GET("/api/bus/route/{id}", {
+      params: {
+        path: {
+          id: +routeId,
         },
-      })
-    if (routeResp.error) {
+      },
+    })
+    if (routeError) {
       redirect("/review/bus")
     }
-    if (routeResp.data) {
-      busRoute = routeResp.data
+    if (routeData) {
+      busRoute = routeData
     }
   }
   return (

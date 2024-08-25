@@ -1,17 +1,14 @@
-// app/mypage/page.js
+"use client"
 
-import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
 
 import ModifyContainer from "./ModifyContainer"
 
-
-export default async function MyPage() {
-  const cookieStore = cookies()
-  const token = cookieStore.get("JSESSIONID")
+export default function MyPage() {
+  const isLogin = localStorage.getItem("isLogin")
 
   // 쿠키가 존재하지 않으면 로그인 페이지로 리다이렉트
-  if (!token) {
+  if (!isLogin) {
     // 리다이렉트 처리
     redirect("/login")
   }

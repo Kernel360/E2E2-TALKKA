@@ -1,14 +1,17 @@
 "use client"
 
 import { useCallback, useState } from "react"
-import { fetch } from "next/dist/compiled/@edge-runtime/primitives"
 import { useRouter, useSearchParams } from "next/navigation"
+import useClient from "@/api/useClient"
+
+import { TimeSlot } from "@/types/api/domain/TimeSlot"
 
 export default function CreateBusReviewPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const queryRouteId = searchParams.get("routeId")
   const queryStationId = searchParams.get("stationId")
+  const client = useClient()
 
   if (queryRouteId === null || queryStationId === null) {
     alert("잘못된 접근입니다.")
@@ -18,6 +21,9 @@ export default function CreateBusReviewPage() {
 
   const [routeId, setRouteId] = useState<number>(+queryRouteId)
   const [stationId, setStationId] = useState<number>(+queryStationId)
+  const [timeSlot, setTimeSlot] = useState<TimeSlot>("T_06_00")
+  const [content, setContent] = useState<string | undefined>(undefined)
+  const [rating, setRating] = useState<number>(10)
 
   const userData = localStorage.getItem("userData")
 
@@ -28,19 +34,20 @@ export default function CreateBusReviewPage() {
   }
 
   const postReview = useCallback(async () => {
-    const fetchResult = await fetch("/api/bus-review", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
+    const { data, error, response } = await client.POST("/api/bus-review", {
+      body: {
         routeId: routeId,
-        stationId: stationId,
-        content: "test",
-        rating: 10,
-      }),
+        busRouteStationId: stationId,
+        timeSlot: timeSlot,
+        content: content,
+        rating: rating,
+      },
     })
-    if (fetchResult.status === 200) {
+    if (error) {
+      alert(error.message)
+      return
+    }
+    if (data && response.ok) {
       alert("리뷰가 등록되었습니다.")
       router.push(`/review/bus?routeId=${routeId}`)
     }

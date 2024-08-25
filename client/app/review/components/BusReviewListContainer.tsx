@@ -1,8 +1,9 @@
-import BusReviewResponse from "@/types/api/bus-review/BusReviewResponse"
+import { components } from "@/api/v1"
+
 import BusReview from "@/app/review/components/BusReview"
 
 interface BusReviewListContainerProps {
-  reviews: BusReviewResponse[]
+  reviews: components["schemas"]["BusReviewRespDto"][]
 }
 
 export default function BusReviewListContainer({

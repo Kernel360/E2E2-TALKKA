@@ -2,8 +2,9 @@
 
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
+import useClient from "@/api/useClient"
+import { components } from "@/api/v1"
 
-import BusRouteStationResponse from "@/types/api/bus/route-station/BusRouteStationResponse"
 import {
   Select,
   SelectContent,
@@ -12,45 +13,33 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-
-
-
-
 interface RouteStationSelectProps {
   routeId: string | null
 }
+
+type BusRouteStation = components["schemas"]["BusRouteStationRespDto"]
 
 export default function RouteStationSelect({
   routeId,
 }: RouteStationSelectProps) {
   const [stationId, setStationId] = useState<number | undefined>(undefined)
-  const [stations, setStations] = useState<BusRouteStationResponse[]>([])
+  const [stations, setStations] = useState<BusRouteStation[]>([])
   const router = useRouter()
+  const client = useClient()
   const fetchRouteStations = useCallback(async () => {
     if (!routeId) {
       setStations([])
       return
     }
-    try {
-      const resp = await fetch(
-        `${process.env.NEXT_PUBLIC_SERVER_URL}/api/bus/route-station?routeId=${routeId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include",
-        }
-      )
-      if (!resp.ok) {
-        console.error(resp.status)
-        return
-      }
-      const respData: BusRouteStationResponse[] = await resp.json()
-      setStations(respData)
-    } catch (error) {
-      setStations([])
+    const { data, response } = await client.GET(`/api/bus/route-station`, {
+      routeId: routeId,
+    })
+    if (!response.ok) {
+      console.error(response.status)
       return
+    }
+    if (data) {
+      setStations(data)
     }
   }, [routeId])
 

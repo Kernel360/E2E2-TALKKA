@@ -1,4 +1,5 @@
-import BusReviewResponse from "@/types/api/bus-review/BusReviewResponse"
+import { components } from "@/api/v1"
+
 import { getTimeSlotFromString } from "@/types/api/domain/TimeSlot"
 import {
   Card,
@@ -8,12 +9,8 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 
-
-
-
-
 interface BusReviewProps {
-  review: BusReviewResponse
+  review: components["schemas"]["BusReviewRespDto"]
 }
 
 const getRatingString = (rating: number) => {
