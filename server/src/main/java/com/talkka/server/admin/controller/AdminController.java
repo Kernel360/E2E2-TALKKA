@@ -42,7 +42,7 @@ public class AdminController {
 
 	@GetMapping("/bookmark")
 	@Secured("ADMIN")
-	public String stat(Model model) {
+	public String bookmark(Model model) {
 		model.addAttribute("bookmarkStats", adminService.getBookmarkStats());
 		return "admin/bookmark";
 	}
