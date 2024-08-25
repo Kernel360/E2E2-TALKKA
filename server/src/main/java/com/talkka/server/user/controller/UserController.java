@@ -32,6 +32,7 @@ import lombok.RequiredArgsConstructor;
 public class UserController implements UserApi {
 	private final UserService userService;
 
+	@Override
 	@GetMapping("/{user_id}")
 	@Secured("ADMIN")
 	public ResponseEntity<?> getUser(
@@ -47,6 +48,7 @@ public class UserController implements UserApi {
 		return response;
 	}
 
+	@Override
 	@PutMapping("/{user_id}")
 	@Secured("ADMIN")
 	public ResponseEntity<?> updateUser(@PathVariable("user_id") Long userId,
@@ -64,6 +66,7 @@ public class UserController implements UserApi {
 		return response;
 	}
 
+	@Override
 	@DeleteMapping("/{user_id}")
 	@Secured("ADMIN")
 	public ResponseEntity<?> deleteUser(@PathVariable("user_id") Long userId) {
@@ -77,6 +80,7 @@ public class UserController implements UserApi {
 		return response;
 	}
 
+	@Override
 	@GetMapping("/me")
 	@Secured({"USER"})
 	public ResponseEntity<?> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
@@ -90,6 +94,7 @@ public class UserController implements UserApi {
 		return response;
 	}
 
+	@Override
 	@PutMapping("/me")
 	@Secured({"USER"})
 	public ResponseEntity<?> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,

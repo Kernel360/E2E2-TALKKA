@@ -29,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AuthController implements AuthApi {
 	private final UserService userService;
 
+	@Override
 	@PostMapping("/register")
 	@Secured("UNREGISTERED")
 	public ResponseEntity<?> register(

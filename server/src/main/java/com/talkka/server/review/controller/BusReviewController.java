@@ -40,6 +40,7 @@ public class BusReviewController implements BusReviewApi {
 
 	private final BusReviewService busReviewService;
 
+	@Override
 	@GetMapping("")
 	public ResponseEntity<?> getBusReviewList(
 		@RequestParam Long routeId,
@@ -62,6 +63,7 @@ public class BusReviewController implements BusReviewApi {
 		return ResponseEntity.ok(reviewData);
 	}
 
+	@Override
 	@PostMapping("")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> saveBusReview(
@@ -80,6 +82,7 @@ public class BusReviewController implements BusReviewApi {
 		return response;
 	}
 
+	@Override
 	@PutMapping("{bus_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBusReview(
@@ -102,6 +105,7 @@ public class BusReviewController implements BusReviewApi {
 		return response;
 	}
 
+	@Override
 	@DeleteMapping("{bus_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteBusReview(
