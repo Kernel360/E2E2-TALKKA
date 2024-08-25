@@ -1,93 +1,189 @@
-import { redirect } from "next/navigation"
+"use client"
+
+import { useCallback, useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import useClient from "@/api/useClient"
 import { components } from "@/api/v1"
 
 import { TimeSlot } from "@/types/api/domain/TimeSlot"
-import BaseReviewContainer from "@/app/review/components/BaseReviewContainer"
-import BusCard from "@/app/review/components/BusInfoCard"
+import BusCard from "@/app/review/components/BusCard"
 import BusReviewListContainer from "@/app/review/components/BusReviewListContainer"
-import ReviewCreateButton from "@/app/review/components/ReviewCreateButton"
-import RouteStationSelect from "@/app/review/components/RouteStationSelect"
+import CreateBusReview from "@/app/review/components/CreateBusReview"
 import SearchBusRoute from "@/app/review/components/SearchBusRoute"
+import SelectRouteStation from "@/app/review/components/SelectRouteStation"
+import SelectTimeSlots from "@/app/review/components/SelectTimeSlots"
 
 type BusReview = components["schemas"]["BusReviewRespDto"]
 type BusRoute = components["schemas"]["BusRouteRespDto"]
+type BusRouteStation = components["schemas"]["BusRouteStationRespDto"]
 
-const getQuery = (routeId?: string, stationId?: string, timeSlot?: string) => {
-  if (!routeId) return new URLSearchParams()
-  const query = new URLSearchParams()
-  query.append("routeId", routeId.toString())
-  if (stationId) query.append("stationId", stationId.toString())
-  if (timeSlot) query.append("timeSlot", timeSlot)
-  return query
-}
-
-const createUrl = (path: string, query: URLSearchParams) => {
-  return `${path}?${query.toString()}`
-}
-
-interface SearchParams {
-  routeId?: string
-  stationId?: string
-  timeSlot?: string
-}
-
-export default async function BusReviewPage({
-  params,
-  searchParams,
-}: {
-  params: { slug: string }
-  searchParams: SearchParams
-}) {
+export default function BusReviewPage() {
+  const router = useRouter()
   const client = useClient()
-  let routeId = searchParams?.routeId ?? undefined
-  let stationId = searchParams?.stationId ?? undefined
-  let timeSlot = searchParams.timeSlot ?? undefined
-  let reviews: BusReview[] = []
-  let busRoute: BusRoute | null = null
-  if (routeId) {
-    // review list
-    const query = getQuery(routeId, stationId, timeSlot)
-    const apiUrl = createUrl("/api/bus-review", query)
+
+  const [searchKeyword, setSearchKeyword] = useState<string>("")
+
+  const [routeId, setRouteId] = useState<number | undefined>(undefined)
+  const [stationId, setStationId] = useState<number | undefined>(undefined)
+  const [timeSlot, setTimeSlot] = useState<TimeSlot | undefined>(undefined)
+
+  const [reviews, setReviews] = useState<BusReview[]>([])
+  const [routes, setRoutes] = useState<BusRoute[]>([])
+  const [selectedRoute, setSelectedRoute] = useState<BusRoute | undefined>(
+    undefined
+  )
+  const [routeStations, setRouteStations] = useState<BusRouteStation[]>([])
+  const [content, setContent] = useState<string>("")
+  const [rating, setRating] = useState<number>(10)
+
+  const fetchBusReviewList = useCallback(async () => {
+    if (!routeId) {
+      return
+    }
     const { data, error, response } = await client.GET("/api/bus-review", {
       params: {
         query: {
-          routeId: +routeId,
-          stationId: stationId ? +stationId : undefined,
-          timeSlot: timeSlot ? (timeSlot as TimeSlot) : undefined,
+          routeId,
+          busRouteStationId: stationId,
+          timeSlot,
         },
       },
     })
-    if (data) {
-      reviews = data
+    if (error) {
+      alert(error.message)
+      return
     }
+    if (data && response.ok) {
+      setReviews(data)
+    }
+  }, [routeId, stationId, timeSlot])
 
-    const {
-      data: routeData,
-      error: routeError,
-      response: routeResponse,
-    } = await client.GET("/api/bus/route/{id}", {
+  const fetchBusRoutes = useCallback(async () => {
+    const { data, error, response } = await client.GET("/api/bus/route", {
+      params: {
+        query: {
+          search: searchKeyword,
+        },
+      },
+    })
+
+    if (error) {
+      setRoutes([])
+      return
+    }
+    if (data && response.ok) {
+      setRoutes(data)
+    }
+  }, [searchKeyword])
+
+  const fetchBusRouteStations = useCallback(async () => {
+    if (!routeId) {
+      return
+    }
+    const { data, error, response } = await client.GET(
+      "/api/bus/route-station",
+      {
+        params: {
+          query: {
+            routeId,
+          },
+        },
+      }
+    )
+    if (error) {
+      return
+    }
+    if (data && response.ok) {
+      setRouteStations(data)
+    }
+  }, [routeId])
+
+  const fetchRoute = useCallback(async () => {
+    if (!routeId) {
+      return
+    }
+    const { data, error, response } = await client.GET("/api/bus/route/{id}", {
       params: {
         path: {
-          id: +routeId,
+          id: routeId,
         },
       },
     })
-    if (routeError) {
-      redirect("/review/bus")
+    if (error) {
+      return
     }
-    if (routeData) {
-      busRoute = routeData
+    if (data && response.ok) {
+      setSelectedRoute(data)
     }
-  }
+  }, [routeId])
+
+  const fetchPostReview = useCallback(async () => {
+    if (!routeId || !stationId || !timeSlot || !rating) {
+      alert("모든 항목을 입력해주세요.")
+      return
+    }
+    const { data, error, response } = await client.POST("/api/bus-review", {
+      body: {
+        routeId: routeId,
+        busRouteStationId: stationId,
+        timeSlot: timeSlot,
+        content: content,
+        rating: rating,
+      },
+    })
+    if (error) {
+      alert(error.message)
+      return
+    }
+    if (data && response.ok) {
+      alert("리뷰가 등록되었습니다.")
+      fetchBusReviewList()
+      router.refresh()
+    }
+  }, [routeId, stationId, timeSlot, rating, content])
+
+  useEffect(() => {
+    fetchBusRoutes()
+  }, [])
+
+  useEffect(() => {
+    fetchBusRouteStations()
+    fetchRoute()
+  }, [routeId])
+
+  useEffect(() => {
+    fetchBusReviewList()
+  }, [routeId, stationId, timeSlot])
+
+  console.log(reviews)
+
   return (
-    <BaseReviewContainer defaultTransport={"BUS"}>
-      <SearchBusRoute />
-      {routeId && <RouteStationSelect routeId={routeId} />}
-      <BusCard busRoute={busRoute}></BusCard>
-      <p className={`font-extrabold`}>리뷰 모아보기</p>
-      <ReviewCreateButton />
-      <BusReviewListContainer reviews={reviews} />
-    </BaseReviewContainer>
+    <div className={"flex flex-col items-center gap-y-5 my-5"}>
+      <SearchBusRoute
+        onRouteSelect={setRouteId}
+        busRouteList={routes}
+        searchKeyword={searchKeyword}
+        setSearchKeyword={setSearchKeyword}
+      />
+      {selectedRoute && <BusCard busRoute={selectedRoute} />}
+      {routeId && (
+        <SelectRouteStation
+          routeStations={routeStations}
+          setStationId={setStationId}
+        />
+      )}
+      {!routeId && <div>버스 노선을 선택해주세요.</div>}
+      {routeId && <SelectTimeSlots setTimeSlot={setTimeSlot} />}
+      {reviews && <BusReviewListContainer reviews={reviews} />}
+      {routeId && stationId && timeSlot && (
+        <CreateBusReview
+          rating={rating}
+          setRating={setRating}
+          content={content}
+          setContent={setContent}
+          fetchPostReview={fetchPostReview}
+        />
+      )}
+    </div>
   )
 }
