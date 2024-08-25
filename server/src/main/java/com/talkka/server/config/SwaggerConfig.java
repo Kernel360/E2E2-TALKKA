@@ -22,6 +22,7 @@ public class SwaggerConfig {
 
 	private Components components() {
 		return new Components()
+			.addSecuritySchemes("unregistered", securityScheme())
 			.addSecuritySchemes("admin", securityScheme())
 			.addSecuritySchemes("user", securityScheme());
 	}
