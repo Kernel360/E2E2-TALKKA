@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.DisplayName;
@@ -109,6 +110,21 @@ class UserServiceTest {
 		assertThrows(UserNotFoundException.class, () -> {
 			userService.getUser(1L);
 		});
+	}
+
+	@Test
+	@DisplayName("전체 유저 조회 테스트")
+	void getAllUser() {
+		// given
+		UserEntity user1 = getUserEntity(1L);
+		UserEntity user2 = getUserEntity(2L);
+		UserEntity user3 = getUserEntity(3L);
+		given(userRepository.findAll()).willReturn(List.of(user1, user2, user3));
+		// when
+		List<UserDto> actual = userService.getAllUser();
+		// then
+		verify(userRepository, times(1)).findAll();
+		assertThat(actual.stream().map(UserDto::userId)).containsExactly(1L, 2L, 3L);
 	}
 
 	@Test
