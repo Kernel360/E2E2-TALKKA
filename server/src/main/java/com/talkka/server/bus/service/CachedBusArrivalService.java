@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BusArrivalServiceImpl implements BusArrivalService {
+public class CachedBusArrivalService implements BusArrivalService {
 	private final BusApiService busApiService;
 	private final CachedStorage<Long, BusArrivalRespDto> arrivalCache;
 
