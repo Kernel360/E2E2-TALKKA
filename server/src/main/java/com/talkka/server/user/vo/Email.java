@@ -5,7 +5,9 @@ import java.util.regex.Pattern;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.talkka.server.user.exception.InvalidEmailException;
 
-public record Email(String email) {
+import jakarta.validation.constraints.NotNull;
+
+public record Email(@NotNull String email) {
 	private static final String REGEX = "^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
 	private static final Pattern EMAIL_PATTERN = Pattern.compile(REGEX);
 

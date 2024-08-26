@@ -77,3 +77,8 @@ scheduling:
         - "22:00"
         - "23:00"
         - "00:00"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json

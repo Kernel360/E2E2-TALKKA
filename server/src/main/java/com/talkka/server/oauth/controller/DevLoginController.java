@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.oauth.service.DevLoginService;
 
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-public class DevLoginController {
+public class DevLoginController implements DevLoginApi {
 
 	private final DevLoginService loginService;
 
@@ -25,9 +26,10 @@ public class DevLoginController {
 	 * User 세션 생성 : localhost:8080/dev-login?authRole=user
 	 * Admin 세션 생성 : localhost:8080/dev-login?authRole=admin
 	 * */
+	@Override
 	@GetMapping("/dev-login")
-	public ResponseEntity<String> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
-		ResponseEntity<String> response;
+	public ResponseEntity<?> manualAuth(@RequestParam String authRole, HttpServletRequest request) {
+		ResponseEntity<?> response;
 
 		try {
 			Authentication authentication = loginService.getAuthentication(AuthRole.valueOf(authRole.toUpperCase()));
@@ -38,9 +40,9 @@ public class DevLoginController {
 			session.setAttribute(HttpSessionSecurityContextRepository.SPRING_SECURITY_CONTEXT_KEY,
 				SecurityContextHolder.getContext());
 
-			response = ResponseEntity.ok("Success Login " + authRole);
+			response = ResponseEntity.ok("Success Login " + authRole + " cookie: " + session.getId());
 		} catch (IllegalArgumentException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 
 		return response;

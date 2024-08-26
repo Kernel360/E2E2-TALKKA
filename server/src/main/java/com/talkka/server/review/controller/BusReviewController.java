@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.exception.BusRouteNotFoundException;
 import com.talkka.server.bus.exception.BusStationNotFoundException;
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
@@ -35,10 +36,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/bus-review")
 @RequiredArgsConstructor
-public class BusReviewController {
+public class BusReviewController implements BusReviewApi {
 
 	private final BusReviewService busReviewService;
 
+	@Override
 	@GetMapping("")
 	public ResponseEntity<?> getBusReviewList(
 		@RequestParam Long routeId,
@@ -56,11 +58,12 @@ public class BusReviewController {
 				reviewData = busReviewService.getBusReviewList(routeId);
 			}
 		} catch (InvalidTimeSlotEnumException exception) {
-			return ResponseEntity.badRequest().body(exception.getMessage());
+			return ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return ResponseEntity.ok(reviewData);
 	}
 
+	@Override
 	@PostMapping("")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> saveBusReview(
@@ -74,11 +77,12 @@ public class BusReviewController {
 			response = ResponseEntity.ok(createdReview);
 		} catch (UserNotFoundException | BusStationNotFoundException
 				 | BusRouteNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@PutMapping("{bus_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBusReview(
@@ -94,13 +98,14 @@ public class BusReviewController {
 			response = ResponseEntity.ok(updatedReview);
 		} catch (ContentAccessException exception) {
 			response = ResponseEntity.status(HttpStatus.FORBIDDEN)
-				.body(exception.getMessage());
+				.body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException | BusReviewNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@DeleteMapping("{bus_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteBusReview(
@@ -113,9 +118,9 @@ public class BusReviewController {
 			busReviewService.deleteBusReview(oAuth2UserInfo.getUserId(), busReviewId);
 			response = ResponseEntity.ok().build();
 		} catch (ContentAccessException exception) {
-			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(exception.getMessage());
+			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException | BusReviewNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}

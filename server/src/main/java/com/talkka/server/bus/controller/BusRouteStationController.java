@@ -13,15 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 import com.talkka.server.bus.dto.BusRouteStationRespDto;
 import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
 import com.talkka.server.bus.service.BusRouteStationService;
+import com.talkka.server.common.dto.ErrorRespDto;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/bus/route-station")
-public class BusRouteStationController {
+public class BusRouteStationController implements BusRouteStationApi {
 	private final BusRouteStationService routeStationService;
 
+	@Override
 	@GetMapping("/{id}")
 	public ResponseEntity<?> getRouteStationById(
 		@PathVariable("id") Long routeStationId) {
@@ -29,11 +31,12 @@ public class BusRouteStationController {
 		try {
 			response = ResponseEntity.ok(routeStationService.getRouteStationById(routeStationId));
 		} catch (BusRouteStationNotFoundException exception) {
-			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@GetMapping("")
 	public ResponseEntity<List<BusRouteStationRespDto>> getRouteStations(
 		@RequestParam(value = "routeId", required = false) Long routeId,
