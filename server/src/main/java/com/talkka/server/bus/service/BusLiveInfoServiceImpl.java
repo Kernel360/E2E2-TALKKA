@@ -21,13 +21,19 @@ public class BusLiveInfoServiceImpl implements BusLiveInfoService {
 		throws BusRouteStationNotFoundException, GetBusLiveArrivalInfoFailedException {
 		var busRouteStation = busRouteStationRepository.findById(routeStationId)
 			.orElseThrow(() -> new BusRouteStationNotFoundException(routeStationId));
-		var apiRouteId = busRouteStation.getRoute().getApiRouteId();
-		var apiStationId = busRouteStation.getStation().getApiStationId();
+		var route = busRouteStation.getRoute();
+		var station = busRouteStation.getStation();
+		var routeId = route.getId();
+		var routeName = route.getRouteName();
+		var apiRouteId = route.getApiRouteId();
+		var apiStationId = station.getApiStationId();
 		var arrivalInfo = busArrivalService.getBusArrivalInfo(routeStationId, apiRouteId, apiStationId)
 			.orElse(null);
 
 		return BusLiveInfoRespDto.of(
 			busRouteStation.getStationSeq(),
+			routeId,
+			routeName,
 			BusRouteStationRespDto.of(busRouteStation),
 			arrivalInfo);
 	}

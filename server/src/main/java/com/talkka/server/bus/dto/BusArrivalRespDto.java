@@ -7,7 +7,7 @@ import com.talkka.server.bus.enums.RunningStatus;
 
 import jakarta.validation.constraints.NotNull;
 
-public record BusLiveArrivalRespDto(
+public record BusArrivalRespDto(
 	@NotNull
 	Integer locationNo1,            // 첫번째차량 위치 정보
 	@NotNull
@@ -27,11 +27,11 @@ public record BusLiveArrivalRespDto(
 	@NotNull
 	RunningStatus flag                  // 상태구분
 ) {
-	public static Optional<BusLiveArrivalRespDto> of(BusArrivalBodyDto busArrivalBodyDto) {
+	public static Optional<BusArrivalRespDto> of(BusArrivalBodyDto busArrivalBodyDto) {
 		if (busArrivalBodyDto == null) {
 			return Optional.empty();
 		}
-		return Optional.of(new BusLiveArrivalRespDto(
+		return Optional.of(new BusArrivalRespDto(
 			busArrivalBodyDto.locationNo1(),
 			busArrivalBodyDto.predictTime1(),
 			busArrivalBodyDto.plateNo1(),
