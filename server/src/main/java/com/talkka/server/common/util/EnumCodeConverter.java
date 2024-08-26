@@ -1,5 +1,7 @@
 package com.talkka.server.common.util;
 
+import com.talkka.server.common.exception.enums.InvalidEnumCodeException;
+
 import jakarta.persistence.AttributeConverter;
 
 public abstract class EnumCodeConverter<T extends Enum<T> & EnumCodeInterface>
@@ -17,7 +19,7 @@ public abstract class EnumCodeConverter<T extends Enum<T> & EnumCodeInterface>
 	}
 
 	@Override
-	public T convertToEntityAttribute(String dbData) {
+	public T convertToEntityAttribute(String dbData) throws InvalidEnumCodeException {
 		return EnumCodeConverterUtils.fromCode(attributeClass, dbData);
 	}
 }

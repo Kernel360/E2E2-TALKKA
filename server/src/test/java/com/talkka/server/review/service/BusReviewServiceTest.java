@@ -3,10 +3,10 @@ package com.talkka.server.review.service;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -19,14 +19,20 @@ import com.talkka.server.bus.dao.BusRouteEntity;
 import com.talkka.server.bus.dao.BusRouteRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
 import com.talkka.server.common.enums.TimeSlot;
-import com.talkka.server.common.exception.http.ForbiddenException;
-import com.talkka.server.common.exception.http.NotFoundException;
-import com.talkka.server.common.util.EnumCodeConverterUtils;
+import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
+import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.dao.BusReviewEntity;
 import com.talkka.server.review.dao.BusReviewRepository;
-import com.talkka.server.review.dto.BusReviewReqDto;
+import com.talkka.server.review.dto.BusReviewDto;
 import com.talkka.server.review.dto.BusReviewRespDto;
+import com.talkka.server.review.exception.BusReviewNotFoundException;
+import com.talkka.server.review.exception.ContentAccessException;
+import com.talkka.server.review.exception.UserNotFoundException;
+import com.talkka.server.review.vo.Rating;
+import com.talkka.server.review.vo.ReviewContent;
 import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.dao.UserRepository;
 
@@ -48,17 +54,43 @@ public class BusReviewServiceTest {
 	@Mock
 	private BusRouteRepository busRouteRepository;
 
-	private BusReviewRespDto busReviewRespDtoFixture(Long userId) {
-		return BusReviewRespDto.builder()
+	@Mock
+	private ContentAccessValidator contentAccessValidator;
+
+	private final Long userId = 1L;
+	private final Long busReviewId = 1L;
+	private BusReviewDto busReviewDto;
+	private BusReviewEntity busReviewEntity;
+	private BusReviewEntity savedEntity;
+
+	@BeforeEach
+	public void setUp() {
+		busReviewDto = BusReviewDto.builder()
+			.id(busReviewId)
 			.userId(userId)
-			.userName("유저 이름")
 			.routeId(236000050L)
-			.routeName("노선 이름")
 			.busRouteStationId(1L)
-			.stationName("정류장 이름")
-			.content("리뷰 내용")
-			.timeSlot(TimeSlot.T_00_00.getCode())
-			.rating(4)
+			.content(new ReviewContent("리뷰 내용 123456678"))
+			.timeSlot(TimeSlot.T_00_30)
+			.rating(new Rating(5))
+			.build();
+		busReviewEntity = BusReviewEntity.builder()
+			.id(busReviewId)
+			.content(new ReviewContent("리뷰 내용 123456678"))
+			.timeSlot(TimeSlot.T_00_00)
+			.rating(new Rating(4))
+			.writer(getUserFixture(userId))
+			.route(getBusRouteFixture(236000050L))
+			.station(getBusRouteStationFixture(1L))
+			.build();
+		savedEntity = BusReviewEntity.builder()
+			.id(busReviewId)
+			.content(busReviewDto.content())
+			.timeSlot(busReviewDto.timeSlot())
+			.rating(busReviewDto.rating())
+			.writer(getUserFixture(userId))
+			.route(getBusRouteFixture(236000050L))
+			.station(getBusRouteStationFixture(1L))
 			.build();
 	}
 
@@ -83,434 +115,267 @@ public class BusReviewServiceTest {
 			.build();
 	}
 
-	private List<BusReviewEntity> getReviewEntity(Long routeId, Long busRouteStationId, TimeSlot timeSlot) {
-		if (busRouteStationId == null) {
-			return List.of(
-				BusReviewEntity.builder()
-					.id(1L)
-					.content("리뷰 내용")
-					.timeSlot(TimeSlot.T_00_00)
-					.rating(4)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(1L))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now().plusMinutes(1))
-					.updatedAt(LocalDateTime.now())
-					.build(),
-				BusReviewEntity.builder()
-					.id(2L)
-					.content("리뷰 내용")
-					.timeSlot(TimeSlot.T_00_00)
-					.rating(5)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(1L))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now())
-					.updatedAt(LocalDateTime.now())
-					.build()
-			);
-		} else if (timeSlot == null) {
-			return List.of(
-				BusReviewEntity.builder()
-					.id(1L)
-					.content("리뷰 내용")
-					.timeSlot(TimeSlot.T_00_00)
-					.rating(4)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(busRouteStationId))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now().plusMinutes(1))
-					.updatedAt(LocalDateTime.now())
-					.build(),
-				BusReviewEntity.builder()
-					.id(2L)
-					.content("리뷰 내용")
-					.timeSlot(TimeSlot.T_00_00)
-					.rating(5)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(busRouteStationId))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now().plusMinutes(1))
-					.updatedAt(LocalDateTime.now())
-					.build()
-			);
-		} else {
-			return List.of(
-				BusReviewEntity.builder()
-					.id(1L)
-					.content("리뷰 내용")
-					.timeSlot(timeSlot)
-					.rating(4)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(busRouteStationId))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now())
-					.updatedAt(LocalDateTime.now())
-					.build(),
-				BusReviewEntity.builder()
-					.id(2L)
-					.content("리뷰 내용")
-					.timeSlot(timeSlot)
-					.rating(5)
-					.writer(getUserFixture(1L))
-					.station(getBusRouteStationFixture(busRouteStationId))
-					.route(getBusRouteFixture(routeId))
-					.createdAt(LocalDateTime.now())
-					.updatedAt(LocalDateTime.now())
-					.build()
-			);
-		}
-	}
-
 	@Nested
 	@DisplayName("getBusReviewList 메서드 테스트")
 	public class GetBusReviewListTest {
-		@Test
-		void 버스_노선_아이디_대한_리뷰를_조회한다() {
-			// given
-			Long routeId = 236000050L;
-			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, null, null);
-			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
+		private List<BusReviewEntity> reviewEntityList;
 
+		@BeforeEach
+		void setUp() {
+			reviewEntityList = List.of(busReviewEntity);
+		}
+
+		@Test
+		@DisplayName("routeId만 주어진 경우 BusReviewRepository의 findAllByRouteIdOrderByCreatedAtDesc 메서드를 호출한다.")
+		void testGetBusReviewListWithRouteId() {
+			// given
 			given(busReviewRepository.findAllByRouteIdOrderByCreatedAtDesc(anyLong())).willReturn(reviewEntityList);
 			// when
-			var result = busReviewService.getBusReviewList(routeId);
+			busReviewService.getBusReviewList(236000050L);
 			// then
-			verify(busReviewRepository, times(1)).findAllByRouteIdOrderByCreatedAtDesc(routeId);
-			assertThat(result).isEqualTo(expected);
+			verify(busReviewRepository, times(1)).findAllByRouteIdOrderByCreatedAtDesc(anyLong());
 		}
 
 		@Test
-		void 버스_노선_아이디와_정거장에_대한_리뷰를_조회한다() {
+		@DisplayName("routeId, busRouteStationId만 주어진 경우 BusReviewRepository의 findAllByRouteIdAndStationIdOrderByCreatedAtDesc 메서드를 호출한다.")
+		void testGetBusReviewListWithRouteIdAndBusRouteStationId() {
 			// given
-			Long routeId = 236000050L;
-			Long busRouteStationId = 1L;
-
-			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, busRouteStationId, null);
-			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
-			given(busReviewRepository.findAllByRouteIdAndStationIdOrderByCreatedAtDesc(anyLong(), anyLong()))
-				.willReturn(reviewEntityList);
+			given(
+				busReviewRepository.findAllByRouteIdAndStationIdOrderByCreatedAtDesc(anyLong(), anyLong())).willReturn(
+				reviewEntityList);
 			// when
-			var result = busReviewService.getBusReviewList(routeId, busRouteStationId);
+			busReviewService.getBusReviewList(236000050L, 1L);
 			// then
-			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdOrderByCreatedAtDesc(routeId,
-				busRouteStationId);
-			assertThat(result).isEqualTo(expected);
+			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdOrderByCreatedAtDesc(anyLong(),
+				anyLong());
 		}
 
 		@Test
-		void 버스_노선_아이디와_정거장_그리고_타임슬롯에_대한_리뷰를_조회한다() {
+		@DisplayName("routeId, busRouteStationId, timeSlot만 주어진 경우 BusReviewRepository의 findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc 메서드를 호출한다.")
+		void testGetBusReviewListWithRouteIdAndBusRouteStationIdAndTimeSlot() {
 			// given
-			Long routeId = 236000050L;
-			Long busRouteStationId = 1L;
-			TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
-
-			List<BusReviewEntity> reviewEntityList = getReviewEntity(routeId, busRouteStationId, timeSlot);
-			var expected = reviewEntityList.stream().map(BusReviewRespDto::of).toList();
 			given(busReviewRepository.findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(anyLong(), anyLong(),
 				any(TimeSlot.class))).willReturn(reviewEntityList);
 			// when
-			var result = busReviewService.getBusReviewList(routeId, busRouteStationId, TimeSlot.T_00_00.getCode());
+			busReviewService.getBusReviewList(236000050L, 1L, "T_00_00");
 			// then
-			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(routeId,
-				busRouteStationId, timeSlot);
-			assertThat(result).isEqualTo(expected);
+			verify(busReviewRepository, times(1)).findAllByRouteIdAndStationIdAndTimeSlotOrderByCreatedAtDesc(anyLong(),
+				anyLong(), any(TimeSlot.class));
+		}
+
+		@Test
+		@DisplayName("TimeSlot이 잘못된 경우 InvalidTimeSlotEnumException을 발생시킨다.")
+		void testInvalidTimeSlotEnumException() {
+			// given
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.getBusReviewList(236000050L, 1L, "T_00_00_00"))
+				.isInstanceOf(InvalidTimeSlotEnumException.class);
 		}
 	}
 
 	@Nested
 	@DisplayName("createBusReview 메서드 테스트")
 	public class CreateBusReviewTest {
-
 		@Test
-		void 제안된_요청에_따라_버스리뷰를_생성한다() {
-			//given
-			UserEntity user = getUserFixture(1L);
-			BusRouteStationEntity station = getBusRouteStationFixture(1L);
-			BusRouteEntity route = getBusRouteFixture(236000050L);
-			TimeSlot timeSlot = EnumCodeConverterUtils.<TimeSlot>fromCode(TimeSlot.class,
-				TimeSlot.T_00_00.getCode());
-			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-				.busRouteStationId(1L)
-				.routeId(236000050L)
-				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
-				.rating(4)
-				.build();
-
-			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
-				.content("리뷰 내용")
-				.timeSlot(timeSlot)
-				.rating(4)
-				.writer(user)
-				.station(station)
-				.route(route)
-				.build();
-
-			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(station));
-			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(route));
-			given(busReviewRepository.save(any(BusReviewEntity.class))).willReturn(busReviewEntity);
-
-			BusReviewRespDto resultDto = busReviewRespDtoFixture(user.getId());
-
-			//when
-			BusReviewRespDto result = busReviewService.createBusReview(user.getId(), busReviewReqDto);
-
-			//then
-			assertThat(result).isEqualTo(resultDto);
+		@DisplayName("리뷰 생성시, 생성된 리뷰의 dto를 반환한다.")
+		void testCreateReviewReturnValue() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(getBusRouteStationFixture(1L)));
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(getBusRouteFixture(236000050L)));
+			given(busReviewRepository.save(any())).willReturn(savedEntity);
+			// when
+			var result = busReviewService.createBusReview(busReviewDto);
+			// then
+			assertThat(result).isEqualTo(BusReviewRespDto.of(savedEntity));
 		}
 
 		@Test
-		void 유저를_못찾을_경우_Exception을_throw_한다() {
-			//given
-			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-				.build();
-
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.createBusReview(null, busReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("존재하지 않는 유저입니다.");
+		@DisplayName("리뷰 생성시, BusReviewRepository의 save 메서드를 호출한다.")
+		void testCreateReview() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(getBusRouteStationFixture(1L)));
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(getBusRouteFixture(236000050L)));
+			given(busReviewRepository.save(any())).willReturn(savedEntity);
+			// when
+			busReviewService.createBusReview(busReviewDto);
+			// then
+			verify(busReviewRepository, times(1)).save(any(BusReviewEntity.class));
 		}
 
 		@Test
-		void 경유_정류장을_못찾을_경우_Exceptio을_throw_한다() {
-			//given
-			UserEntity user = getUserFixture(1L);
-			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-				.busRouteStationId(null)
-				.routeId(236000050L)
-				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
-				.rating(4)
-				.build();
-
-			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.createBusReview(user.getId(), busReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("존재하지 않는 경유 정류장입니다.");
+		@DisplayName("리뷰 생성시, UserEntity가 없을 경우 UserNotFoundException을 발생시킨다.")
+		void testUserNotFoundException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.empty());
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.createBusReview(busReviewDto))
+				.isInstanceOf(UserNotFoundException.class);
 		}
 
 		@Test
-		void 노선을_못찾을_경우_Exceptio을_throw_한다() {
-			//given
-			UserEntity user = getUserFixture(1L);
-			BusRouteStationEntity station = getBusRouteStationFixture(1L);
-			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-				.busRouteStationId(1L)
-				.routeId(null)
-				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00.getCode())
-				.rating(4)
-				.build();
-
-			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(station));
-
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.createBusReview(anyLong(), busReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("존재하지 않는 노선입니다.");
+		@DisplayName("리뷰 생성시, BusRouteStationEntity가 없을 경우 BusRouteStationNotFoundException을 발생시킨다.")
+		void testBusStationNotFoundException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.empty());
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.createBusReview(busReviewDto))
+				.isInstanceOf(BusRouteStationNotFoundException.class);
 		}
 
 		@Test
-		void 올바른_TimeSlot의_Code가_아닐_경우_IllegalArgumentException_을_throw_한다() {
-			//given
-			UserEntity user = getUserFixture(1L);
-			BusRouteStationEntity station = getBusRouteStationFixture(1L);
-			BusRouteEntity route = getBusRouteFixture(236000050L);
-			Class<?> exceptionClass = IllegalArgumentException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-				.busRouteStationId(1L)
-				.routeId(236000050L)
-				.content("리뷰 내용")
-				.timeSlot("49")
-				.rating(4)
-				.build();
-
-			given(userRepository.findById(anyLong())).willReturn(Optional.of(user));
-			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(station));
-			given(busRouteRepository.findById(anyLong())).willReturn(Optional.of(route));
-
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.createBusReview(anyLong(), busReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("Invalid value: 49");
+		@DisplayName("리뷰 생성시, BusRouteEntity가 없을 경우 BusRouteNotFoundException을 발생시킨다.")
+		void testBusRouteNotFoundException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busRouteStationRepository.findById(anyLong())).willReturn(Optional.of(getBusRouteStationFixture(1L)));
+			given(busRouteRepository.findById(anyLong())).willReturn(Optional.empty());
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.createBusReview(busReviewDto))
+				.isInstanceOf(BusRouteNotFoundException.class);
 		}
 	}
 
 	@Nested
 	@DisplayName("updateBusReviewList 메서드 테스트")
 	public class UpdateBusReviewTest {
-		BusReviewReqDto busReviewReqDto = BusReviewReqDto.builder()
-			.routeId(236000050L)
-			.busRouteStationId(1L)
-			.content("변경된 리뷰 내용")
-			.timeSlot(TimeSlot.T_00_30.getCode())
-			.rating(5)
-			.build();
-
 		@Test
-		void 리뷰를_업데이트_한_경우_업데이트_된_BusReviewEntity의_BusReviewRespDto를_반환한다() {
-			//given
-			UserEntity user = getUserFixture(1L);
-			BusRouteStationEntity station = getBusRouteStationFixture(1L);
-			BusRouteEntity route = getBusRouteFixture(236000050L);
-			TimeSlot timeSlot = EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_00.getCode());
-			BusReviewEntity originEntity = BusReviewEntity.builder()
-				.id(1L)
-				.content("리뷰 내용")
-				.timeSlot(timeSlot)
-				.rating(4)
-				.writer(user)
-				.station(station)
-				.route(route)
-				.build();
-
-			BusReviewEntity updatedEntity = busReviewReqDto.toEntity(user, station, route,
-				EnumCodeConverterUtils.fromCode(TimeSlot.class, TimeSlot.T_00_30.getCode()));
-
-			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(originEntity));
-
-			BusReviewRespDto resultDto = BusReviewRespDto.of(updatedEntity);
-
-			//when
-			BusReviewRespDto updatedReview = busReviewService.updateBusReview(user.getId(), originEntity.getId(),
-				busReviewReqDto);
-
-			//then
-			assertThat(updatedReview).isEqualTo(resultDto);
+		@DisplayName("리뷰 업데이트 이후 업데이트된 리뷰의 dto를 반환한다.")
+		void testUpdateReviewReturnValue() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			given(busReviewRepository.save(any())).willReturn(savedEntity);
+			// when
+			var result = busReviewService.updateBusReview(busReviewDto);
+			// then
+			assertThat(result).isEqualTo(BusReviewRespDto.of(savedEntity));
 		}
 
 		@Test
-		void 리뷰를_찾지_못하는_경우_Exception을_throw_한다() {
-			//given
-			Class<?> exceptionClass = NotFoundException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
+		@DisplayName("리뷰 업데이트시, BusReviewRepository의 findById, save 메서드를 호출한다.")
+		void testCallRepositoryMethods() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			given(busReviewRepository.save(any())).willReturn(savedEntity);
+			// when
+			busReviewService.updateBusReview(busReviewDto);
+			// then
+			verify(busReviewRepository, times(1)).findById(anyLong());
+			verify(busReviewRepository, times(1)).save(any(BusReviewEntity.class));
+		}
+
+		@Test
+		@DisplayName("리뷰 업데이트시, BusReviewRepository의 findById 메서드가 리턴한 값이 없을 경우 BusReviewNotFoundException을 발생시킨다.")
+		void testBusReviewNotFoundException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.empty());
-			//when
-			//then
-			assertThatThrownBy(
-				() -> busReviewService.updateBusReview(1L, 1L, busReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("존재하지 않는 리뷰입니다.");
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.updateBusReview(busReviewDto))
+				.isInstanceOf(BusReviewNotFoundException.class);
 		}
 
 		@Test
-		void 유저의_리뷰가_아닌_경우_Exception을_발생시킨다() {
-			//given
-			Long userId = 1L;
-			Long busReviewId = 1L;
-			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
-				.id(busReviewId)
-				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00)
-				.rating(4)
-				.writer(getUserFixture(userId + 1))
-				.build();
+		@DisplayName("리뷰 업데이트시, ContentAccessValidator의 validateOwnerContentAccess 메서드를 호출한다.")
+		void testCallContentAccessValidator() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.updateBusReview(userId, busReviewId, busReviewReqDto))
-				.isInstanceOf(ForbiddenException.class)
-				.hasMessage("작성자와 일치하지 않는 ID입니다.");
+			given(busReviewRepository.save(any())).willReturn(savedEntity);
+			// when
+			busReviewService.updateBusReview(busReviewDto);
+			// then
+			verify(contentAccessValidator, times(1)).validateOwnerContentAccess(anyLong(), any(), anyLong());
 		}
 
 		@Test
-		void 올바른_TimeSlot의_Code가_아닐_경우_IllegalArgumentException_을_throw_한다() {
-			//given
-			Long userId = 1L;
-			Long busReviewId = 1L;
-			Class<?> exceptionClass = IllegalArgumentException.class; // 추후 변경될 가능성이 있어, 변수로 따로 지정함
-			UserEntity user = getUserFixture(1L);
-
-			BusReviewReqDto wrongBusReviewReqDto = BusReviewReqDto.builder()
-				.routeId(236000050L)
-				.busRouteStationId(1L)
-				.content("변경된 리뷰 내용")
-				.timeSlot("49")
-				.rating(5)
-				.build();
-
-			BusReviewEntity busReviewEntity = BusReviewEntity.builder()
-				.id(busReviewId)
-				.content("리뷰 내용")
-				.timeSlot(TimeSlot.T_00_00)
-				.rating(4)
-				.writer(getUserFixture(userId))
-				.build();
-
+		@DisplayName("리뷰 업데이트시, 유저가 리뷰 작성자가 아닐 경우 ContentAccessException을 발생시킨다.")
+		void testContentAccessException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
-
-			//when
-			//then
-			assertThatThrownBy(() -> busReviewService.updateBusReview(userId, busReviewId, wrongBusReviewReqDto))
-				.isInstanceOf(exceptionClass)
-				.hasMessage("Invalid value: 49");
+			willThrow(new ContentAccessException()).given(contentAccessValidator)
+				.validateOwnerContentAccess(anyLong(), any(), anyLong());
+			// when
+			// then
+			assertThatThrownBy(() -> busReviewService.updateBusReview(busReviewDto))
+				.isInstanceOf(ContentAccessException.class);
 		}
 	}
 
 	@Nested
 	@DisplayName("deleteBusReview 메서드")
 	public class DeleteBusReviewTest {
-
 		@Test
-		void 유저의_리뷰를_삭제한다() {
+		@DisplayName("리뷰 삭제 이후 삭제된 리뷰의 id를 반환한다.")
+		void testDeleteReviewReturnValue() {
 			// given
-			Long userId = 1L;
-			Long busReviewId = 1L;
-			BusReviewEntity reviewEntity = BusReviewEntity.builder()
-				.id(busReviewId)
-				.writer(getUserFixture(userId))
-				.build();
-
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
 			// when
-			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(reviewEntity));
-
+			Long deletedReviewId = busReviewService.deleteBusReview(userId, busReviewId);
 			// then
-			var result = busReviewService.deleteBusReview(userId, busReviewId);
-			assertThat(result).isEqualTo(busReviewId);
+			assertThat(deletedReviewId).isEqualTo(busReviewId);
 		}
 
 		@Test
-		void 존재하지않는_리뷰일경우_Exception을_발생시킨다() {
+		@DisplayName("리뷰 삭제시, BusReviewRepository의 findById, deleteById 메서드를 호출한다.")
+		void testCallRepositoryMethods() {
 			// given
-			Long userId = 1L;
-			Long busReviewId = 1L;
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			// when
+			busReviewService.deleteBusReview(userId, busReviewId);
+			// then
+			verify(busReviewRepository, times(1)).findById(anyLong());
+			verify(busReviewRepository, times(1)).deleteById(anyLong());
+		}
 
+		@Test
+		@DisplayName("리뷰 삭제시, BusReviewRepository의 findById 메서드가 리턴한 값이 없을 경우 BusReviewNotFoundException을 발생시킨다.")
+		void testBusReviewNotFoundException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
 			given(busReviewRepository.findById(anyLong())).willReturn(Optional.empty());
 			// when
 			// then
-			assertThatThrownBy(
-				() -> busReviewService.deleteBusReview(userId, busReviewId)
-			).isInstanceOf(NotFoundException.class)
-				.hasMessage("존재하지 않는 리뷰입니다.");
+			assertThatThrownBy(() -> busReviewService.deleteBusReview(userId, busReviewId))
+				.isInstanceOf(BusReviewNotFoundException.class);
 		}
 
 		@Test
-		void 유저의_리뷰가_아닌_경우_Exception을_발생시킨다() {
+		@DisplayName("리뷰 삭제시, ContentAccessValidator의 validateOwnerContentAccess 메서드를 호출한다.")
+		void testCallContentAccessValidator() {
 			// given
-			Long userId = 1L;
-			Long busReviewId = 1L;
-			BusReviewEntity reviewEntity = BusReviewEntity.builder()
-				.id(busReviewId)
-				.writer(getUserFixture(userId + 1))
-				.build();
-			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(reviewEntity));
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			// when
+			busReviewService.deleteBusReview(userId, busReviewId);
+			// then
+			verify(contentAccessValidator, times(1)).validateOwnerContentAccess(anyLong(), any(), anyLong());
+		}
+
+		@Test
+		@DisplayName("리뷰 삭제시, 유저가 리뷰 작성자가 아닐 경우 ContentAccessException을 발생시킨다.")
+		void testContentAccessException() {
+			// given
+			given(userRepository.findById(anyLong())).willReturn(Optional.of(getUserFixture(userId)));
+			given(busReviewRepository.findById(anyLong())).willReturn(Optional.of(busReviewEntity));
+			willThrow(new ContentAccessException()).given(contentAccessValidator)
+				.validateOwnerContentAccess(anyLong(), any(), anyLong());
 			// when
 			// then
-			assertThatThrownBy(
-				() -> busReviewService.deleteBusReview(userId, busReviewId)
-			).isInstanceOf(ForbiddenException.class)
-				.hasMessage("작성자와 일치하지 않는 ID입니다.");
+			assertThatThrownBy(() -> busReviewService.deleteBusReview(userId, busReviewId))
+				.isInstanceOf(ContentAccessException.class);
 		}
 	}
 }

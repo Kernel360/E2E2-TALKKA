@@ -12,7 +12,9 @@ import com.talkka.server.bus.dao.BusStationEntity;
 import com.talkka.server.bus.dao.BusStationRepository;
 import com.talkka.server.bus.dto.BusRouteStationCreateDto;
 import com.talkka.server.bus.dto.BusRouteStationRespDto;
-import com.talkka.server.common.exception.http.BadRequestException;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
+import com.talkka.server.bus.exception.BusStationNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,19 +26,25 @@ public class BusRouteStationService {
 	private final BusStationRepository stationRepository;
 	private final BusRouteStationRepository routeStationRepository;
 
-	public BusRouteStationRespDto createRouteStation(BusRouteStationCreateDto busRouteStationCreateDto) {
-		BusRouteEntity routeEntity = routeRepository.findByApiRouteId(busRouteStationCreateDto.apiRouteId())
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선입니다."));
-		BusStationEntity stationEntity = stationRepository.findByApiStationId(
-				busRouteStationCreateDto.apiStationId())
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 정류장입니다."));
+	// TODO controller에 추가 로직 없음, 추후 관리자가 추가할 수 있도록 추가 필요
+	public BusRouteStationRespDto createRouteStation(BusRouteStationCreateDto busRouteStationCreateDto)
+		throws BusRouteNotFoundException, BusStationNotFoundException {
+		Long routeId = busRouteStationCreateDto.routeId();
+		Long stationId = busRouteStationCreateDto.stationId();
+
+		BusRouteEntity routeEntity = routeRepository.findById(routeId)
+			.orElseThrow(() -> new BusRouteNotFoundException(routeId));
+		BusStationEntity stationEntity = stationRepository.findById(stationId)
+			.orElseThrow(() -> new BusStationNotFoundException(stationId));
+
 		BusRouteStationEntity busRouteStationEntity = busRouteStationCreateDto.toEntity(routeEntity, stationEntity);
 		return BusRouteStationRespDto.of(routeStationRepository.save(busRouteStationEntity));
 	}
 
-	public BusRouteStationRespDto getRouteStationById(Long id) {
+	public BusRouteStationRespDto getRouteStationById(Long id)
+		throws BusRouteStationNotFoundException {
 		BusRouteStationEntity busRouteStationEntity = routeStationRepository.findById(id)
-			.orElseThrow(() -> new BadRequestException("존재하지 않는 노선정류장입니다."));
+			.orElseThrow(() -> new BusRouteStationNotFoundException(id));
 		return BusRouteStationRespDto.of(busRouteStationEntity);
 	}
 

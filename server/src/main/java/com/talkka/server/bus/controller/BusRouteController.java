@@ -10,21 +10,23 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.dto.BusRouteRespDto;
+import com.talkka.server.bus.exception.BusRouteNotFoundException;
 import com.talkka.server.bus.service.BusRouteService;
-import com.talkka.server.common.dto.ApiRespDto;
-import com.talkka.server.common.enums.StatusCode;
+import com.talkka.server.common.dto.ErrorRespDto;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/bus/route")
-public class BusRouteController {
+public class BusRouteController implements BusRouteApi {
 	private final BusRouteService busRouteService;
 
+	@Override
 	@GetMapping("")
-	public ResponseEntity<ApiRespDto<List<BusRouteRespDto>>> getRoutes(
-		@RequestParam(value = "search", required = false) String routeName) {
+	public ResponseEntity<List<BusRouteRespDto>> getRoutes(
+		@RequestParam(value = "search", required = false) String routeName
+	) {
 		List<BusRouteRespDto> routeList;
 
 		if (routeName != null) {
@@ -32,23 +34,19 @@ public class BusRouteController {
 		} else {
 			routeList = busRouteService.getRoutes();
 		}
-		return ResponseEntity.ok(
-			ApiRespDto.<List<BusRouteRespDto>>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(routeList)
-				.build()
-		);
+
+		return ResponseEntity.ok(routeList);
 	}
 
+	@Override
 	@GetMapping("/{id}")
-	public ResponseEntity<ApiRespDto<BusRouteRespDto>> getRouteById(@PathVariable("id") Long routeId) {
-		return ResponseEntity.ok(
-			ApiRespDto.<BusRouteRespDto>builder()
-				.statusCode(StatusCode.OK.getCode())
-				.message(StatusCode.OK.getMessage())
-				.data(busRouteService.getRouteById(routeId))
-				.build()
-		);
+	public ResponseEntity<?> getRouteById(@PathVariable("id") Long routeId) {
+		ResponseEntity<?> response;
+		try {
+			response = ResponseEntity.ok(busRouteService.getRouteById(routeId));
+		} catch (BusRouteNotFoundException exception) {
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
+		}
+		return response;
 	}
 }

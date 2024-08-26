@@ -112,11 +112,6 @@ public class BusRouteEntity {
 	@LastModifiedDate
 	private LocalDateTime updatedAt;
 
-	// 추후 논의 필요
-	@OneToMany(mappedBy = "route")
-	@Builder.Default
-	private List<BusLocationEntity> routeLocations = new ArrayList<>();
-
 	@OneToMany(mappedBy = "route")
 	@Builder.Default
 	private List<BusRouteStationEntity> stations = new ArrayList<>();

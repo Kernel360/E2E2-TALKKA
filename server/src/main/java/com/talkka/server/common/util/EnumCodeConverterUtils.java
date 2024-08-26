@@ -1,5 +1,7 @@
 package com.talkka.server.common.util;
 
+import com.talkka.server.common.exception.enums.InvalidEnumCodeException;
+
 public class EnumCodeConverterUtils {
 	public static <T extends Enum<T> & EnumCodeInterface> T fromCode(Class<T> enumType, String codeString) {
 		for (T type : enumType.getEnumConstants()) {
@@ -7,7 +9,7 @@ public class EnumCodeConverterUtils {
 				return type;
 			}
 		}
-		throw new IllegalArgumentException("Invalid value: " + codeString);
+		throw new InvalidEnumCodeException(enumType, codeString);
 	}
 
 	public static <T extends Enum<T> & EnumCodeInterface> String toCode(T value) {

@@ -8,10 +8,16 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import com.talkka.server.bookmark.dao.BookmarkEntity;
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.review.dao.BusReviewEntity;
-import com.talkka.server.user.enums.Grade;
+import com.talkka.server.user.util.EmailDbConverter;
+import com.talkka.server.user.util.NicknameDbConverter;
+import com.talkka.server.user.vo.Email;
+import com.talkka.server.user.vo.Nickname;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
@@ -45,10 +51,12 @@ public class UserEntity {
 	private String name;
 
 	@Column(name = "email", length = 30, nullable = false)
-	private String email;
+	@Convert(converter = EmailDbConverter.class)
+	private Email email;
 
 	@Column(name = "nickname", length = 50, nullable = false)
-	private String nickname;
+	@Convert(converter = NicknameDbConverter.class)
+	private Nickname nickname;
 
 	@Column(name = "oauth_provider", length = 30, nullable = false, updatable = false)
 	private String oauthProvider;
@@ -56,9 +64,9 @@ public class UserEntity {
 	@Column(name = "access_token", length = 255, nullable = false)
 	private String accessToken;
 
-	@Column(name = "grade", length = 20, nullable = true)
+	@Column(name = "auth_role", length = 20, nullable = true)
 	@Enumerated(EnumType.STRING)
-	private Grade grade;
+	private AuthRole authRole;
 
 	@CreatedDate
 	@Column(name = "created_at", nullable = false, updatable = false)
@@ -71,6 +79,10 @@ public class UserEntity {
 	@OneToMany(mappedBy = "writer")
 	@ToString.Exclude
 	private List<BusReviewEntity> busReviews;
+
+	@OneToMany(mappedBy = "user")
+	@ToString.Exclude
+	private List<BookmarkEntity> bookmarks;
 
 	@Override
 	public boolean equals(Object o) {
@@ -87,9 +99,7 @@ public class UserEntity {
 		return Objects.hashCode(id);
 	}
 
-	public void updateUser(String nickname) {
-		if (nickname != null && !nickname.isEmpty()) {
-			this.nickname = nickname;
-		}
+	public void updateUser(Nickname nickname) {
+		this.nickname = nickname;
 	}
 }

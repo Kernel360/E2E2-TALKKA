@@ -1,467 +1,312 @@
 package com.talkka.server.user.controller;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.BDDMockito.*;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.data.jpa.mapping.JpaMetamodelMappingContext;
-import org.springframework.http.MediaType;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.test.web.servlet.MockMvc;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.talkka.server.common.enums.StatusCode;
-import com.talkka.server.common.exception.http.BadRequestException;
-import com.talkka.server.common.exception.http.NotFoundException;
 import com.talkka.server.oauth.domain.NaverOAuth2User;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
-import com.talkka.server.user.dto.UserCreateDto;
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.user.dto.UserCreateReqDto;
 import com.talkka.server.user.dto.UserDto;
 import com.talkka.server.user.dto.UserRespDto;
+import com.talkka.server.user.dto.UserUpdateDto;
 import com.talkka.server.user.dto.UserUpdateReqDto;
-import com.talkka.server.user.enums.Grade;
+import com.talkka.server.user.exception.DuplicatedNicknameException;
+import com.talkka.server.user.exception.UserNotFoundException;
 import com.talkka.server.user.service.UserService;
+import com.talkka.server.user.vo.Email;
+import com.talkka.server.user.vo.Nickname;
 
-@WebMvcTest(UserController.class)
-@MockBean({
-	JpaMetamodelMappingContext.class,
-})
+@ExtendWith(MockitoExtension.class)
 class UserControllerTest {
-
-	@Autowired
-	private MockMvc mockMvc;
-
-	@MockBean
-	private UserService userService;
+	@InjectMocks
+	private UserController userController;
 
 	@Mock
-	private OAuth2UserInfo oAuth2User;
+	private UserService userService;
 
-	@BeforeEach
-	public void setUp() {
-		Map<String, Object> attributes = new HashMap<>();
+	private OAuth2UserInfo getOAuth2UserInfo(Long userId, AuthRole authRole) {
+		Map<String, Object> attributes = Map.of(
+			"sub", userId,
+			"name", "name" + userId,
+			"userId", userId,
+			"OAuth2Id", "OAuth2Id" + userId,
+			"email", "email" + userId + "@test.com",
+			"nickname", "nickname" + userId,
+			"accessToken", "accessToken" + userId,
+			"authRole", authRole.name(),
+			"provider", "NAVER"
+		);
+		var grant = new SimpleGrantedAuthority(authRole.name());
+		return new NaverOAuth2User(attributes, List.of(grant));
+	}
+
+	private UserDto getUserDto(Long userId) {
+		Nickname nickname = new Nickname("nickname" + userId);
+		Email email = new Email("email" + userId + "@test.com");
+
+		return UserDto.builder()
+			.userId(userId)
+			.name("name" + userId)
+			.email(email)
+			.nickname(nickname)
+			.oauthProvider("oauthProvider")
+			.accessToken("accessToken")
+			.authRole(AuthRole.USER)
+			.createdAt(LocalDateTime.now())
+			.updatedAt(LocalDateTime.now())
+			.build();
+	}
+
+	private UserRespDto getUserRespDto(Long userId) {
+		Nickname nickname = new Nickname("nickname" + userId);
+		Email email = new Email("email" + userId + "@test.com");
+
+		return UserRespDto.builder()
+			.userId(userId)
+			.name("name" + userId)
+			.email(email)
+			.nickname(nickname)
+			.build();
+	}
+
+	private UserUpdateReqDto getUserUpdateReqDto(Long userId) {
+		return new UserUpdateReqDto("nickname" + userId);
+	}
+
+	private UserCreateReqDto getUserCreateReqDto(Long userId) {
+		return new UserCreateReqDto("name" + userId);
+	}
+
+	@Test
+	@DisplayName("사용자 정보 조회 (정상)")
+	void getUserInfo() {
+		// given
 		Long userId = 1L;
-		attributes.put("userId", userId);
-		attributes.put("name", "testUser");
-		attributes.put("nickname", "testUser");
-		attributes.put("email", "test@example.com");
-		attributes.put("oauthProvider", "naver");
-		attributes.put("accessToken", "token");
-		attributes.put("oauth2Id", "test");
-		oAuth2User = new NaverOAuth2User(attributes, List.of(new SimpleGrantedAuthority("ROLE_USER")));
+		var userDto = getUserDto(userId);
+		var userRespDto = UserRespDto.of(userDto);
+		var expected = ResponseEntity.ok(userRespDto);
+		given(userService.getUser(userId)).willReturn(userDto);
+		// when
+		var result = userController.getUser(userId);
+		// then
+		verify(userService).getUser(userId);
+		assertThat(result).isEqualTo(expected);
 	}
 
-	private final ObjectMapper objectMapper = new ObjectMapper();
-
-	@Nested
-	@DisplayName("GET /api/users/{user_id}")
-	public class UsersUserIdTest {
-
-		@Test
-		public void 유저_아이디의_정보를_요청하면_유저_정보를_반환한다() throws Exception {
-			// given
-			final Long userId = 1L;
-			final UserDto userDto = new UserDto(
-				userId,
-				"name",
-				"nickname",
-				"email",
-				"oauthProvider",
-				"accessToken",
-				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now()
-			);
-			final UserRespDto expect = UserRespDto.of(userDto);
-			given(userService.getUser(userId)).willReturn(userDto);
-			// when
-			// then
-			mockMvc.perform(get("/api/users/{user_id}", userId)
-					.with(oauth2Login().oauth2User(oAuth2User)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(expect.userId()))
-				.andExpect(jsonPath("$.data.nickname").value(expect.nickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(expect.oauthProvider()));
-		}
-
-		@Test
-		public void 존재하지않는_유저아이디를_입력하면_404을_응답한다() throws Exception {
-			// given
-			final Long userId = 1L;
-			given(userService.getUser(userId)).willThrow(new NotFoundException("존재하지 않는 유저입니다."));
-			// when
-			// then
-			mockMvc.perform(get("/api/users/{user_id}", userId)
-					.with(oauth2Login().oauth2User(oAuth2User)))
-				.andExpect(status().isNotFound())
-				.andExpect(jsonPath("$.status_code").value(404))
-				.andExpect(jsonPath("$.message").value("존재하지 않는 유저입니다."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
+	@Test
+	@DisplayName("존재하지 않는 사용자를 조회하면 400 에러 발생")
+	void getUserInfoNotFound() {
+		// given
+		Long userId = 1L;
+		var expected = ResponseEntity.badRequest().body("존재하지 않는 유저입니다.");
+		given(userService.getUser(userId)).willThrow(new UserNotFoundException());
+		// when
+		var result = userController.getUser(userId);
+		// then
+		verify(userService).getUser(userId);
+		assertThat(result).isEqualTo(expected);
 	}
 
-	@Nested
-	@DisplayName("POST /api/users")
-	public class CreateUserTest {
-		@Test
-		void 유저가_생성을_요청하면_생성된_유저의_정보를_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname");
-			final UserCreateDto userCreateDto = new UserCreateDto(
-				"testUser",
-				"test@example.com",
-				"naver",
-				userCreateReqDto.nickname(),
-				"token",
-				Grade.USER
-			);
-			final UserDto expectedData = new UserDto(
-				1L,
-				userCreateDto.name(),
-				userCreateDto.email(),
-				userCreateDto.nickname(),
-				userCreateDto.oauthProvider(),
-				"token",
-				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now()
-			);
-			given(userService.createUser(any(UserCreateDto.class))).willReturn(expectedData);
-			// when
-			// then
-			// ApiRespDto<UserRespDto>
-			mockMvc.perform(post("/api/users")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").exists())
-				.andExpect(jsonPath("$.data.name").value(userCreateDto.name()))
-				.andExpect(jsonPath("$.data.email").value(userCreateDto.email()))
-				.andExpect(jsonPath("$.data.nickname").value(userCreateDto.nickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userCreateDto.oauthProvider()));
-		}
+	@Test
+	@DisplayName("특정 아이디 정보 수정 (정상)")
+	void updateUserInfo() {
+		// given
+		Long userId = 1L;
+		var userDto = getUserDto(userId);
+		var userRespDto = UserRespDto.of(userDto);
+		var userUpdateReqDto = new UserUpdateReqDto("nickname" + userId);
+		var userUpdateDto = UserUpdateDto.of(userId, userUpdateReqDto);
+		var expected = ResponseEntity.ok(userRespDto);
 
-		@Test
-		void 유저가_생성요청한_닉네임이_중복될경우_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname");
-			given(userService.createUser(any())).willThrow(new BadRequestException("중복된 닉네임 입니다."));
-			// when
-			// then
-			mockMvc.perform(post("/api/users")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("중복된 닉네임 입니다."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임이_길이가_짧으면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("0");
-			// when
-			// then
-			mockMvc.perform(post("/api/users")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임_길이가_길면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("123456789012345678901");
-			// when
-			// then
-			mockMvc.perform(post("/api/users")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임이_양식에_맞지_않으면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname!");
-			// when
-			// then
-			mockMvc.perform(post("/api/users")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 영문 대소문자, 한글, 숫자로만 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
+		given(userService.updateUser(userUpdateDto)).willReturn(userDto);
+		// when
+		var result = userController.updateUser(userId, userUpdateReqDto);
+		// then
+		verify(userService).updateUser(userUpdateDto);
+		assertThat(result).isEqualTo(expected);
 	}
 
-	@Nested
-	@DisplayName("PUT /api/users/{user_id}")
-	public class UpdateUserTest {
-		@Test
-		void 유저가_수정요청을_할경우_수정된_유저의_정보를_반환한다() throws Exception {
-			// given
-			final UserUpdateReqDto userUpdateReqDto = new UserUpdateReqDto("nickname");
-			final UserDto userDto = new UserDto(
-				1L,
-				"name",
-				userUpdateReqDto.nickname(),
-				"email",
-				"oauthProvider",
-				"accessToken",
-				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now()
-			);
-			given(userService.updateUser(anyLong(), any(UserUpdateReqDto.class))).willReturn(userDto);
-			// when
-			// then
-			mockMvc.perform(put("/api/users/1")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(userDto.userId()))
-				.andExpect(jsonPath("$.data.name").value(userDto.name()))
-				.andExpect(jsonPath("$.data.email").value(userDto.email()))
-				.andExpect(jsonPath("$.data.nickname").value(userDto.nickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.oauthProvider()));
-		}
-
-		@Test
-		void 유저가_중복된_닉네임으로_수정요청을_할_경우_400을_반환한다() throws Exception {
-			// given
-			final UserUpdateReqDto userUpdateReqDto = new UserUpdateReqDto("nickname");
-			given(userService.updateUser(anyLong(), any(UserUpdateReqDto.class)))
-				.willThrow(new BadRequestException("중복된 닉네임 입니다."));
-			// when
-			// then
-			mockMvc.perform(put("/api/users/1")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("중복된 닉네임 입니다."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임이_길이가_짧으면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("0");
-			// when
-			// then
-			mockMvc.perform(put("/api/users/1")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임_길이가_길면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("123456789012345678901");
-			// when
-			// then
-			mockMvc.perform(put("/api/users/1")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 2자 이상 20자 이하로 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 유저의_닉네임이_양식에_맞지_않으면_400을_반환한다() throws Exception {
-			// given
-			final UserCreateReqDto userCreateReqDto = new UserCreateReqDto("nickname!");
-			// when
-			// then
-			mockMvc.perform(put("/api/users/1")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userCreateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("닉네임은 영문 대소문자, 한글, 숫자로만 입력해주세요."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
+	@Test
+	@DisplayName("존재하지 않는 사용자를 수정하면 400 에러 발생")
+	void updateUserInfoNotFound() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = new UserUpdateReqDto("nickname" + userId);
+		var expected = ResponseEntity.badRequest().body("존재하지 않는 유저입니다.");
+		given(userService.updateUser(any())).willThrow(new UserNotFoundException());
+		// when
+		var result = userController.updateUser(userId, userUpdateReqDto);
+		// then
+		verify(userService).updateUser(any());
+		assertThat(result).isEqualTo(expected);
 	}
 
-	@Nested
-	@DisplayName("DELETE /api/users/{user_id}")
-	public class DeleteUserTest {
-		@Test
-		void 유저가_삭제요청을_할경우_성공메세지를_반환한다() throws Exception {
-			// given
-			final Long userId = 1L;
-			// when
-			// then
-			mockMvc.perform(delete("/api/users/{user_id}", userId)
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf()))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
-
-		@Test
-		void 존재하지않는_유저아이디를_입력하면_400을_응답한다() throws Exception {
-			// given
-			final Long userId = 1L;
-			given(userService.deleteUser(any(Long.class))).willThrow(new BadRequestException("존재하지 않는 유저입니다."));
-			// when
-			// then
-			mockMvc.perform(delete("/api/users/{user_id}", userId)
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf()))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("존재하지 않는 유저입니다."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
+	@Test
+	@DisplayName("Nickname이 중복되면 400 에러 발생")
+	void updateUserInfoDuplicatedNickname() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = new UserUpdateReqDto("duplicatedNickname");
+		var userUpdateDto = UserUpdateDto.of(userId, userUpdateReqDto);
+		var expected = ResponseEntity.badRequest().body("이미 존재하는 닉네임입니다.");
+		given(userService.updateUser(userUpdateDto)).willThrow(new DuplicatedNicknameException());
+		// when
+		var result = userController.updateUser(userId, userUpdateReqDto);
+		// then
+		verify(userService).updateUser(userUpdateDto);
+		assertThat(result).isEqualTo(expected);
 	}
 
-	@Nested
-	@DisplayName("GET /users/me")
-	public class GetMeTest {
-		@Test
-		void 내정보를_요청하면_내정보를_반환한다() throws Exception {
-			// given
-			final Long userId = 1L;
-			final UserDto userDto = new UserDto(
-				userId,
-				"name",
-				"nickname",
-				"email",
-				"oauthProvider",
-				"accessToken",
-				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now()
-			);
-			final UserRespDto expect = UserRespDto.of(userDto);
-			given(userService.getUser(userId)).willReturn(userDto);
-			// when
-			// then
-			mockMvc.perform(get("/api/users/me")
-					.with(oauth2Login().oauth2User(oAuth2User)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(expect.userId()))
-				.andExpect(jsonPath("$.data.email").value(expect.email()))
-				.andExpect(jsonPath("$.data.name").value(expect.name()))
-				.andExpect(jsonPath("$.data.nickname").value(expect.nickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(expect.oauthProvider()));
-		}
+	@Test
+	@DisplayName("Nickname 형식이 잘못되면 400 에러 발생")
+	void updateUserInfoInvalidNickname() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = new UserUpdateReqDto("INVALID_NICKNAME");
+		var expected = ResponseEntity.badRequest().body("닉네임은 2자 이상 20자 이하의 영문, 숫자, 한글만 사용 가능합니다.");
+		// when
+		var result = userController.updateUser(userId, userUpdateReqDto);
+		// then
+		assertThat(result).isEqualTo(expected);
 	}
 
-	@Nested
-	@DisplayName("PUT /users/me")
-	public class UpdateMeTest {
-		@Test
-		void 내정보를_수정하면_수정된_내정보를_반환한다() throws Exception {
-			// given
-			final UserUpdateReqDto userUpdateReqDto = new UserUpdateReqDto("nickname");
-			final UserDto userDto = new UserDto(
-				1L,
-				"name",
-				userUpdateReqDto.nickname(),
-				"email",
-				"oauthProvider",
-				"accessToken",
-				Grade.USER,
-				LocalDateTime.now(),
-				LocalDateTime.now()
-			);
-			given(userService.updateUser(any(Long.class), any(UserUpdateReqDto.class))).willReturn(userDto);
-			// when
-			// then
-			mockMvc.perform(put("/api/users/me")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
-				.andExpect(status().isOk())
-				.andExpect(jsonPath("$.status_code").value(StatusCode.OK.getCode()))
-				.andExpect(jsonPath("$.message").value(StatusCode.OK.getMessage()))
-				.andExpect(jsonPath("$.data.user_id").value(userDto.userId()))
-				.andExpect(jsonPath("$.data.name").value(userDto.name()))
-				.andExpect(jsonPath("$.data.email").value(userDto.email()))
-				.andExpect(jsonPath("$.data.nickname").value(userDto.nickname()))
-				.andExpect(jsonPath("$.data.oauth_provider").value(userDto.oauthProvider()));
-		}
-
-		@Test
-		void 내정보를_수정요청한_닉네임이_중복될경우_400을_반환한다() throws Exception {
-			// given
-			final UserUpdateReqDto userUpdateReqDto = new UserUpdateReqDto("nickname");
-			given(userService.updateUser(anyLong(), any(UserUpdateReqDto.class)))
-				.willThrow(new BadRequestException("중복된 닉네임 입니다."));
-			// when
-			// then
-			mockMvc.perform(put("/api/users/me")
-					.with(oauth2Login().oauth2User(oAuth2User))
-					.with(csrf())
-					.contentType(MediaType.APPLICATION_JSON)
-					.content(objectMapper.writeValueAsString(userUpdateReqDto)))
-				.andExpect(status().isBadRequest())
-				.andExpect(jsonPath("$.status_code").value(400))
-				.andExpect(jsonPath("$.message").value("중복된 닉네임 입니다."))
-				.andExpect(jsonPath("$.data").doesNotExist());
-		}
+	@Test
+	@DisplayName("사용자 삭제 (정상)")
+	void deleteUser() {
+		// given
+		Long userId = 1L;
+		var expected = ResponseEntity.ok(userId);
+		given(userService.deleteUser(userId)).willReturn(userId);
+		// when
+		var result = userController.deleteUser(userId);
+		// then
+		verify(userService).deleteUser(userId);
+		assertThat(result).isEqualTo(expected);
 	}
+
+	@Test
+	@DisplayName("존재하지 않는 사용자를 삭제하면 400 에러 발생")
+	void deleteUserNotFound() {
+		// given
+		Long userId = 1L;
+		var expected = ResponseEntity.badRequest().body("존재하지 않는 유저입니다.");
+		given(userService.deleteUser(userId)).willThrow(new UserNotFoundException());
+		// when
+		var result = userController.deleteUser(userId);
+		// then
+		verify(userService).deleteUser(userId);
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 조회 (정상)")
+	void getMyInfo() {
+		// given
+		Long userId = 1L;
+		var userDto = getUserDto(userId);
+		var userRespDto = UserRespDto.of(userDto);
+		var expected = ResponseEntity.ok(userRespDto);
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.USER);
+		given(userService.getUser(userId)).willReturn(userDto);
+		// when
+		var result = userController.getMe(userInfo);
+		// then
+		verify(userService).getUser(userId);
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 조회 (권한 없음)")
+	void getMyInfoNoAuth() {
+		// given
+		Long userId = 1L;
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.ADMIN);
+		var expected = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+		given(userService.getUser(userId)).willThrow(new UserNotFoundException());
+		// when
+		var result = userController.getMe(userInfo);
+		// then
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 수정 (정상)")
+	void updateMyInfo() {
+		// given
+		Long userId = 1L;
+		var userDto = getUserDto(userId);
+		var userUpdateReqDto = getUserUpdateReqDto(userId);
+		var userUpdateDto = UserUpdateDto.of(userId, userUpdateReqDto);
+		var userRespDto = UserRespDto.of(userDto);
+		var expected = ResponseEntity.ok(userRespDto);
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.USER);
+		given(userService.updateUser(userUpdateDto)).willReturn(userDto);
+		// when
+		var result = userController.updateMe(userInfo, userUpdateReqDto);
+		// then
+		verify(userService).updateUser(userUpdateDto);
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 수정 (권한 없음)")
+	void updateMyInfoNoAuth() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = getUserUpdateReqDto(userId);
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.ADMIN);
+		var expected = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
+		given(userService.updateUser(any())).willThrow(new UserNotFoundException());
+		// when
+		var result = userController.updateMe(userInfo, userUpdateReqDto);
+		// then
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 수정시 닉네임이 중복되면 400 에러 발생")
+	void updateMyInfoDuplicatedNickname() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = getUserUpdateReqDto(userId);
+		var userUpdateDto = UserUpdateDto.of(userId, userUpdateReqDto);
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.USER);
+		var expected = ResponseEntity.badRequest().body("이미 존재하는 닉네임입니다.");
+		given(userService.updateUser(userUpdateDto)).willThrow(new DuplicatedNicknameException());
+		// when
+		var result = userController.updateMe(userInfo, userUpdateReqDto);
+		// then
+		verify(userService).updateUser(userUpdateDto);
+		assertThat(result).isEqualTo(expected);
+	}
+
+	@Test
+	@DisplayName("내 정보 수정시 닉네임 형식이 잘못되면 400 에러 발생")
+	void updateMyInfoInvalidNickname() {
+		// given
+		Long userId = 1L;
+		var userUpdateReqDto = new UserUpdateReqDto("INVALID_NICKNAME");
+		var userInfo = getOAuth2UserInfo(userId, AuthRole.USER);
+		var expected = ResponseEntity.badRequest().body("닉네임은 2자 이상 20자 이하의 영문, 숫자, 한글만 사용 가능합니다.");
+		// when
+		var result = userController.updateMe(userInfo, userUpdateReqDto);
+		// then
+		assertThat(result).isEqualTo(expected);
+	}
+
 }

@@ -7,7 +7,7 @@ import lombok.Getter;
 @Getter
 public enum EndBus implements EnumCodeInterface {
 	// "0 = RUNNING" or "1 = END"
-	RUNNING("1"), END("0");
+	RUNNING("0"), END("1"), LENT_BUS_END("4");
 
 	private final String code;
 

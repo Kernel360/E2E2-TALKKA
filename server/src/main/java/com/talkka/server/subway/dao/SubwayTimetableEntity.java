@@ -43,29 +43,29 @@ public class SubwayTimetableEntity {
 	@JoinColumn(name = "station_id", nullable = false)
 	private SubwayStationEntity subwayStation;
 
-	@Column(name = "line_code", nullable = false)
-	@Convert(converter = LineConverter.class)
-	private Line line;
+	@Column(name = "station_code", nullable = false, length = 10)
+	private String stationCode;
 
-	@Column(name = "fr_code", nullable = false)
-	private String frCode;
-
-	@Column(name = "station_name", nullable = false)
+	@Column(name = "station_name", nullable = false, length = 50)
 	private String stationName;
 
-	@Column(name = "day_type", nullable = false)
+	@Column(name = "line_code", nullable = false, length = 4)
+	@Convert(converter = LineConverter.class)
+	private Line line;
+	
+	@Column(name = "day_type", nullable = false, length = 3)
 	@Convert(converter = DayTypeConverter.class)
 	private DayType dayType;
 
-	@Column(name = "updown", nullable = false)
+	@Column(name = "updown", nullable = false, length = 1)
 	@Convert(converter = UpdownConverter.class)
 	private Updown updown;
 
-	@Column(name = "is_express", nullable = false)
+	@Column(name = "is_express", nullable = false, length = 1)
 	@Convert(converter = ExpressConverter.class)
 	private Express express;
 
-	@Column(name = "train_code", nullable = false)
+	@Column(name = "train_code", nullable = false, length = 10)
 	private String trainCode;
 
 	@Column(name = "arrival_time", nullable = false)
@@ -74,10 +74,10 @@ public class SubwayTimetableEntity {
 	@Column(name = "depart_time", nullable = false)
 	private LocalTime departTime;
 
-	@Column(name = "start_station_name", nullable = false)
+	@Column(name = "start_station_name", nullable = false, length = 50)
 	private String startStationName;
 
-	@Column(name = "end_station_name", nullable = false)
+	@Column(name = "end_station_name", nullable = false, length = 50)
 	private String endStationName;
 
 	@Override

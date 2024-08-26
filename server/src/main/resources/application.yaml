@@ -6,9 +6,12 @@ spring:
     url: ${MYSQL_URL}
     username: ${MYSQL_USERNAME}
     password: ${MYSQL_PASSWORD}
+  sql:
+    init:
+      mode: never # schema.sql 실행시 always 키고 실행하시면 됩니다.
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: validate
     properties:
       hibernate:
         format_sql: true
@@ -44,3 +47,38 @@ openapi:
       service-key:
         keys:
           - ${SERVICE_KEY_1}
+
+
+bus:
+  location:
+    collect:
+      targetIdList:
+        - "200000150"   # 7800
+        - "200000108"   # 3003
+        - "233000031"  # 7770
+
+scheduling:
+  collect:
+    bus-location:
+      enabled: true
+      enabledTime:
+        # 출근 시간대
+        - "05:00"
+        - "06:00"
+        - "07:00"
+        - "08:00"
+        - "09:00"
+        # 퇴근 시간대
+        - "17:00"
+        - "18:00"
+        - "19:00"
+        - "20:00"
+        # 막차 시간대
+        - "22:00"
+        - "23:00"
+        - "00:00"
+
+springdoc:
+  api-docs:
+    path: /api-docs
+  default-consumes-media-type: application/json

@@ -7,17 +7,30 @@ import com.talkka.server.bus.enums.CenterStation;
 import com.talkka.server.bus.enums.DistrictCode;
 import com.talkka.server.bus.enums.TurnStation;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record BusStationCreateDto(
+	@NotNull
 	String apiStationId,
+	@NotNull
 	String stationName,
+	@NotNull
 	String regionName,
+	@NotNull
+	@Schema(implementation = DistrictCode.class)
 	DistrictCode districtCd,
+	@NotNull
+	@Schema(implementation = CenterStation.class)
 	CenterStation centerYn,
+	@NotNull
+	@Schema(implementation = TurnStation.class)
 	TurnStation turnYn,
+	@NotNull
 	BigDecimal longitude,
+	@NotNull
 	BigDecimal latitude
 ) {
 	public BusStationEntity toEntity() {
