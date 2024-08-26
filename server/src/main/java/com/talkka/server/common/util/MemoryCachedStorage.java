@@ -7,7 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * MemoryCachedStorage
  * Redis 사용 이전에 메모리에 캐시를 저장하는 클래스
- * 시간에 따라 Expire 되지 않아 메모리가 쌓이는 문제가 발생할 수 있음.
+ * 사용량이 증가할 경우 put 에서 removeExpired 를 호출하여 메모리를 정리에 시간이 크게 소요될 수 있음
+ * (임시방편으로 사용하고 있으며 추후 Redis 로 대체할 예정)
  * @param <K>
  * @param <V>
  */
