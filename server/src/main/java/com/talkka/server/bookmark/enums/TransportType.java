@@ -18,4 +18,8 @@ public enum TransportType {
 			throw new InvalidTransportTypeEnumException();
 		}
 	}
+
+	public boolean isBus() {
+		return this == BUS;
+	}
 }
