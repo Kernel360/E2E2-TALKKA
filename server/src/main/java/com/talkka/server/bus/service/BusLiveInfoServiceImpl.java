@@ -6,7 +6,6 @@ import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.bus.dto.BusLiveInfoRespDto;
 import com.talkka.server.bus.dto.BusRouteStationRespDto;
 import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
-import com.talkka.server.bus.exception.GetBusLiveArrivalInfoFailedException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,7 +17,7 @@ public class BusLiveInfoServiceImpl implements BusLiveInfoService {
 
 	@Override
 	public BusLiveInfoRespDto getBusLiveInfo(Long routeStationId)
-		throws BusRouteStationNotFoundException, GetBusLiveArrivalInfoFailedException {
+		throws BusRouteStationNotFoundException {
 		var busRouteStation = busRouteStationRepository.findById(routeStationId)
 			.orElseThrow(() -> new BusRouteStationNotFoundException(routeStationId));
 		var route = busRouteStation.getRoute();
