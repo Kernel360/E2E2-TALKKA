@@ -30,7 +30,6 @@ public class BusLiveInfoServiceImpl implements BusLiveInfoService {
 			.orElse(null);
 
 		return BusLiveInfoRespDto.of(
-			busRouteStation.getStationSeq(),
 			routeId,
 			routeName,
 			BusRouteStationRespDto.of(busRouteStation),

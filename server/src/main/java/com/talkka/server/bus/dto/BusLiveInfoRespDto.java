@@ -4,8 +4,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record BusLiveInfoRespDto(
 	@NotNull
-	Short seq,
-	@NotNull
 	Long routeId,
 	@NotNull
 	String routeName,
@@ -14,11 +12,10 @@ public record BusLiveInfoRespDto(
 	BusArrivalRespDto arrivalInfo) {
 
 	public static BusLiveInfoRespDto of(
-		Short seq,
 		Long routeId,
 		String routeName,
 		BusRouteStationRespDto routeStation,
 		BusArrivalRespDto arrivalInfo) {
-		return new BusLiveInfoRespDto(seq, routeId, routeName, routeStation, arrivalInfo);
+		return new BusLiveInfoRespDto(routeId, routeName, routeStation, arrivalInfo);
 	}
 }
