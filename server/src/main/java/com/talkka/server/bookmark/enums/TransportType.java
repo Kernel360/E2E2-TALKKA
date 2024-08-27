@@ -22,4 +22,8 @@ public enum TransportType {
 	public boolean isBus() {
 		return this == BUS;
 	}
+
+	public boolean isSubway() {
+		return this == SUBWAY;
+	}
 }
