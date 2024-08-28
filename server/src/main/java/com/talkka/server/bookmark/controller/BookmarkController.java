@@ -20,8 +20,11 @@ import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
 import com.talkka.server.bookmark.exception.DuplicatedBookmarkNameException;
+import com.talkka.server.bookmark.exception.InvalidBusDetailException;
+import com.talkka.server.bookmark.exception.NotSupportedTypeException;
 import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
 import com.talkka.server.bookmark.service.BookmarkService;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
 import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.review.exception.ContentAccessException;
@@ -73,15 +76,15 @@ public class BookmarkController implements BookmarkApi {
 		try {
 			BookmarkRespDto bookmark = bookmarkService.createBookmark(bookmarkReqDto, oAuth2UserInfo.getUserId());
 			return ResponseEntity.ok(bookmark);
-		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException |
-				 DuplicatedBookmarkNameException exception) {
+		} catch (BookmarkUserNotFoundException | InvalidTransportTypeEnumException
+				 | InvalidBusDetailException | NotSupportedTypeException | DuplicatedBookmarkNameException exception) {
 			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
 	@Override
-	@PutMapping("{bookmarkId}")
+	@PutMapping("/{bookmarkId}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateBookmark(@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
 		@RequestBody @Valid BookmarkReqDto bookmarkReqDto, @PathVariable Long bookmarkId) {
@@ -91,6 +94,7 @@ public class BookmarkController implements BookmarkApi {
 				bookmarkId);
 			response = ResponseEntity.ok(bookmark);
 		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException | DuplicatedBookmarkNameException
+				 | InvalidBusDetailException | NotSupportedTypeException
 				 | InvalidTransportTypeEnumException exception) {
 			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (ContentAccessException exception) {
@@ -109,6 +113,25 @@ public class BookmarkController implements BookmarkApi {
 			bookmarkService.deleteBookmark(oAuth2UserInfo.getUserId(), bookmarkId);
 			response = ResponseEntity.ok().build();
 		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException exception) {
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
+		} catch (ContentAccessException exception) {
+			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorRespDto.of(exception));
+		}
+		return response;
+	}
+
+	@Override
+	@GetMapping("/{bookmarkId}/paths")
+	@Secured({"USER", "ADMIN"})
+	public ResponseEntity<?> getBookmarkPathInfos(
+		@AuthenticationPrincipal OAuth2UserInfo oAuth2UserInfo,
+		@PathVariable Long bookmarkId) {
+		ResponseEntity<?> response;
+		try {
+			var body = bookmarkService.getBusPathInfosByBookmarkId(oAuth2UserInfo.getUserId(), bookmarkId);
+			response = ResponseEntity.ok(body);
+		} catch (BookmarkNotFoundException | BookmarkUserNotFoundException |
+				 BusRouteStationNotFoundException exception) {
 			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (ContentAccessException exception) {
 			response = ResponseEntity.status(HttpStatus.FORBIDDEN).body(ErrorRespDto.of(exception));

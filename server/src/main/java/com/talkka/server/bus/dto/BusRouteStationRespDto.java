@@ -14,6 +14,8 @@ public record BusRouteStationRespDto(
 	@NotNull
 	Long routeId,
 	@NotNull
+	String routeName,
+	@NotNull
 	Long stationId,
 	@NotNull
 	Short stationSeq,
@@ -26,6 +28,7 @@ public record BusRouteStationRespDto(
 		return new BusRouteStationRespDto(
 			busRouteStationEntity.getId(),
 			busRouteStationEntity.getRoute().getId(),
+			busRouteStationEntity.getRoute().getRouteName(),
 			busRouteStationEntity.getStation().getId(),
 			busRouteStationEntity.getStationSeq(),
 			busRouteStationEntity.getStation().getStationName(),

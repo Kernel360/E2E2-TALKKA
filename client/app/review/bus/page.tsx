@@ -159,6 +159,7 @@ export default function BusReviewPage() {
 
   return (
     <div className={"flex flex-col items-center gap-y-5 my-5"}>
+      <p className={"font-extrabold text-xl"}>경기도 버스 조회</p>
       <SearchBusRoute
         onRouteSelect={setRouteId}
         busRouteList={routes}

@@ -42,7 +42,7 @@ public class BusLocationEntity {
 	private String apiStationId;
 
 	@Column(name = "station_seq", nullable = false)
-	private Short stationSeq;
+	private Integer stationSeq;
 
 	@Column(name = "end_bus", nullable = false, length = 1)
 	@Convert(converter = EndBusConverter.class)
@@ -60,11 +60,8 @@ public class BusLocationEntity {
 	private PlateType plateType;
 
 	@Column(name = "remain_seat_count", nullable = false)
-	private Short remainSeatCount;
-
-	@Column(name = "api_call_no", nullable = false)
-	private Integer apiCallNo;
-
+	private Integer remainSeatCount;
+	
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 

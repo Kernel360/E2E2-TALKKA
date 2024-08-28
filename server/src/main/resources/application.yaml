@@ -60,7 +60,7 @@ bus:
 scheduling:
   collect:
     bus-location:
-      enabled: true
+      enabled: false
       enabledTime:
         # 출근 시간대
         - "05:00"
@@ -82,3 +82,4 @@ springdoc:
   api-docs:
     path: /api-docs
   default-consumes-media-type: application/json
+

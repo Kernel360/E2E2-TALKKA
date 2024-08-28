@@ -18,7 +18,7 @@ public class BusLocationService {
 	private final BusLocationRepository busLocationRepository;
 
 	@Transactional
-	public void saveBusLocations(List<BusLocationBodyDto> responseList, int apiCallNo, LocalDateTime createdAt) {
+	public void saveBusLocations(List<BusLocationBodyDto> responseList, Integer apiCallNo, LocalDateTime createdAt) {
 		List<BusLocationEntity> entityList = responseList.stream()
 			.map(dto -> dto.toEntity(apiCallNo, createdAt))
 			.toList();

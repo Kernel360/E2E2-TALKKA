@@ -21,13 +21,12 @@ public record BusLocationBodyDto(String endBus, String lowPlate, String plateNo,
 		return BusLocationEntity.builder()
 			.apiRouteId(routeId)
 			.apiStationId(stationId)
-			.stationSeq(stationSeq.shortValue())
+			.stationSeq(stationSeq)
 			.endBus(endBusEnum)
 			.lowPlate(lowPlateEnum)
 			.plateNo(plateNo)
 			.plateType(plateTypeEnum)
-			.remainSeatCount(remainSeatCnt.shortValue())
-			.apiCallNo(apiCallNo)
+			.remainSeatCount(remainSeatCnt)
 			.createdAt(createdAt)
 			.build();
 	}

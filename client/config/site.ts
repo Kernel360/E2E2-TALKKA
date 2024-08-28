@@ -5,12 +5,12 @@ export const siteConfig = {
   description: "대중교통 플랫폼",
   mainNav: [
     {
-      title: "경로",
-      href: "/route",
+      title: "버스",
+      href: "/",
     },
     {
-      title: "통계",
-      href: "/route",
+      title: "북마크",
+      href: "/bookmark",
     },
     {
       title: "리뷰",
