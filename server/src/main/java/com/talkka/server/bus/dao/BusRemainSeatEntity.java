@@ -65,8 +65,8 @@ public class BusRemainSeatEntity {
 	private Integer time;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "route_info_id")
-	private BusPlateStatisticEntity routeInfo;
+	@JoinColumn(name = "plate_statistic_id")
+	private BusPlateStatisticEntity plateStatistic;
 
 	// Builder Class
 	public static class BusRemainSeatEntityBuilder {
@@ -82,8 +82,8 @@ public class BusRemainSeatEntity {
 		return defaultBuilder();
 	}
 
-	public void updateRouteInfo(BusPlateStatisticEntity routeInfo) {
-		this.routeInfo = routeInfo;
+	public void updateRouteInfo(BusPlateStatisticEntity plateStatistic) {
+		this.plateStatistic = plateStatistic;
 	}
 
 	/**

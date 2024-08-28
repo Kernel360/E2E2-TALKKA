@@ -75,8 +75,8 @@ public class BusViewService {
 		for (var seat : busSeats) {
 			// 타겟 정거장 전후 도착정보
 			data.add(
-				busRemainSeatRepository.findByRouteInfoAndStationSeqBetweenOrderByStationSeq(
-					seat.getRouteInfo(),
+				busRemainSeatRepository.findByPlateStatisticAndStationSeqBetweenOrderByStationSeq(
+					seat.getPlateStatistic(),
 					seat.getStationSeq() - stationNum,
 					seat.getStationSeq() + stationNum
 				)

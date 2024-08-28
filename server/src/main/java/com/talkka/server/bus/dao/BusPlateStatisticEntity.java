@@ -51,6 +51,6 @@ public class BusPlateStatisticEntity {
 	@Column(name = "end_time", nullable = false)
 	private Integer endTime;
 
-	@OneToMany(mappedBy = "routeInfo", cascade = CascadeType.PERSIST)
+	@OneToMany(mappedBy = "plateStatistic", cascade = CascadeType.PERSIST)
 	private List<BusRemainSeatEntity> seats;
 }
