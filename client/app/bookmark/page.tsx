@@ -31,7 +31,7 @@ export default function PathPage() {
     if (createMode || editMode) {
       return
     }
-
+    setSelectedBookmarkIndex(0)
     const { data, response } = await client.GET("/api/bookmark")
     if (!response.ok || !data) {
       return
