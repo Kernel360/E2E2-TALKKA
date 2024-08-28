@@ -1,19 +1,13 @@
 package com.talkka.server.admin.controller;
 
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.talkka.server.admin.dto.CollectBusRouteCreateDto;
-import com.talkka.server.admin.exception.CollectBusRouteAlreadyExistsException;
-import com.talkka.server.admin.exception.CollectBusRouteNotFoundException;
 import com.talkka.server.admin.service.AdminService;
 import com.talkka.server.admin.service.CollectBusRouteService;
+import com.talkka.server.admin.service.PublicApiKeyService;
 import com.talkka.server.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -25,6 +19,7 @@ public class AdminController {
 	private final AdminService adminService;
 	private final UserService userService;
 	private final CollectBusRouteService collectBusRouteService;
+	private final PublicApiKeyService publicApiKeyService;
 
 	@GetMapping("")
 	public String index() {
@@ -49,37 +44,15 @@ public class AdminController {
 		return "admin/review";
 	}
 
-	@GetMapping("/collect-route")
+	@GetMapping("/collect")
 	public String collectRoute(Model model) {
 		model.addAttribute("collectRoutes", collectBusRouteService.findAllCollectBusRoutes());
-		return "admin/collect-route";
+		return "admin/collect";
 	}
 
-	@GetMapping("/collect-route/form")
-	public String collectRouteForm(Model model) {
-		return "admin/collect-route-form";
+	@GetMapping("/key")
+	public String publicApiKey(Model model) {
+		model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
+		return "admin/key";
 	}
-
-	@PostMapping("/collect-route/form")
-	public String createCollectRoute(CollectBusRouteCreateDto dto, Model model) {
-		try {
-			collectBusRouteService.createCollectBusRoute(dto);
-		} catch (CollectBusRouteNotFoundException | CollectBusRouteAlreadyExistsException exception) {
-			model.addAttribute("errorMessage", exception.getMessage());
-			return "admin/collect-route-form";
-		}
-
-		return "redirect:/admin/collect-route";
-	}
-
-	@DeleteMapping("/collect-route/{collectRouteId}")
-	public ResponseEntity<String> deleteCollectRoute(@PathVariable Long collectRouteId, Model model) {
-		try {
-			collectBusRouteService.deleteCollectBusRoute(collectRouteId);
-		} catch (CollectBusRouteNotFoundException exception) {
-			return ResponseEntity.badRequest().body(exception.getMessage());
-		}
-		return ResponseEntity.ok().body("삭제에 성공했습니다.");
-	}
-	
 }
