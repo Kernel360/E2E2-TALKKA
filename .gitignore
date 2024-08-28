@@ -39,7 +39,8 @@ out/
 ### OS ###
 .DS_Store
 
-./data/mysql-data
+data
+!data/mysql-files
 
 .env
 .env.*
