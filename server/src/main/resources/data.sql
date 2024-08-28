@@ -155,3 +155,14 @@ FROM temp_bus_route_station t
 
 -- 4. 임시 테이블 삭제
 DROP TABLE temp_bus_route_station;
+
+-- 1. 버스 위치 정보 데이터 삽입
+-- 2. CSV 데이터 로드 (임시 테이블에)
+LOAD DATA INFILE '/var/lib/mysql-files/bus_location.csv'
+    INTO TABLE bus_location
+    FIELDS TERMINATED BY ','
+    ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+    IGNORE 1 LINES
+    (bus_location_id, api_route_id, api_station_id, station_seq, end_bus, low_plate, plate_no, plate_type,
+     remain_seat_count, created_at);
