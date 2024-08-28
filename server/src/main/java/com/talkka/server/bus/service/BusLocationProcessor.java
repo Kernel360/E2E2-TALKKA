@@ -47,7 +47,11 @@ public class BusLocationProcessor {
 
 	@Transactional
 	public void start(List<BusLocationEntity> locations) {
+		init();
 		for (var location : locations) {
+			if (location.getRemainSeatCount() == -1) {
+				continue;
+			}
 			try {
 				if (locationMap.containsKey(location.getPlateNo())) {
 					var dq = locationMap.get(location.getPlateNo());
@@ -101,14 +105,14 @@ public class BusLocationProcessor {
 		String plateNo = locations.peek().getPlateNo();
 		LocalDateTime createdAt = locations.peek().getCreatedAt();
 		List<BusRemainSeatEntity> result = new ArrayList<>();
-		// 노선의 길이 확인
-		int num = getRouteLength(apiRouteId);
-		// 노선 손실률이 80% 이상이면 저장하지 않음
-		if (locations.size() < num * 0.2) {
-			return;
-		}
-		var routeStationList = getRouteStationByRouteId(apiRouteId);
 		try {
+			// 노선의 길이 확인
+			var routeStationList = getRouteStationByRouteId(apiRouteId);
+			int num = routeStationList.size();
+			// 노선 손실률이 80% 이상이면 저장하지 않음
+			if (locations.size() < num * 0.2) {
+				return;
+			}
 			if (locations.peek().getStationSeq() != 1) {
 				result.add(makeSeatEntity(Optional.empty(), Optional.of(locations.peek()), 1,
 					routeStationList.get(0).getStation()));
@@ -137,6 +141,9 @@ public class BusLocationProcessor {
 		} catch (InvalidLocationNotFoundException e) {
 			log.warn("버스 위치정보 가공 실패 : 노선({}), 정거장({}), 버스이름({}), 생성일({})",
 				apiRouteId, apiStationId, plateNo, createdAt);
+		}
+		if (result.isEmpty()) {
+			return;
 		}
 		BusPlateStatisticEntity routeInfo = BusPlateStatisticEntity.builder()
 			.route(result.get(0).getRoute())
@@ -276,6 +283,15 @@ public class BusLocationProcessor {
 		return routeLengthMap.get(apiRouteId);
 	}
 
+	private void init() {
+		for (var stationEntity : busStationRepository.findAll()) {
+			stationMap.put(stationEntity.getApiStationId(), Optional.of(stationEntity));
+		}
+		for (var routeEntity : busRouteRepository.findAll()) {
+			routeMap.put(routeEntity.getApiRouteId(), Optional.of(routeEntity));
+		}
+	}
+
 	/**
 	 * 주어진 두 시간 {@code time1}과 {@code time2} 사이의 구간을 주어진 개수 {@code num}만큼 나누어
 	 * 그중 첫 번째 구간의 시작 시간을 반환합니다.
@@ -286,6 +302,7 @@ public class BusLocationProcessor {
 	 * @return 첫 번째 구간의 끝 시간에 해당하는 {@code LocalDateTime} 객체를 반환합니다.
 	 */
 	private LocalDateTime getBetweenTime(LocalDateTime time1, LocalDateTime time2, int num) {
+		num = num == 0 ? 1 : num;
 		Duration duration = Duration.between(time1, time2);
 		Duration halfDuration = duration.dividedBy(num);
 		return time1.plus(halfDuration);
