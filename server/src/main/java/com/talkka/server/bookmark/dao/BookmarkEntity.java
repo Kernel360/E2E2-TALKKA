@@ -7,7 +7,6 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.user.dao.UserEntity;
 
 import jakarta.persistence.CascadeType;
@@ -57,10 +56,9 @@ public class BookmarkEntity {
 	@Column(name = "updated_at", nullable = false)
 	private LocalDateTime updatedAt;
 
-	public void updateBookmark(BookmarkReqDto dto) {
-		this.name = dto.name();
-		this.details = dto.details().stream()
-			.map(detail -> detail.toEntity(this))
-			.toList();
+	public void updateBookmark(String name, List<BookmarkDetailEntity> details) {
+		this.name = name;
+		this.details.clear();
+		this.details.addAll(details);
 	}
 }

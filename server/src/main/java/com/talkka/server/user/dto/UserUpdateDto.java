@@ -3,11 +3,14 @@ package com.talkka.server.user.dto;
 import com.talkka.server.user.exception.InvalidNicknameException;
 import com.talkka.server.user.vo.Nickname;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record UserUpdateDto(
+	@NotNull
 	Long userId,
+	@NotNull
 	Nickname nickname
 ) {
 

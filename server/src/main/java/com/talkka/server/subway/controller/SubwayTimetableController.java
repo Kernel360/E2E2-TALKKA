@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.subway.exception.StationNotFoundException;
 import com.talkka.server.subway.exception.TimetableNotFoundException;
@@ -20,10 +21,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/subway/timetable")
-public class SubwayTimetableController {
+public class SubwayTimetableController implements SubwayTimetableApi {
 
 	private final SubwayTimetableService timetableService;
 
+	@Override
 	@GetMapping("/{stationId}")
 	public ResponseEntity<?> getTimetable(
 		@PathVariable Long stationId,
@@ -36,16 +38,17 @@ public class SubwayTimetableController {
 			response = ResponseEntity.ok(
 				timetableService.getTimetable(stationId, dayTypeCode, updownCode, time));
 		} catch (DateTimeParseException exception) {
-			response = ResponseEntity.badRequest().body("해당 시간 형식은 올바르지 않습니다.");
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of("해당 시간 형식은 올바르지 않습니다."));
 		} catch (StationNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (TimetableNotFoundException exception) {
-			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
 	// 첫차 = 5:00:00, 막차 = 0:30:30 기준으로 널널하게 잡음
+	@Override
 	@GetMapping("/{stationId}/list")
 	public ResponseEntity<?> getTimetableList(
 		@PathVariable Long stationId,
@@ -59,9 +62,9 @@ public class SubwayTimetableController {
 			response = ResponseEntity.ok(
 				timetableService.getTimetableList(stationId, dayTypeCode, updownCode, startTime, endTime));
 		} catch (DateTimeParseException exception) {
-			response = ResponseEntity.badRequest().body("해당 시간 형식은 올바르지 않습니다.");
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of("해당 시간 형식은 올바르지 않습니다."));
 		} catch (StationNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}

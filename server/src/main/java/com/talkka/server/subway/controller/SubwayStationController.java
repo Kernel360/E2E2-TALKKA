@@ -27,10 +27,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/subway/station")
-public class SubwayStationController {
+public class SubwayStationController implements SubwayStationApi {
 
 	private final SubwayStationService stationService;
 
+	@Override
 	@GetMapping("/{stationId}")
 	public ResponseEntity<?> getStation(@PathVariable Long stationId) {
 		ResponseEntity<?> response;
@@ -42,6 +43,7 @@ public class SubwayStationController {
 		return response;
 	}
 
+	@Override
 	@GetMapping("")
 	public ResponseEntity<List<SubwayStationRespDto>> getStationList(
 		@RequestParam(value = "keyword", required = false) String name
@@ -57,6 +59,7 @@ public class SubwayStationController {
 		return ResponseEntity.ok(stationList);
 	}
 
+	@Override
 	@PostMapping("")
 	@Secured("ADMIN")
 	public ResponseEntity<?> createStation(

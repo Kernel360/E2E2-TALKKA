@@ -11,16 +11,24 @@ import com.talkka.server.review.vo.Rating;
 import com.talkka.server.review.vo.ReviewContent;
 import com.talkka.server.user.dao.UserEntity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record BusReviewDto(
+	@NotNull
 	Long id,
+	@NotNull
 	Long userId,
+	@NotNull
 	Long routeId,
+	@NotNull
 	Long busRouteStationId,
+	@NotNull
 	ReviewContent content,
+	@NotNull
 	TimeSlot timeSlot,
+	@NotNull
 	Rating rating
 ) {
 	public static BusReviewDto of(Long reviewId, Long userId, BusReviewReqDto reqDto) throws
@@ -28,7 +36,7 @@ public record BusReviewDto(
 		InvalidTimeSlotEnumException {
 		ReviewContent contentValue = new ReviewContent(reqDto.content());
 		TimeSlot timeSlotValue = TimeSlot.valueOfEnumString(reqDto.timeSlot());
-		Rating ratingValue = new Rating(Integer.parseInt(reqDto.rating()));
+		Rating ratingValue = new Rating(reqDto.rating());
 
 		return new BusReviewDto(
 			reviewId,

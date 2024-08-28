@@ -2,18 +2,25 @@ package com.talkka.server.api.datagg.service;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
+import org.springframework.retry.backoff.FixedBackOffPolicy;
+import org.springframework.retry.policy.SimpleRetryPolicy;
+import org.springframework.retry.support.RetryTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.talkka.server.api.core.exception.ApiClientException;
 import com.talkka.server.api.datagg.config.BusApiKeyProperty;
+import com.talkka.server.api.datagg.dto.BusArrivalBodyDto;
+import com.talkka.server.api.datagg.dto.BusArrivalRespDto;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.api.datagg.dto.BusLocationRespDto;
 import com.talkka.server.api.datagg.dto.BusRouteInfoBodyDto;
@@ -39,15 +46,10 @@ public class SimpleBusApiService implements BusApiService {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("keyword", keyword);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusRouteSearchRespDto> resp = restTemplate.getForEntity(uri, BusRouteSearchRespDto.class);
-			var body = resp.getBody().msgBody();
-			if (body == null) {
-				throw new ApiClientException("결과가 없습니다.");
-			}
-			return body;
-		} catch (Exception exception) {
-			throw new ApiClientException(exception.getMessage());
+			ResponseEntity<BusRouteSearchRespDto> resp = apiCallWithRetry(path, params, BusRouteSearchRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (RestClientException exception) {
+			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
 
@@ -57,15 +59,10 @@ public class SimpleBusApiService implements BusApiService {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusRouteInfoRespDto> resp = restTemplate.getForEntity(uri, BusRouteInfoRespDto.class);
-			var body = resp.getBody().msgBody();
-			if (body == null) {
-				throw new ApiClientException("결과가 없습니다.");
-			}
-			return body;
-		} catch (Exception exception) {
-			throw new ApiClientException(exception.getMessage());
+			ResponseEntity<BusRouteInfoRespDto> resp = apiCallWithRetry(path, params, BusRouteInfoRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (RestClientException exception) {
+			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
 
@@ -75,15 +72,10 @@ public class SimpleBusApiService implements BusApiService {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusRouteStationRespDto> resp = restTemplate.getForEntity(uri, BusRouteStationRespDto.class);
-			var body = resp.getBody().msgBody();
-			if (body == null) {
-				throw new ApiClientException("결과가 없습니다.");
-			}
-			return body;
-		} catch (Exception exception) {
-			throw new ApiClientException(exception.getMessage());
+			ResponseEntity<BusRouteStationRespDto> resp = apiCallWithRetry(path, params, BusRouteStationRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (RestClientException exception) {
+			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
 
@@ -93,22 +85,32 @@ public class SimpleBusApiService implements BusApiService {
 		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
 		params.add("routeId", apiRouteId);
 		try {
+			ResponseEntity<BusLocationRespDto> resp = apiCallWithRetry(path, params, BusLocationRespDto.class);
+			return resp.getBody().msgBody();
+		} catch (RestClientException exception) {
+			throw new ApiClientException("결과가 없습니다.");
+		}
+	}
+
+	@Override
+	public Optional<BusArrivalBodyDto> getBusArrival(String apiRouteId, String apiStationId) throws
+		ApiClientException {
+		final String path = "/6410000/busarrivalservice/getBusArrivalItem";
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("routeId", apiRouteId);
+		params.add("stationId", apiStationId);
+		try {
 			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusLocationRespDto> resp = restTemplate.getForEntity(uri, BusLocationRespDto.class);
+			ResponseEntity<BusArrivalRespDto> resp = restTemplate.getForEntity(uri, BusArrivalRespDto.class);
 			var body = resp.getBody().msgBody();
-			if (body == null) {
-				throw new ApiClientException("결과가 없습니다.");
+			if (body == null || body.isEmpty()) {
+				return Optional.empty();
 			}
-			return body;
+			return Optional.of(body.get(0));
 		} catch (Exception exception) {
 			throw new ApiClientException(exception.getMessage());
 		}
 	}
-
-	// @Override
-	// public List<RouteBusStationArrivalInfoRespDto> getBusStationArrivalInfo(String routeId) {
-	// 	return null;
-	// }
 
 	private URI getOpenApiUri(String path, MultiValueMap<String, String> params) {
 		final var builder = new DefaultUriBuilderFactory();
@@ -120,5 +122,32 @@ public class SimpleBusApiService implements BusApiService {
 			.queryParam("serviceKey", this.busApiKeyProperty.getApiKey())
 			.queryParams(params)
 			.build();
+	}
+
+	// 리트라이 로직을 포함한 api call
+	private <T> ResponseEntity<T> apiCallWithRetry(String path, MultiValueMap<String, String> params,
+		Class<T> type) throws RestClientException {
+
+		final int MAX_ATTEMPTS = 10;
+		final int RETRY_INTERVAL = 200;
+
+		// 이후 bean 으로 등록하는것 고려
+		RetryTemplate retryTemplate = new RetryTemplate();
+
+		SimpleRetryPolicy retryPolicy = new SimpleRetryPolicy();
+		retryPolicy.setMaxAttempts(MAX_ATTEMPTS);
+		retryTemplate.setRetryPolicy(retryPolicy);
+
+		FixedBackOffPolicy backOffPolicy = new FixedBackOffPolicy();
+		backOffPolicy.setBackOffPeriod(RETRY_INTERVAL);
+		retryTemplate.setBackOffPolicy(backOffPolicy);
+
+		// 재시도마다 새로운 api key 로 시도
+		// 파싱 실패시 RestClientException 터트림
+		return retryTemplate.execute(context -> {
+			// 재시도마다 새로운 api key 로 시도
+			URI uri = this.getOpenApiUri(path, params);
+			return restTemplate.getForEntity(uri, type); // 파싱 실패시 RestClientException 터트림
+		});
 	}
 }

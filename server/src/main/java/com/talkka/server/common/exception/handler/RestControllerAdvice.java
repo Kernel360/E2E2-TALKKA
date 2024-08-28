@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.talkka.server.common.dto.ApiRespDto;
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.enums.InvalidEnumCodeException;
 import com.talkka.server.common.exception.http.HttpBaseException;
 
@@ -18,17 +19,17 @@ public class RestControllerAdvice {
 	private static final String INTERNAL_SERVER_ERROR_MESSAGE = "Server has some error";
 
 	@ExceptionHandler(MethodArgumentNotValidException.class)
-	public ResponseEntity<String> handleMethodArgumentNotValidException(
+	public ResponseEntity<ErrorRespDto> handleMethodArgumentNotValidException(
 		MethodArgumentNotValidException exception) {
 		String message = exception.getBindingResult().getAllErrors().get(0).getDefaultMessage();
 
-		return ResponseEntity.badRequest().body(message);
+		return ResponseEntity.badRequest().body(ErrorRespDto.of(message));
 	}
 
 	@ExceptionHandler(InvalidEnumCodeException.class)
-	public ResponseEntity<String> handleInvalidEnumCodeException(InvalidEnumCodeException exception) {
+	public ResponseEntity<ErrorRespDto> handleInvalidEnumCodeException(InvalidEnumCodeException exception) {
 		log.error("InvalidEnumCodeException: {}", exception.getMessage());
-		return new ResponseEntity<>(INTERNAL_SERVER_ERROR_MESSAGE, HttpStatus.INTERNAL_SERVER_ERROR);
+		return new ResponseEntity<>(ErrorRespDto.of(INTERNAL_SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
 	@Deprecated

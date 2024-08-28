@@ -47,17 +47,16 @@ public class BlockedApiLocationCollectService implements BusLocationCollectServi
 			log.info("No target routeId to collect bus locations");
 			return;
 		}
+		apiRouteIdList.forEach(this::collectLocationsByRouteId);
+	}
 
+	@Override
+	@Transactional
+	public void collectLocationsByRouteId(String apiRouteId) throws ApiClientException {
+		log.info("Collecting bus locations for routeId: {}", apiRouteId);
 		Integer apiCallNo = apiCallNumberProvider.getApiCallNumber();
 		LocalDateTime createdAt = LocalDateTime.now();
-		for (String apiRouteId : apiRouteIdList) {
-			log.info("Collecting bus locations for routeId: {}", apiRouteId);
-			try { // should be refactored
-				List<BusLocationBodyDto> responseList = busApiService.getBusLocationInfo(apiRouteId);
-				busLocationService.saveBusLocations(responseList, apiCallNo, createdAt);
-			} catch (ApiClientException apiClientException) {
-				log.error("Failed to collect bus locations", apiClientException);
-			}
-		}
+		List<BusLocationBodyDto> responseList = busApiService.getBusLocationInfo(apiRouteId);
+		busLocationService.saveBusLocations(responseList, apiCallNo, createdAt);
 	}
 }

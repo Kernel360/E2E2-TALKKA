@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
+import com.talkka.server.oauth.enums.AuthRole;
 import com.talkka.server.user.dto.UserCreateDto;
 import com.talkka.server.user.dto.UserCreateReqDto;
 import com.talkka.server.user.exception.DuplicatedNicknameException;
@@ -26,9 +27,10 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController implements AuthApi {
 	private final UserService userService;
 
+	@Override
 	@PostMapping("/register")
 	@Secured("UNREGISTERED")
 	public ResponseEntity<?> register(
@@ -43,6 +45,7 @@ public class AuthController {
 			UserCreateDto userCreateDto = UserCreateDto.builder()
 				.name(userInfo.getName())
 				.email(email)
+				.authRole(AuthRole.USER)
 				.oauthProvider(userInfo.getProvider())
 				.nickname(nickname)
 				.accessToken(userInfo.getAccessToken())
