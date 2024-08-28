@@ -10,6 +10,7 @@ public record CollectBusRouteCreateDto(
 	public CollectBusRouteEntity toEntity(BusRouteEntity route) {
 		return CollectBusRouteEntity.builder()
 			.route(route)
+			.apiRouteId(route.getApiRouteId())
 			.build();
 	}
 }

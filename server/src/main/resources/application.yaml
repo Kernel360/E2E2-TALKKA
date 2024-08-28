@@ -11,7 +11,7 @@ spring:
       mode: never # schema.sql 실행시 always 키고 실행하시면 됩니다.
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true

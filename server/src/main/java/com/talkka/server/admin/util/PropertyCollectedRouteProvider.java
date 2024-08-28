@@ -1,4 +1,4 @@
-package com.talkka.server.bus.util;
+package com.talkka.server.admin.util;
 
 import java.util.List;
 
@@ -12,6 +12,6 @@ import lombok.Setter;
 @Setter
 @Getter
 @ConfigurationProperties(prefix = "bus.location.collect")
-public class BusLocationCollectProperty implements BusLocationCollectProvider {
+public class PropertyCollectedRouteProvider implements CollectedRouteProvider {
 	private List<String> targetIdList;
 }

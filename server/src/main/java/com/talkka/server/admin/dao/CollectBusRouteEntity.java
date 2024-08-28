@@ -36,6 +36,9 @@ public class CollectBusRouteEntity {
 	@JoinColumn(name = "route_id", nullable = false)
 	private BusRouteEntity route;
 
+	@Column(name = "api_route_id", nullable = false)
+	private String apiRouteId;
+
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;

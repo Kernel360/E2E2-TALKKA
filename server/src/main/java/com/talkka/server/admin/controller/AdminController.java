@@ -73,12 +73,13 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/collect-route/{collectRouteId}")
-	public ResponseEntity<?> deleteCollectRoute(@PathVariable Long collectRouteId, Model model) {
+	public ResponseEntity<String> deleteCollectRoute(@PathVariable Long collectRouteId, Model model) {
 		try {
 			collectBusRouteService.deleteCollectBusRoute(collectRouteId);
 		} catch (CollectBusRouteNotFoundException exception) {
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
-		return ResponseEntity.ok().build();
+		return ResponseEntity.ok().body("삭제에 성공했습니다.");
 	}
+	
 }
