@@ -2,6 +2,7 @@ package com.talkka.server.common.exception.handler;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -30,6 +31,11 @@ public class RestControllerAdvice {
 	public ResponseEntity<ErrorRespDto> handleInvalidEnumCodeException(InvalidEnumCodeException exception) {
 		log.error("InvalidEnumCodeException: {}", exception.getMessage());
 		return new ResponseEntity<>(ErrorRespDto.of(INTERNAL_SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(AuthorizationDeniedException.class)
+	public ResponseEntity<ErrorRespDto> handleAuthorizationDeniedException(AuthorizationDeniedException exception) {
+		return new ResponseEntity<>(ErrorRespDto.of(exception.getMessage()), HttpStatus.FORBIDDEN);
 	}
 
 	@ExceptionHandler(RuntimeException.class)
