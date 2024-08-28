@@ -1,7 +1,6 @@
 package com.talkka.server.admin.controller;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -28,47 +27,40 @@ public class AdminController {
 	private final CollectBusRouteService collectBusRouteService;
 
 	@GetMapping("")
-	@Secured("ADMIN")
 	public String index() {
 		return "admin/index";
 	}
 
 	@GetMapping("/user")
-	@Secured("ADMIN")
 	public String user(Model model) {
 		model.addAttribute("userList", userService.getAllUser());
 		return "admin/user";
 	}
 
 	@GetMapping("/bookmark")
-	@Secured("ADMIN")
 	public String bookmark(Model model) {
 		model.addAttribute("bookmarkStats", adminService.getBookmarkStats());
 		return "admin/bookmark";
 	}
 
 	@GetMapping("/review")
-	@Secured(("ADMIN"))
 	public String review(Model model) {
 		model.addAttribute("reviewStats", adminService.getBusReviewStats());
 		return "admin/review";
 	}
 
 	@GetMapping("/collect-route")
-	@Secured("ADMIN")
 	public String collectRoute(Model model) {
 		model.addAttribute("collectRoutes", collectBusRouteService.findAllCollectBusRoutes());
 		return "admin/collect-route";
 	}
 
 	@GetMapping("/collect-route/form")
-	@Secured("ADMIN")
 	public String collectRouteForm(Model model) {
 		return "admin/collect-route-form";
 	}
 
 	@PostMapping("/collect-route/form")
-	@Secured("ADMIN")
 	public String createCollectRoute(CollectBusRouteCreateDto dto, Model model) {
 		try {
 			collectBusRouteService.createCollectBusRoute(dto);
@@ -81,7 +73,6 @@ public class AdminController {
 	}
 
 	@DeleteMapping("/collect-route/{collectRouteId}")
-	@Secured("ADMIN")
 	public ResponseEntity<?> deleteCollectRoute(@PathVariable Long collectRouteId, Model model) {
 		try {
 			collectBusRouteService.deleteCollectBusRoute(collectRouteId);
