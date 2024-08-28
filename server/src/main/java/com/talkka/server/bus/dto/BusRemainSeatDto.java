@@ -1,6 +1,5 @@
 package com.talkka.server.bus.dto;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +14,7 @@ import lombok.Getter;
 public class BusRemainSeatDto {
 	@Getter
 	@AllArgsConstructor
-	private static class SeatInfo implements Serializable {
+	private static class SeatInfo {
 		LocalDateTime arrivedTime;
 		Integer remainSeat;
 	}
@@ -23,11 +22,9 @@ public class BusRemainSeatDto {
 	private PlateType plateType;
 	private String plateNo;
 	private LocalDateTime standardTime;
-	private List<SeatInfo> remainSeatList;
+	private final List<SeatInfo> remainSeatList = new ArrayList<>();
 
 	public BusRemainSeatDto(List<BusRemainSeatEntity> seats) {
-		remainSeatList = new ArrayList<>();
-
 		for (var seat : seats) {
 			plateType = seat.getPlateType();
 			plateNo = seat.getPlateNo();
