@@ -11,7 +11,7 @@
         <append>true</append>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>${LOG_PATH}/api-server.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>${logging.application.file.max-history:-1}</maxHistory>
+            <maxHistory>${logging.application.file.max-history:-7}</maxHistory>
             <maxFileSize>${logging.application.file.max-size:-10MB}</maxFileSize>
         </rollingPolicy>
         <encoder>
