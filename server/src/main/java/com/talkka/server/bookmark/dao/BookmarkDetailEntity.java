@@ -5,14 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.talkka.server.bookmark.enums.TransportType;
-import com.talkka.server.subway.enums.Updown;
+import com.talkka.server.bus.dao.BusRouteStationEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -38,25 +35,15 @@ public class BookmarkDetailEntity {
 	@Column(name = "seq", nullable = false)
 	private Integer seq;
 
-	@Column(name = "type", nullable = false, length = 10)
-	@Enumerated(EnumType.STRING)
-	private TransportType type;
-
 	@ManyToOne
 	@JoinColumn(name = "bookmark_id")
 	private BookmarkEntity bookmark;
 
-	@JoinColumn(name = "subway_station_id")
-	private Long subwayStationId;
-
-	@Column(name = "subway_updown")
-	private Updown subwayUpdown;
-
+	@ManyToOne
 	@JoinColumn(name = "bus_route_station_id")
-	private Long busRouteStationId;
+	private BusRouteStationEntity routeStation;
 
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
-
 }

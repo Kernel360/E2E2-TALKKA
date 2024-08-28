@@ -1,8 +1,10 @@
 package com.talkka.server.api.datagg.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.talkka.server.api.core.exception.ApiClientException;
+import com.talkka.server.api.datagg.dto.BusArrivalBodyDto;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.api.datagg.dto.BusRouteInfoBodyDto;
 import com.talkka.server.api.datagg.dto.BusRouteSearchBodyDto;
@@ -17,5 +19,6 @@ public interface BusApiService {
 
 	List<BusLocationBodyDto> getBusLocationInfo(String apiRouteId) throws ApiClientException;
 
-	// List<RouteBusStationArrivalInfoRespDto> getBusStationArrivalInfo(String routeId);
+	Optional<BusArrivalBodyDto> getBusArrival(String apiRouteId, String apiStationId) throws
+		ApiClientException;
 }
