@@ -32,6 +32,20 @@ public class RestControllerAdvice {
 		return new ResponseEntity<>(ErrorRespDto.of(INTERNAL_SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<ErrorRespDto> handleRuntimeException(RuntimeException exception) {
+		log.error("""
+				Exception Class : {}
+				Exception Message : {}
+				Stack Trace : {}
+				""",
+			exception.getClass().getName(),
+			exception.getMessage(),
+			exception.getStackTrace()
+		);
+		return new ResponseEntity<>(ErrorRespDto.of(INTERNAL_SERVER_ERROR_MESSAGE), HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
 	@Deprecated
 	@ExceptionHandler(HttpBaseException.class)
 	public ResponseEntity<ApiRespDto<Void>> handleHttpException(HttpBaseException exception) {
