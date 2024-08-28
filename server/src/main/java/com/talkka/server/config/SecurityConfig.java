@@ -46,9 +46,13 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/api/auth/login/**").permitAll()
-				.requestMatchers("/dev-login").permitAll()    // 개발용 경로
-				.requestMatchers(HttpMethod.POST, "/api/auth/register").hasAuthority(AuthRole.UNREGISTERED.getName())
-				.anyRequest().authenticated()//.hasAuthority(AuthRole.USER.getName())
+				.requestMatchers("/dev-login").permitAll()    // 개발용 경로, 이후에 삭제
+				.requestMatchers(HttpMethod.GET, "/api/bus/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/subway/**").permitAll()
+				.requestMatchers(HttpMethod.GET, "/api/bus-review/**").permitAll()
+				.requestMatchers("/swagger-ui/**").permitAll()
+				.requestMatchers("/api-docs/**").permitAll()
+				.anyRequest().authenticated() //.hasAuthority(AuthRole.USER.getName())
 			)
 			.addFilterAfter(new UnregisteredUserFilter(), BasicAuthenticationFilter.class)
 			.oauth2Login(oauth -> oauth
@@ -89,7 +93,7 @@ public class SecurityConfig {
 					response.sendRedirect("http://localhost:3000/register");
 					return;
 				}
-				response.sendRedirect("http://localhost:3000");
+				response.sendRedirect("http://localhost:3000/login/ok");
 			}
 
 			private boolean isUnregisteredUser(Authentication authentication) {

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.review.dto.SubwayReviewDto;
@@ -33,10 +34,11 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/subway-review")
-public class SubwayReviewController {
+public class SubwayReviewController implements SubwayReviewApi {
 
 	private final SubwayReviewService subwayReviewService;
 
+	@Override
 	@GetMapping("")
 	public ResponseEntity<?> getSubwayReviewList(
 		@RequestParam Long stationId,
@@ -53,11 +55,12 @@ public class SubwayReviewController {
 				reviewData = subwayReviewService.getSubwayReviewList(stationId, updown, timeSlot);
 			}
 		} catch (InvalidTypeException exception) {
-			return ResponseEntity.badRequest().body(exception.getMessage());
+			return ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return ResponseEntity.ok(reviewData);
 	}
 
+	@Override
 	@PostMapping("")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> createSubwayReview(
@@ -76,6 +79,7 @@ public class SubwayReviewController {
 		return response;
 	}
 
+	@Override
 	@PutMapping("/{subway_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> updateSubwayReview(
@@ -99,6 +103,7 @@ public class SubwayReviewController {
 		return response;
 	}
 
+	@Override
 	@DeleteMapping("/{subway_review_id}")
 	@Secured({"USER", "ADMIN"})
 	public ResponseEntity<?> deleteSubwayReview(

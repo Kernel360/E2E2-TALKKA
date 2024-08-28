@@ -3,7 +3,9 @@ package com.talkka.server.user.vo;
 import com.fasterxml.jackson.annotation.JsonValue;
 import com.talkka.server.user.exception.InvalidNicknameException;
 
-public record Nickname(String nickname) {
+import jakarta.validation.constraints.NotNull;
+
+public record Nickname(@NotNull String nickname) {
 	private static final String REGEX = "^[a-zA-Z0-9가-힣]{2,20}$";
 
 	public Nickname {

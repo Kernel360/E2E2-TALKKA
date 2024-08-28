@@ -2,26 +2,24 @@ package com.talkka.server.bookmark.dto;
 
 import com.talkka.server.bookmark.dao.BookmarkDetailEntity;
 import com.talkka.server.bookmark.dao.BookmarkEntity;
-import com.talkka.server.bookmark.enums.TransportType;
-import com.talkka.server.subway.enums.Updown;
+import com.talkka.server.bus.dao.BusRouteStationEntity;
+
+import jakarta.validation.constraints.NotNull;
 
 public record BookmarkDetailReqDto(
+	@NotNull
 	Integer seq,
-	String type,
-	Long subwayStationId,
-	Updown subwayUpdown,
+	@NotNull
 	Long busRouteStationId
 ) {
 	public BookmarkDetailEntity toEntity(
-		BookmarkEntity bookmark
+		BookmarkEntity bookmark,
+		BusRouteStationEntity busRouteStation
 	) {
 		return BookmarkDetailEntity.builder()
 			.seq(seq)
 			.bookmark(bookmark)
-			.type(TransportType.valueOf(type))
-			.subwayStationId(subwayStationId)
-			.subwayUpdown(subwayUpdown)
-			.busRouteStationId(busRouteStationId)
+			.routeStation(busRouteStation)
 			.build();
 	}
 }

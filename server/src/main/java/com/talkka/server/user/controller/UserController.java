@@ -2,6 +2,7 @@ package com.talkka.server.user.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 import com.talkka.server.user.dto.UserDto;
@@ -27,10 +29,12 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
-public class UserController {
+public class UserController implements UserApi {
 	private final UserService userService;
 
+	@Override
 	@GetMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> getUser(
 		@PathVariable("user_id") Long userId
 	) {
@@ -38,13 +42,15 @@ public class UserController {
 		try {
 			UserRespDto userRespDto = UserRespDto.of(userService.getUser(userId));
 			response = ResponseEntity.ok(userRespDto);
-		} catch (Exception exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+		} catch (UserNotFoundException exception) {
+			response = new ResponseEntity<>(ErrorRespDto.of(exception), HttpStatus.NOT_FOUND);
 		}
 		return response;
 	}
 
+	@Override
 	@PutMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> updateUser(@PathVariable("user_id") Long userId,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		ResponseEntity<?> response;
@@ -55,24 +61,28 @@ public class UserController {
 
 			response = ResponseEntity.ok(userRespDto);
 		} catch (InvalidTypeException | DuplicatedNicknameException | UserNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@DeleteMapping("/{user_id}")
+	@Secured("ADMIN")
 	public ResponseEntity<?> deleteUser(@PathVariable("user_id") Long userId) {
 		ResponseEntity<?> response;
 		try {
 			Long deletedUserId = userService.deleteUser(userId);
 			response = ResponseEntity.ok(deletedUserId);
 		} catch (UserNotFoundException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@GetMapping("/me")
+	@Secured({"USER"})
 	public ResponseEntity<?> getMe(@AuthenticationPrincipal OAuth2UserInfo userInfo) {
 		ResponseEntity<?> response;
 		try {
@@ -84,7 +94,9 @@ public class UserController {
 		return response;
 	}
 
+	@Override
 	@PutMapping("/me")
+	@Secured({"USER"})
 	public ResponseEntity<?> updateMe(@AuthenticationPrincipal OAuth2UserInfo userInfo,
 		@RequestBody @Valid UserUpdateReqDto userUpdateReqDto) {
 		ResponseEntity<?> response;
@@ -94,7 +106,7 @@ public class UserController {
 			UserRespDto userRespDto = UserRespDto.of(userDto);
 			response = ResponseEntity.ok(userRespDto);
 		} catch (InvalidTypeException | DuplicatedNicknameException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (UserNotFoundException exception) {
 			response = new ResponseEntity<>("권한이 없습니다.", HttpStatus.UNAUTHORIZED);
 		}

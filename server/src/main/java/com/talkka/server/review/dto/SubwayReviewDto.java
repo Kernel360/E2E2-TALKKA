@@ -10,17 +10,30 @@ import com.talkka.server.subway.enums.Line;
 import com.talkka.server.subway.enums.Updown;
 import com.talkka.server.user.dao.UserEntity;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record SubwayReviewDto(
+	@NotNull
 	Long id,
+	@NotNull
 	Long userId,
+	@NotNull
 	Long stationId,
+	@NotNull
+	@Schema(implementation = Line.class)
 	Line line,
+	@NotNull
+	@Schema(implementation = Updown.class)
 	Updown updown,
+	@NotNull
 	ReviewContent content,
+	@NotNull
+	@Schema(implementation = TimeSlot.class)
 	TimeSlot timeSlot,
+	@NotNull
 	Rating rating
 ) {
 	public static SubwayReviewDto of(Long reviewId, Long userId, SubwayReviewReqDto reqDto) throws

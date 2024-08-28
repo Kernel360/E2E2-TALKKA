@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.common.exception.InvalidTypeException;
 import com.talkka.server.subway.exception.ConfusionNotFoundException;
 import com.talkka.server.subway.exception.StationNotFoundException;
@@ -18,10 +19,11 @@ import lombok.RequiredArgsConstructor;
 @Repository
 @RequiredArgsConstructor
 @RequestMapping("/api/subway/confusion")
-public class SubwayConfusionController {
+public class SubwayConfusionController implements SubwayConfusionApi {
 
 	private final SubwayConfusionService confusionService;
 
+	@Override
 	@GetMapping("/{stationId}")
 	public ResponseEntity<?> getConfusion(
 		@PathVariable Long stationId,
@@ -34,13 +36,14 @@ public class SubwayConfusionController {
 			response = ResponseEntity.ok(
 				confusionService.getConfusion(stationId, dayType, updown, timeSlot));
 		} catch (StationNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		} catch (ConfusionNotFoundException exception) {
-			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(exception.getMessage());
+			response = ResponseEntity.status(HttpStatus.NOT_FOUND).body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}
 
+	@Override
 	@GetMapping("/{stationId}/list")
 	public ResponseEntity<?> getConfusionList(
 		@PathVariable Long stationId,
@@ -55,7 +58,7 @@ public class SubwayConfusionController {
 				confusionService.getConfusionList(stationId, dayType, updown, startTimeSlot, endTimeSlot)
 			);
 		} catch (StationNotFoundException | InvalidTypeException exception) {
-			response = ResponseEntity.badRequest().body(exception.getMessage());
+			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;
 	}

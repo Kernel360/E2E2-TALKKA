@@ -33,8 +33,12 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // XML Parser
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml'
+
     // Spring Retry
     implementation 'org.springframework.retry:spring-retry'
+
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'    //Swagger
     
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'

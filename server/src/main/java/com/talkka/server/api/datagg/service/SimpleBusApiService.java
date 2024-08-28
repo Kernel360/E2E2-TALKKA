@@ -2,6 +2,7 @@ package com.talkka.server.api.datagg.service;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Optional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import org.springframework.web.util.DefaultUriBuilderFactory;
 
 import com.talkka.server.api.core.exception.ApiClientException;
 import com.talkka.server.api.datagg.config.BusApiKeyProperty;
+import com.talkka.server.api.datagg.dto.BusArrivalBodyDto;
+import com.talkka.server.api.datagg.dto.BusArrivalRespDto;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.api.datagg.dto.BusLocationRespDto;
 import com.talkka.server.api.datagg.dto.BusRouteInfoBodyDto;
@@ -86,6 +89,26 @@ public class SimpleBusApiService implements BusApiService {
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
 			throw new ApiClientException("결과가 없습니다.");
+		}
+	}
+
+	@Override
+	public Optional<BusArrivalBodyDto> getBusArrival(String apiRouteId, String apiStationId) throws
+		ApiClientException {
+		final String path = "/6410000/busarrivalservice/getBusArrivalItem";
+		MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+		params.add("routeId", apiRouteId);
+		params.add("stationId", apiStationId);
+		try {
+			URI uri = this.getOpenApiUri(path, params);
+			ResponseEntity<BusArrivalRespDto> resp = restTemplate.getForEntity(uri, BusArrivalRespDto.class);
+			var body = resp.getBody().msgBody();
+			if (body == null || body.isEmpty()) {
+				return Optional.empty();
+			}
+			return Optional.of(body.get(0));
+		} catch (Exception exception) {
+			throw new ApiClientException(exception.getMessage());
 		}
 	}
 

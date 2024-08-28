@@ -8,18 +8,28 @@ import com.talkka.server.user.dao.UserEntity;
 import com.talkka.server.user.vo.Email;
 import com.talkka.server.user.vo.Nickname;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 
 @Builder
 public record UserDto(
+	@NotNull
 	Long userId,
+	@NotNull
 	String name,
+	@NotNull
 	Email email,
+	@NotNull
 	Nickname nickname,
+	@NotNull
 	String oauthProvider,
+	@NotNull
 	String accessToken,
+	@NotNull
 	AuthRole authRole,
+	@NotNull
 	LocalDateTime createdAt,
+	@NotNull
 	LocalDateTime updatedAt
 ) {
 

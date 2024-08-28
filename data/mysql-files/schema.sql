@@ -73,14 +73,14 @@ drop table if exists users;
 create table users
 (
     user_id        bigint auto_increment primary key,
-    created_at     datetime(6)            not null,
-    updated_at     datetime(6)            not null,
-    email          varchar(30)            not null,
-    oauth_provider varchar(30)            not null,
-    nickname       varchar(50)            not null,
-    access_token   varchar(255)           not null,
-    name           varchar(255)           not null,
-    auth_role      varchar(20)            null
+    created_at     datetime(6)  not null,
+    updated_at     datetime(6)  not null,
+    email          varchar(30)  not null,
+    oauth_provider varchar(30)  not null,
+    nickname       varchar(50)  not null,
+    access_token   varchar(255) not null,
+    name           varchar(255) not null,
+    auth_role      varchar(20)  null
 );
 
 drop table if exists bus_review;
@@ -168,10 +168,7 @@ CREATE TABLE bookmark_detail
 (
     bookmark_detail_id   BIGINT AUTO_INCREMENT NOT NULL PRIMARY KEY,
     seq                  INT                   NOT NULL,
-    type                 VARCHAR(10)           NOT NULL,
     bookmark_id          BIGINT                NULL,
-    subway_station_id    BIGINT                NULL,
-    subway_updown        VARCHAR(255)          NULL,
     bus_route_station_id BIGINT                NULL,
     created_at           datetime              NOT NULL
 );
