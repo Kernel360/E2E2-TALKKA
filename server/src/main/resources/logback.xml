@@ -34,8 +34,23 @@
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
-    <logger name="com.talkka.server" level="DEBUG" additivity="false">
+    <!--  OUT_OF_SERVICE  -->
+    <appender name="FILE-OUT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_PATH}/api-server.%d{yyyy-MM-dd}.all.log</fileNamePattern>
+            <maxHistory>${logging.application.file.max-history:-1}</maxHistory>
+            <maxFileSize>${logging.application.file.max-size:-10MB}</maxFileSize>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
+        <appender-ref ref="FILE-OUT"/>
+    </root>
+    <logger name="com.talkka.server" level="DEBUG" additivity="false">
         <appender-ref ref="FILE"/>
         <appender-ref ref="FILE-ERROR"/>
     </logger>
