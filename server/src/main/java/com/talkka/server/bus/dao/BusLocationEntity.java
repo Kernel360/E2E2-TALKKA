@@ -61,10 +61,7 @@ public class BusLocationEntity {
 
 	@Column(name = "remain_seat_count", nullable = false)
 	private Integer remainSeatCount;
-
-	@Column(name = "api_call_no", nullable = false)
-	private Integer apiCallNo;
-
+	
 	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
