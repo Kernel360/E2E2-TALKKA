@@ -27,7 +27,6 @@ public record BusLocationBodyDto(String endBus, String lowPlate, String plateNo,
 			.plateNo(plateNo)
 			.plateType(plateTypeEnum)
 			.remainSeatCount(remainSeatCnt)
-			.apiCallNo(apiCallNo)
 			.createdAt(createdAt)
 			.build();
 	}
