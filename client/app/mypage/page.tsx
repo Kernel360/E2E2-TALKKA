@@ -15,8 +15,8 @@ export default function MyPage() {
   const [userData, setUserData] = useState<UserData | null>(null)
 
   if (!isLogin) {
-    redirect("/login")
-    return
+    redirect("/logout")
+    return null
   }
   // API 요청
   const client = useClient()
@@ -40,8 +40,11 @@ export default function MyPage() {
   }, [])
 
   return (
-    <div>
-      <section className="container items-center justify-center pb-8 pt-6 md:py-10 min-h-full">
+    <div className={""}>
+      <section
+        className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full
+      gap-y-5 w-[300px]"
+      >
         <div className="flex max-w-[980px] flex-col items-center justify-center gap-2">
           <p className="font-bold py-2">내 정보</p>
           {userData ? (

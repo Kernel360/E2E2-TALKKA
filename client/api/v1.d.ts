@@ -448,15 +448,52 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bus/live/{routeStationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 버스 실시간 정보 조회
+         * @description 버스 실시간 정보 조회 API
+         */
+        get: operations["getBusLiveInfo"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/bookmark/{bookmarkId}/paths": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * 북마크에 연관된 경로 정보를 조회
+         * @description 북마크에 연관된 경로 정보(도착 정보, 통계 정보)를 조회합니다.
+         */
+        get: operations["getBookmarkPathInfos"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
         UserUpdateReqDto: {
             nickname: string;
-        };
-        ErrorRespDto: {
-            message: string;
         };
         /** @description 유저 정보 응답 DTO */
         UserRespDto: {
@@ -466,6 +503,9 @@ export interface components {
             email: string;
             nickname: string;
             oauthProvider: string;
+        };
+        ErrorRespDto: {
+            message: string;
         };
         SubwayReviewReqDto: {
             /** Format: int64 */
@@ -527,29 +567,17 @@ export interface components {
         BookmarkDetailReqDto: {
             /** Format: int32 */
             seq: number;
-            type: string;
-            /** Format: int64 */
-            subwayStationId: number;
-            /** @enum {string} */
-            subwayUpdown: "UP" | "DOWN";
             /** Format: int64 */
             busRouteStationId: number;
         };
         BookmarkReqDto: {
-            name?: string;
-            details?: components["schemas"]["BookmarkDetailReqDto"][];
+            name: string;
+            details: components["schemas"]["BookmarkDetailReqDto"][];
         };
         BookmarkDetailRespDto: {
             /** Format: int32 */
             seq: number;
-            /** @enum {string} */
-            type: "BUS" | "SUBWAY";
-            /** Format: int64 */
-            subwayStationId: number;
-            /** @enum {string} */
-            subwayUpdown: "UP" | "DOWN";
-            /** Format: int64 */
-            busRouteStationId: number;
+            routeStation: components["schemas"]["BusRouteStationRespDto"];
         };
         BookmarkRespDto: {
             /** Format: int64 */
@@ -558,6 +586,20 @@ export interface components {
             /** Format: int64 */
             userId: number;
             details: components["schemas"]["BookmarkDetailRespDto"][];
+        };
+        BusRouteStationRespDto: {
+            /** Format: int64 */
+            busRouteStationId: number;
+            /** Format: int64 */
+            routeId: number;
+            routeName: string;
+            /** Format: int64 */
+            stationId: number;
+            /** Format: int32 */
+            stationSeq: number;
+            stationName: string;
+            /** Format: date-time */
+            createdAt: string;
         };
         SubwayStationReqDto: {
             stationName: string;
@@ -646,18 +688,30 @@ export interface components {
             /** Format: int32 */
             nPeekAlloc: number;
         };
-        BusRouteStationRespDto: {
-            /** Format: int64 */
-            busRouteStationId: number;
+        BusArrivalRespDto: {
+            /** Format: int32 */
+            locationNo1: number;
+            /** Format: int32 */
+            predictTime1: number;
+            plateNo1: string;
+            /** Format: int32 */
+            remainSeatCnt1: number;
+            /** Format: int32 */
+            locationNo2: number;
+            /** Format: int32 */
+            predictTime2: number;
+            plateNo2: string;
+            /** Format: int32 */
+            remainSeatCnt2: number;
+            /** @enum {string} */
+            flag: "RUN" | "PASS" | "STOP" | "WAIT" | "UNKNOWN";
+        };
+        BusLiveInfoRespDto: {
             /** Format: int64 */
             routeId: number;
-            /** Format: int64 */
-            stationId: number;
-            /** Format: int32 */
-            stationSeq: number;
-            stationName: string;
-            /** Format: date-time */
-            createdAt: string;
+            routeName: string;
+            routeStation: components["schemas"]["BusRouteStationRespDto"];
+            arrivalInfo?: components["schemas"]["BusArrivalRespDto"];
         };
     };
     responses: never;
@@ -1755,6 +1809,79 @@ export interface operations {
             };
             /** @description 해당 ID의 버스 노선 정류장이 존재하지 않습니다. */
             404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespDto"];
+                };
+            };
+        };
+    };
+    getBusLiveInfo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 노선 정류장 ID */
+                routeStationId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 성공 */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BusLiveInfoRespDto"];
+                };
+            };
+            /** @description 잘못된 요청 */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ErrorRespDto"];
+                };
+            };
+        };
+    };
+    getBookmarkPathInfos: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                /** @description 북마크 ID */
+                bookmarkId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description 정상적으로 북마크에 연관된 경로 정보를 조회했습니다. */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusLiveInfoRespDto"][];
+                };
+            };
+            /** @description 잘못된 요청입니다. */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorRespDto"];
+                };
+            };
+            /** @description 권한이 없습니다. */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
