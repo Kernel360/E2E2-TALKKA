@@ -1,33 +1,29 @@
-"use client"
-
 import { useCallback, useState } from "react"
-import { useRouter } from "next/navigation"
 import useClient from "@/api/useClient"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 
-export default function CreateRoute() {
-  const router = useRouter()
+interface CreateRouteProps {
+  setCreateMode: (createMode: boolean) => void
+}
+
+export default function CreateBookmark({ setCreateMode }: CreateRouteProps) {
   const [routeName, setRouteName] = useState<string>("")
   const client = useClient()
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setRouteName(e.target.value)
-  }
-
-  const handleCreateRoute = useCallback(async () => {
-    const { data, response, error } = await client.POST(`/api/bookmark`, {
-      body: {
-        name: routeName,
-        details: [],
-      },
+  const fetchCreateBookmark = useCallback(async (bookmarkName: string) => {
+    const { response, error } = await client.POST("/api/bookmark", {
+      body: { name: bookmarkName, details: [] },
     })
     if (error) {
-      alert(error.message)
+      alert(`북마크 생성에 실패했습니다. ${error.message}`)
       return
     }
-  }, [routeName])
+    if (response.ok) {
+      setCreateMode(false)
+    }
+  }, [])
 
   return (
     <div className={""}>
@@ -42,13 +38,14 @@ export default function CreateRoute() {
             type={"text"}
             placeholder={"경로명"}
             value={routeName}
-            onChange={handleInputChange}
+            onChange={(e) => {
+              setRouteName(e.target.value)
+            }}
           />
           <Button
             className={"w-[100px]"}
             onClick={() => {
-              handleCreateRoute()
-              router.push("/route")
+              fetchCreateBookmark(routeName)
             }}
           >
             경로 생성
