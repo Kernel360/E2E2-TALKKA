@@ -13,6 +13,7 @@ import com.talkka.server.bus.service.BusViewService;
 
 import lombok.RequiredArgsConstructor;
 
+// 테스트용 컨트롤러입니다.
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/bus/route-info")
