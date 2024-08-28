@@ -6,11 +6,13 @@ import org.springframework.http.ResponseEntity;
 
 import com.talkka.server.bookmark.dto.BookmarkReqDto;
 import com.talkka.server.bookmark.dto.BookmarkRespDto;
+import com.talkka.server.bus.dto.BusLiveInfoRespDto;
 import com.talkka.server.common.dto.ErrorRespDto;
 import com.talkka.server.oauth.domain.OAuth2UserInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
@@ -174,6 +176,44 @@ public interface BookmarkApi {
 			))
 	})
 	ResponseEntity<?> deleteBookmark(
+		OAuth2UserInfo oAuth2UserInfo,
+		@Parameter(description = "북마크 ID", required = true)
+		Long bookmarkId);
+
+	@Operation(
+		summary = "북마크에 연관된 경로 정보를 조회",
+		description = "북마크에 연관된 경로 정보(도착 정보, 통계 정보)를 조회합니다.",
+		security = {
+			@SecurityRequirement(name = "user"),
+			@SecurityRequirement(name = "admin")
+		}
+	)
+	@ApiResponses(
+		value = {
+			@ApiResponse(
+				responseCode = "200",
+				description = "정상적으로 북마크에 연관된 경로 정보를 조회했습니다.",
+				content = @Content(
+					mediaType = "application/json",
+					array = @ArraySchema(schema = @Schema(implementation = BusLiveInfoRespDto.class))
+				)),
+			@ApiResponse(
+				responseCode = "400",
+				description = "잘못된 요청입니다.",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = ErrorRespDto.class)
+				)),
+			@ApiResponse(
+				responseCode = "403",
+				description = "권한이 없습니다.",
+				content = @Content(
+					mediaType = "application/json",
+					schema = @Schema(implementation = ErrorRespDto.class)
+				))
+		}
+	)
+	ResponseEntity<?> getBookmarkPathInfos(
 		OAuth2UserInfo oAuth2UserInfo,
 		@Parameter(description = "북마크 ID", required = true)
 		Long bookmarkId);

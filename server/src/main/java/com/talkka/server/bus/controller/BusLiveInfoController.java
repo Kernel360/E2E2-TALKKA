@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
-import com.talkka.server.bus.exception.GetBusLiveArrivalInfoFailedException;
 import com.talkka.server.bus.service.BusLiveInfoService;
 import com.talkka.server.common.dto.ErrorRespDto;
 
@@ -26,7 +25,7 @@ public class BusLiveInfoController implements BusLiveInfoApi {
 		try {
 			var busLiveInfo = busLiveInfoService.getBusLiveInfo(routeStationId);
 			response = ResponseEntity.ok(busLiveInfo);
-		} catch (BusRouteStationNotFoundException | GetBusLiveArrivalInfoFailedException exception) {
+		} catch (BusRouteStationNotFoundException exception) {
 			response = ResponseEntity.badRequest().body(ErrorRespDto.of(exception));
 		}
 		return response;

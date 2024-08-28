@@ -2,8 +2,11 @@ package com.talkka.server.bookmark.service;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import com.talkka.server.bookmark.dao.BookmarkDetailEntity;
 import com.talkka.server.bookmark.dao.BookmarkDetailRepository;
 import com.talkka.server.bookmark.dao.BookmarkEntity;
 import com.talkka.server.bookmark.dao.BookmarkRepository;
@@ -12,7 +15,13 @@ import com.talkka.server.bookmark.dto.BookmarkRespDto;
 import com.talkka.server.bookmark.exception.BookmarkNotFoundException;
 import com.talkka.server.bookmark.exception.BookmarkUserNotFoundException;
 import com.talkka.server.bookmark.exception.DuplicatedBookmarkNameException;
+import com.talkka.server.bookmark.exception.InvalidBusDetailException;
+import com.talkka.server.bookmark.exception.NotSupportedTypeException;
 import com.talkka.server.bookmark.exception.enums.InvalidTransportTypeEnumException;
+import com.talkka.server.bus.dao.BusRouteStationRepository;
+import com.talkka.server.bus.dto.BusLiveInfoRespDto;
+import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
+import com.talkka.server.bus.service.BusLiveInfoService;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.user.dao.UserEntity;
@@ -24,10 +33,13 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
+	private static final Logger log = LoggerFactory.getLogger(BookmarkService.class);
 	private final BookmarkRepository bookmarkRepository;
 	private final BookmarkDetailRepository bookmarkDetailRepository;
 	private final UserRepository userRepository;
 	private final ContentAccessValidator contentAccessValidator;
+	private final BusLiveInfoService busLiveInfoService;
+	private final BusRouteStationRepository busRouteStationRepository;
 
 	public BookmarkRespDto getBookmarkById(Long userId, Long bookmarkId) throws
 		BookmarkNotFoundException,
@@ -56,50 +68,67 @@ public class BookmarkService {
 		}
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = dto.toEntity(user);
-		dto.details().stream()
-			.map(detail -> detail.toEntity(bookmark))
-			.forEach(bookmark.getDetails()::add);
+		List<BookmarkDetailEntity> details = dto.details().stream()
+			.map((detail) ->
+				detail.toEntity(bookmark, busRouteStationRepository.findById(detail.busRouteStationId())
+					.orElseThrow(BusRouteStationNotFoundException::new)))
+			.toList();
+		bookmark.updateBookmark(dto.name(), details);
 		return BookmarkRespDto.of(bookmarkRepository.save(bookmark));
 	}
 
 	@Transactional
 	public BookmarkRespDto updateBookmark(BookmarkReqDto dto, Long userId, Long bookmarkId) throws
-		BookmarkUserNotFoundException,
-		BookmarkNotFoundException,
-		InvalidTransportTypeEnumException,
-		DuplicatedBookmarkNameException,
-		ContentAccessException {
-		if (bookmarkRepository.existsByNameAndUserId(dto.name(), userId)) {
-			throw new DuplicatedBookmarkNameException();
-		}
+		BookmarkUserNotFoundException, BookmarkNotFoundException, InvalidTransportTypeEnumException,
+		DuplicatedBookmarkNameException, ContentAccessException, InvalidBusDetailException, NotSupportedTypeException {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
 			.orElseThrow(BookmarkNotFoundException::new);
-
-		// 작성자거나 관리자가 아니면 ContentAccessException 발생
+		if (!isValidNickname(dto, userId, bookmark)) {
+			throw new DuplicatedBookmarkNameException();
+		}
 		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getAuthRole(), bookmark.getUser().getId());
 
-		// 기존 북마크 상세를 전부 지우고 전체를 새로 저장함
-		bookmarkDetailRepository.deleteByBookmarkId(bookmarkId);
-		bookmark.updateBookmark(dto);
+		List<BookmarkDetailEntity> details = dto.details().stream()
+			.map((detail) ->
+				detail.toEntity(bookmark, busRouteStationRepository.findById(detail.busRouteStationId())
+					.orElseThrow(BusRouteStationNotFoundException::new)))
+			.toList();
+		bookmark.updateBookmark(dto.name(), details);
 
-		return BookmarkRespDto.of(bookmarkRepository.save(bookmark));
+		var saved = bookmarkRepository.save(bookmark);
+		return BookmarkRespDto.of(saved);
 	}
 
 	@Transactional
 	public Long deleteBookmark(Long userId, Long bookmarkId) throws
-		BookmarkUserNotFoundException,
-		BookmarkNotFoundException {
+		BookmarkUserNotFoundException, BookmarkNotFoundException {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
 			.orElseThrow(BookmarkUserNotFoundException::new);
 
 		// 작성자거나 관리자가 아니면 ContentAccessException 발생
-		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getAuthRole(), bookmark.getId());
-
+		contentAccessValidator.validateOwnerContentAccess(user.getId(), user.getAuthRole(), bookmark.getUser().getId());
 		// 북마크와 북마크 상세를 삭제
 		bookmarkRepository.delete(bookmark);
-
 		return bookmarkId;
+	}
+
+	public List<BusLiveInfoRespDto> getBusPathInfosByBookmarkId(
+		Long userId, Long bookmarkId
+	) throws BookmarkNotFoundException, BookmarkUserNotFoundException, ContentAccessException,
+		BusRouteStationNotFoundException {
+		BookmarkEntity bookmark = bookmarkRepository.findById(bookmarkId)
+			.orElseThrow(BookmarkNotFoundException::new);
+		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
+		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), bookmark.getUser().getId());
+
+		return bookmark.getDetails().stream()
+			.map((detail) -> busLiveInfoService.getBusLiveInfo(detail.getRouteStation().getId()))
+			.toList();
+	}
+
+	private boolean isValidNickname(BookmarkReqDto dto, Long userId, BookmarkEntity bookmark) {
+		return bookmark.getName().equals(dto.name()) || !bookmarkRepository.existsByNameAndUserId(dto.name(), userId);
 	}
 }
