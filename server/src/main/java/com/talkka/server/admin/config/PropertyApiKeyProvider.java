@@ -1,11 +1,9 @@
-package com.talkka.server.api.datagg.config;
+package com.talkka.server.admin.config;
 
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-
-import com.talkka.server.api.core.config.ApiKeyProperty;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +11,7 @@ import lombok.Setter;
 @Getter
 @Component
 @ConfigurationProperties(prefix = "openapi.public.bus.service-key")
-public class BusApiKeyProperty implements ApiKeyProperty {
+public class PropertyApiKeyProvider implements ApiKeyProvider {
 	@Setter
 	private List<String> keys;
 
