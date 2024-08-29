@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -39,6 +40,9 @@ public class SecurityConfig {
 	private static final Logger log = LoggerFactory.getLogger(SecurityConfig.class);
 	private final CustomOAuth2Service customOAuth2Service;
 
+	@Value("${base.url}")
+	private String baseUrl;
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 		http
@@ -71,7 +75,7 @@ public class SecurityConfig {
 			)
 			.logout(logout -> logout
 				.logoutUrl("/api/auth/logout")
-				.logoutSuccessUrl("http://localhost:3000")
+				.logoutSuccessUrl(baseUrl)
 				.deleteCookies("JSESSIONID")
 			)
 			.exceptionHandling(exceptionHandling -> exceptionHandling
@@ -90,10 +94,10 @@ public class SecurityConfig {
 			public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 				Authentication authentication) throws IOException {
 				if (isUnregisteredUser(authentication)) {
-					response.sendRedirect("http://localhost:3000/register");
+					response.sendRedirect(baseUrl + "/register");
 					return;
 				}
-				response.sendRedirect("http://localhost:3000/login/ok");
+				response.sendRedirect(baseUrl + "/login/ok");
 			}
 
 			private boolean isUnregisteredUser(Authentication authentication) {
@@ -114,7 +118,7 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 
 		config.setAllowCredentials(true);
-		config.setAllowedOrigins(List.of("http://localhost:3000"));
+		config.setAllowedOrigins(List.of(baseUrl));
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
 		config.setAllowedHeaders(List.of("*"));
 		config.setExposedHeaders(List.of("*"));

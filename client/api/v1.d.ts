@@ -180,6 +180,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bus/stat/process/all": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["process"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/bus-review": {
         parameters: {
             query?: never;
@@ -368,6 +384,22 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bus/statics/now": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["getStatics"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/bus/route": {
         parameters: {
             query?: never;
@@ -495,6 +527,9 @@ export interface components {
         UserUpdateReqDto: {
             nickname: string;
         };
+        ErrorRespDto: {
+            message: string;
+        };
         /** @description 유저 정보 응답 DTO */
         UserRespDto: {
             /** Format: int64 */
@@ -503,9 +538,6 @@ export interface components {
             email: string;
             nickname: string;
             oauthProvider: string;
-        };
-        ErrorRespDto: {
-            message: string;
         };
         SubwayReviewReqDto: {
             /** Format: int64 */
@@ -660,6 +692,38 @@ export interface components {
             /** Format: date-time */
             createdAt: string;
         };
+        BusRemainSeatDto: {
+            /** @enum {string} */
+            plateType: "UNKNOWN" | "SMALL" | "MEDIUM" | "LARGE" | "DOUBLE_DECKER";
+            plateNo: string;
+            /** Format: date-time */
+            standardTime: string;
+            remainSeatList: components["schemas"]["SeatInfo"][];
+        };
+        BusStaticsDto: {
+            /** Format: date-time */
+            requestTime: string;
+            /** Format: int64 */
+            routeId: number;
+            routeName: string;
+            /** Format: int32 */
+            stationNum: number;
+            /** Format: int32 */
+            busNum: number;
+            stationList: components["schemas"]["StationInfo"][];
+            data: components["schemas"]["BusRemainSeatDto"][];
+        };
+        SeatInfo: {
+            /** Format: date-time */
+            arrivedTime: string;
+            /** Format: int32 */
+            remainSeat: number;
+        };
+        StationInfo: {
+            /** Format: int64 */
+            stationId: number;
+            stationName: string;
+        };
         BusRouteRespDto: {
             /** Format: int64 */
             routeId: number;
@@ -712,6 +776,7 @@ export interface components {
             routeName: string;
             routeStation: components["schemas"]["BusRouteStationRespDto"];
             arrivalInfo?: components["schemas"]["BusArrivalRespDto"];
+            statics?: components["schemas"]["BusStaticsDto"];
         };
     };
     responses: never;
@@ -1332,6 +1397,26 @@ export interface operations {
             };
         };
     };
+    process: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
     getBusReviewList: {
         parameters: {
             query: {
@@ -1702,6 +1787,31 @@ export interface operations {
                 };
                 content: {
                     "*/*": Record<string, never>;
+                };
+            };
+        };
+    };
+    getStatics: {
+        parameters: {
+            query: {
+                routeStationId: number;
+                stationNum?: number;
+                timeRange?: number;
+                week?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BusStaticsDto"];
                 };
             };
         };
