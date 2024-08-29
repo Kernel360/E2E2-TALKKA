@@ -121,7 +121,7 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
       </p>
       <ChartContainer
         config={chartConfig}
-        className="min-h-[300px] w-[240px] sm:w-[400px]"
+        className="min-h-[300px] w-[260px] sm:w-[400px]"
       >
         <LineChart
           accessibilityLayer

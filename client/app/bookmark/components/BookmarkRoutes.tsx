@@ -14,7 +14,7 @@ export default function BookmarkRoutes({
   setEditMode,
 }: BookmarkRoutesProps) {
   return (
-    <div className={`flex flex-col gap-y-4 items-center h-full`}>
+    <div className={`flex flex-col gap-y-4 items-center h-full w-[100%]`}>
       {details.length === 0 && (
         <div className={"flex flex-col items-center"}>
           <p className={"font-extrabold py-2"}>북마크된 버스가 없습니다.</p>

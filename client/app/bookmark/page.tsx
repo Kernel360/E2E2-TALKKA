@@ -80,7 +80,7 @@ export default function PathPage() {
 
   return (
     <div className={""}>
-      <section className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full gap-y-5 w-[100%]">
+      <section className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full gap-y-5 w-[100%] sm:w-[500px]">
         <div>
           <p className="font-bold py-2 text-xl">버스 북마크</p>
         </div>
