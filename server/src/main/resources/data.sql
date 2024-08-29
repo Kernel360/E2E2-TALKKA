@@ -167,7 +167,7 @@ LOAD DATA INFILE '/var/lib/mysql-files/bus_location.csv'
     (bus_location_id, api_route_id, api_station_id, station_seq, end_bus, low_plate, plate_no, plate_type,
      remain_seat_count, created_at);
 
--- 1. 버스 좌석 정보 데이터 삽입
+-- 1. 버스별 운행 정보 삽입
 -- 2. CSV 데이터 로드 (임시 테이블에)
 -- 헤더가 있는 경우 IGNORE 1 LINES 활성화
 LOAD DATA INFILE '/var/lib/mysql-files/bus_plate_statistic.csv'
