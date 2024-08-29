@@ -54,13 +54,21 @@ jobs:
           echo "IMAGE_TAG=$version" >> $GITHUB_ENV
         working-directory: ./server
 
-      - name: Docker Image Build
-        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ env.IMAGE_TAG }} .
+      - name: Docker Sever Image Build
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.SERVER_PROJECT_NAME }}:${{ env.IMAGE_TAG }} .
         working-directory: ./server
 
-      - name: DockerHub Push
-        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ env.IMAGE_TAG }}
+      - name: DockerHub Server Push
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.SERVER_PROJECT_NAME }}:${{ env.IMAGE_TAG }}
         working-directory: ./server
+
+      - name: Docker Client Image Build
+        run: docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.CLIENT_PROJECT_NAME }} .
+        working-directory: ./client
+
+      - name: DockerHub Client Push
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.CLIENT_PROJECT_NAME }}
+        working-directory: ./client
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -85,7 +93,7 @@ jobs:
           key: ${{ secrets.EC2_KEY }}
           port: ${{ secrets.EC2_SSH_PORT }}
           source: "./docker-compose.yaml"
-          target: "./talkka/git/E2E2-TALKKA"
+          target: ${{ secrets.SCP_TARGET_PATH }}
 
       - name: Application Run
         uses: appleboy/ssh-action@v1.0.3
@@ -98,11 +106,16 @@ jobs:
 
           script: |
             cd ./talkka/git/E2E2-TALKKA
-            docker kill ${{ secrets.PROJECT_NAME }}
-            docker rm -f ${{ secrets.PROJECT_NAME }}
-            docker images -q ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }} | xargs -r docker rmi
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.PROJECT_NAME }}:${{ env.IMAGE_TAG }}
-            docker compose up -d --no-deps ${{ secrets.PROJECT_NAME }}
+            docker kill ${{ secrets.SERVER_PROJECT_NAME }} ${{ secrets.CLIENT_PROJECT_NAME }}
+            docker rm -f ${{ secrets.SERVER_PROJECT_NAME }} ${{ secrets.CLIENT_PROJECT_NAME }}
+            
+            docker images -q ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.SERVER_PROJECT_NAME }} | xargs -r docker rmi
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.SERVER_PROJECT_NAME }}:${{ env.IMAGE_TAG }}
+            
+            docker images -q ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.CLIENT_PROJECT_NAME }} | xargs -r docker rmi
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.CLIENT_PROJECT_NAME }}
+            
+            docker compose up -d --no-deps ${{ secrets.SERVER_PROJECT_NAME }} ${{ secrets.CLIENT_PROJECT_NAME }}
 
       - name: Remove GitHub Actions IP
         run: |

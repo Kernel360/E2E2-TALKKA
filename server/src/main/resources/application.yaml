@@ -102,7 +102,7 @@ spring:
     password: ${MYSQL_PASSWORD}
   sql:
     init:
-      mode: never
+      mode: always
   jpa:
     hibernate:
       ddl-auto: update
@@ -110,7 +110,7 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
-    show-sql: false
+    show-sql: true
   security:
     oauth2:
       client:
@@ -118,7 +118,7 @@ spring:
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            redirect_uri: https://talkka-bus/api/auth/login/naver/code
+            redirect_uri: https://talkka-bus.duckdns.org/api/auth/login/naver/code
             client-name: Naver
             authorization-grant-type: authorization_code
             scope:
@@ -132,4 +132,4 @@ spring:
             user-name-attribute: response
 
 base:
-  url: https://talkka-bus:3000 # 추후 프론트에 맞게 수정 필요
+  url: https://talkka-bus.duckdns.org

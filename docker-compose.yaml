@@ -7,6 +7,17 @@ networks:
     driver: bridge
 
 services:
+  talkka-client:
+    build: ./client
+    image: shd2768/talkka-client
+    container_name: talkka-client
+    ports:
+      - "3000:3000"
+    environment:
+      - TZ=Asia/Seoul
+    networks:
+      - backend
+      - proxy
   mysql:
     image: mysql:8.0
     container_name: bus-mysql

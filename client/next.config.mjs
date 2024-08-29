@@ -5,7 +5,7 @@ const nextConfig = {
     appDir: true,
   },
   api: {
-    baseUrl: "http://localhost:8080",
+    baseUrl: process.env.NEXT_PUBLIC_SERVER_URL,
   },
 }
 
