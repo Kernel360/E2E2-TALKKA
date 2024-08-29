@@ -18,51 +18,24 @@ interface BusSeatStaticsProps {
   staticsResp: Statics
 }
 
-let currentLargeIndex = 0
-let currentDoubleDeckerIndex = 0
-const getColor = (plateType: PlateType, index: number) => {
-  //   LARGE는 붉은색 - 노란색 계열
-  //   DOUBLE_DECKER는 파란색 - 초록색 계열
-  //  나머지는 검정색
-  // RGB 색상으로 표현
-
-  const redYellows = [
-    "rgb(255, 0, 0)",
-    "rgb(255, 50, 0)",
-    "rgb(255, 100, 0)",
-    "rgb(255, 150, 0)",
-    "rgb(255, 200, 0)",
-    "rgb(255, 200, 150)",
-  ]
-
-  const blueGreens = [
-    "rgb(0, 0, 255)",
-    "rgb(0, 50, 255)",
-    "rgb(0, 100, 255)",
-    "rgb(0, 150, 255)",
-    "rgb(0, 200, 255)",
-    "rgb(0, 200, 150)",
-  ]
-
-  const getColorIndex = (plateType: PlateType) => {
-    if (plateType === "LARGE") {
-      return currentLargeIndex++
-    }
-    if (plateType === "DOUBLE_DECKER") {
-      return currentDoubleDeckerIndex++
-    }
-    return 0
-  }
-
+const getColor = (plateType: PlateType) => {
   if (plateType === "LARGE") {
-    return "red"
-    // return redYellows[getColorIndex(plateType) % redYellows.length]
+    return "#fa9494"
   }
   if (plateType === "DOUBLE_DECKER") {
-    return "blue"
-    // return blueGreens[getColorIndex(plateType) % blueGreens.length]
+    return "#33a3ff"
   }
   return "black"
+}
+
+// 00:00 형식으로 변환
+const getTimeFromDateTIme = (dateTime: string) => {
+  const date = new Date(dateTime)
+  const month = `${date.getMonth() + 1}`.padStart(2, "0")
+  const day = `${date.getDate()}`.padStart(2, "0")
+  const hour = `${date.getHours()}`.padStart(2, "0")
+  const minute = `${date.getMinutes()}`.padStart(2, "0")
+  return `${month}-${day} ${hour}:${minute}`
 }
 
 export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
@@ -70,8 +43,7 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
     return null
   }
 
-  const { requestTime, routeName, busNum, stationNum, stationList, data } =
-    staticsResp
+  const { requestTime, stationList, data } = staticsResp
   /**
    * format
    * { stationName: "station1", week1: 100, week2: 200, ... },
@@ -79,18 +51,12 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
    * ...
    */
 
-  // 00:00 형식으로 변환
-  const getTimeFromDateTIme = (dateTime: string) => {
-    const date = new Date(dateTime)
-    const hour = `${date.getHours()}`
-    const minute = `${date.getMinutes()}`.padStart(2, "0")
-    return `${hour}:${minute}`
-  }
+  const midIndex = Math.floor(stationList.length / 2)
 
   let chartConfig: ChartConfig = {}
   data.forEach((bus, index) => {
     const time =
-      getTimeFromDateTIme(bus.standardTime) +
+      getTimeFromDateTIme(bus.remainSeatList[midIndex].arrivedTime) +
       (bus?.plateType === "DOUBLE_DECKER" ? " (2층)" : " (1층)")
     chartConfig[time] = {
       label: time,
@@ -127,7 +93,6 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
     (key) => key !== "stationName"
   )
 
-  const midIndex = Math.floor(stationList.length / 2)
   let minIndex = 0
   let maxIndex = 0
   let minSeat = 100
@@ -150,87 +115,104 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
   }
 
   return (
-    // <></>
-    <ChartContainer
-      config={chartConfig}
-      className="min-h-[300px] w-[260px] border"
-    >
-      <LineChart
-        accessibilityLayer
-        data={chartData}
-        margin={{
-          top: 20,
-          right: 20,
-          left: 20,
-          bottom: 20,
-        }}
+    <div className={"flex flex-col items-center gap-y-2"}>
+      <p className={"font-light text-sm"}>
+        {`기준 시간: ${dateTimeToString(requestTime)}`}
+      </p>
+      <ChartContainer
+        config={chartConfig}
+        className="min-h-[300px] w-[240px] sm:w-[400px]"
       >
-        legand 의 element 가 폭을 넘어가지 않고 개행되도록 함.
-        {/*<ChartLegend*/}
-        {/*  content={*/}
-        {/*    <ChartLegendContent*/}
-        {/*      payload={[*/}
-        {/*        { value: "1층", type: "circle", color: "black" },*/}
-        {/*        { value: "2층", type: "circle", color: "blue" },*/}
-        {/*      ]}*/}
-        {/*    />*/}
-        {/*  }*/}
-        {/*  wrapperStyle={{*/}
-        {/*    width: "100%",*/}
-        {/*    display: "flex",*/}
-        {/*    flexWrap: "wrap",*/}
-        {/*    justifyContent: "center",*/}
-        {/*  }}*/}
-        {/*/>*/}
-        <XAxis
-          dataKey={"stationName"}
-          tickLine={true}
-          tickMargin={5}
-          width={0.8}
-          axisLine={true}
-          tickFormatter={(value, index) => {
-            const mid = Math.floor(stationList.length / 2)
-            if (index === mid) {
-              return value.slice(0, 8)
-            }
-            return `${index - mid > 0 ? "+" : ""}${index - mid}`
+        <LineChart
+          accessibilityLayer
+          data={chartData}
+          margin={{
+            top: 20,
+            right: 20,
+            left: 20,
+            bottom: 20,
           }}
-        />
-        <YAxis axisLine={false} hide domain={[min, max]} />
-        {stationList?.length && (
-          <ReferenceLine
-            x={stationList[Math.floor(stationList.length / 2)].stationName}
-            stroke="black"
+        >
+          {/*legand 의 element 가 폭을 넘어가지 않고 개행되도록 함.*/}
+          {/*<ChartLegend*/}
+          {/*  content={*/}
+          {/*    <ChartLegendContent*/}
+          {/*      payload={[*/}
+          {/*        { value: "1층", type: "circle", color: "black" },*/}
+          {/*        { value: "2층", type: "circle", color: "blue" },*/}
+          {/*      ]}*/}
+          {/*    />*/}
+          {/*  }*/}
+          {/*  wrapperStyle={{*/}
+          {/*    width: "100%",*/}
+          {/*    display: "flex",*/}
+          {/*    flexWrap: "wrap",*/}
+          {/*    justifyContent: "center",*/}
+          {/*  }}*/}
+          {/*/>*/}
+          <XAxis
+            dataKey={"stationName"}
+            tickLine={true}
+            tickMargin={5}
+            width={0.8}
+            axisLine={true}
+            tickFormatter={(value, index) => {
+              const mid = Math.floor(stationList.length / 2)
+              if (index === mid) {
+                return "현위치"
+                // return value.slice(0, 8)
+              }
+              const repeat = Math.abs(index - mid)
+              return `${
+                index - mid > 0
+                  ? "다".repeat(repeat) + "음"
+                  : "전".repeat(repeat)
+              }`
+            }}
           />
-        )}
-        {dataKeys.map((key, index) => (
-          <>
-            <Tooltip />
-            <Line
-              dataKey={key}
-              fill={chartConfig[key].color}
-              stroke={chartConfig[key].color}
-            >
-              {index === minIndex && (
-                <LabelList
-                  position={"bottom"}
-                  offset={12}
-                  className={"fill-foreground font-bold"}
-                  fontSize={12}
-                />
-              )}
-              {index === maxIndex && index !== minIndex && (
-                <LabelList
-                  position={"top"}
-                  offset={12}
-                  className={"fill-foreground font-bold"}
-                  fontSize={12}
-                />
-              )}
-            </Line>
-          </>
-        ))}
-      </LineChart>
-    </ChartContainer>
+          <YAxis axisLine={false} hide domain={[min, max]} />
+          {stationList?.length && (
+            <ReferenceLine
+              x={stationList[Math.floor(stationList.length / 2)].stationName}
+              stroke="black"
+            />
+          )}
+          {dataKeys.map((key, index) => (
+            <>
+              <Tooltip />
+              <Line
+                dataKey={key}
+                fill={chartConfig[key].color}
+                stroke={chartConfig[key].color}
+              >
+                {index === minIndex && (
+                  <LabelList
+                    position={"bottom"}
+                    offset={12}
+                    className={"fill-foreground font-bold"}
+                    fontSize={12}
+                  />
+                )}
+                {index === maxIndex && index !== minIndex && (
+                  <LabelList
+                    position={"top"}
+                    offset={12}
+                    className={"fill-foreground font-bold"}
+                    fontSize={12}
+                  />
+                )}
+              </Line>
+            </>
+          ))}
+        </LineChart>
+      </ChartContainer>
+    </div>
   )
+}
+
+function dateTimeToString(dateTime: string) {
+  const date = new Date(dateTime)
+  const hour = `${date.getHours()}`
+  const minute = `${date.getMinutes()}`.padStart(2, "0")
+  return `${hour}:${minute}`
 }

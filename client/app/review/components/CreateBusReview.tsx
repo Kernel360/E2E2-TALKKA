@@ -19,7 +19,7 @@ export default function CreateBusReview({
   return (
     <div
       className={
-        "w-[300px] flex flex-col items-center gap-y-2 bg-slate-50 border p-2 rounded-xl"
+        "w-[100%] flex flex-col items-center gap-y-2 bg-slate-50 border p-2 rounded-xl"
       }
     >
       <p className={"text-xl font-bold mb-2"}>리뷰등록</p>

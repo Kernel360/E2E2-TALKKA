@@ -80,10 +80,7 @@ export default function PathPage() {
 
   return (
     <div className={""}>
-      <section
-        className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full
-      gap-y-5 w-[300px]"
-      >
+      <section className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full gap-y-5 w-[100%]">
         <div>
           <p className="font-bold py-2 text-xl">버스 북마크</p>
         </div>
@@ -99,7 +96,7 @@ export default function PathPage() {
           />
         )}
         {!createMode && !editMode && bookmarks && (
-          <div className="w-[300px] flex flex-col items-center justify-center gap-y-5">
+          <div className="w-[100%] flex flex-col items-center justify-center gap-y-5">
             <BookmarkToggleList
               bookmarks={bookmarks}
               selectedBookmarkIndex={selectedBookmarkIndex}
@@ -108,7 +105,7 @@ export default function PathPage() {
             />
             <div
               className={
-                "border rounded-xl p-5 bg-slate-50 w-[300px] min-h-[300px] flex flex-col items-center justify-center gap-y-5"
+                "border rounded-xl p-2 bg-slate-50 w-[100%] sm:w-[500px] min-h-[300px] flex flex-col items-center justify-center gap-y-5"
               }
             >
               {bookmarks.length === 0 && (
