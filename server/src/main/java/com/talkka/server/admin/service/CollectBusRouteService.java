@@ -26,7 +26,7 @@ public class CollectBusRouteService {
 	public CollectBusRouteRespDto createCollectBusRoute(CollectBusRouteCreateDto dto) throws
 		CollectBusRouteNotFoundException,
 		CollectBusRouteAlreadyExistsException {
-		if (collectBusRouteRepository.findByRouteId(dto.routeId()).isPresent()) {
+		if (collectBusRouteRepository.existsByRouteId(dto.routeId())) {
 			throw new CollectBusRouteAlreadyExistsException();
 		}
 		BusRouteEntity route = busRouteRepository.findById(dto.routeId())

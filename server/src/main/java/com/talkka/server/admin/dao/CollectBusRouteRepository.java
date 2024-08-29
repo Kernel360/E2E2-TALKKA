@@ -19,5 +19,7 @@ public interface CollectBusRouteRepository extends JpaRepository<CollectBusRoute
 	@Transactional
 	@Query("delete from collect_bus_route c where c.route.id = :routeId")
 	void deleteByRouteId(@Param("routeId") Long routeId);
+
+	boolean existsByRouteId(Long routeId);
 }
 
