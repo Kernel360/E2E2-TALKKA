@@ -11,14 +11,14 @@ import com.talkka.server.bus.dao.BusRemainSeatEntity;
 import com.talkka.server.bus.dao.BusRemainSeatRepository;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
-import com.talkka.server.bus.dto.BusViewDto;
+import com.talkka.server.bus.dto.BusStaticsDto;
 import com.talkka.server.bus.exception.BusRouteNotFoundException;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class BusViewService {
+public class BusStaticsService {
 	private final BusRemainSeatRepository busRemainSeatRepository;
 	private final BusRouteStationRepository busRouteStationRepository;
 
@@ -35,7 +35,7 @@ public class BusViewService {
 	 *                        ex) week = 2 -> 2주 전 같은 요일의 데이터를 조회
 	 * @return BusRouteInfoRespDto 버스 경로 정보
 	 */
-	public BusViewDto getBusView(
+	public BusStaticsDto getRouteStationStatics(
 		Long routeStationId,
 		Integer stationNum,
 		LocalDateTime time,
@@ -82,7 +82,7 @@ public class BusViewService {
 				)
 			);
 		}
-		return new BusViewDto(
+		return new BusStaticsDto(
 			time,
 			routeStationList,
 			data

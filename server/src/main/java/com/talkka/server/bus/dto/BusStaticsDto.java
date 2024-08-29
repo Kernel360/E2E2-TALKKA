@@ -9,6 +9,7 @@ import java.util.List;
 import com.talkka.server.bus.dao.BusRemainSeatEntity;
 import com.talkka.server.bus.dao.BusRouteStationEntity;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,24 +17,33 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class BusViewDto {
+public class BusStaticsDto {
 
 	@Getter
 	@AllArgsConstructor
 	private static class StationInfo implements Serializable {
+		@NotNull
 		Long stationId;
+		@NotNull
 		String stationName;
 	}
 
+	@NotNull
 	private LocalDateTime requestTime;
+	@NotNull
 	private Long routeId;
+	@NotNull
 	private String routeName;
+	@NotNull
 	private Integer stationNum;
+	@NotNull
 	private Integer busNum;
+	@NotNull
 	private List<StationInfo> stationList;
+	@NotNull
 	private List<BusRemainSeatDto> data;
 
-	public BusViewDto(LocalDateTime requestTime, List<BusRouteStationEntity> routeStationList,
+	public BusStaticsDto(LocalDateTime requestTime, List<BusRouteStationEntity> routeStationList,
 		List<List<BusRemainSeatEntity>> data) {
 		this.requestTime = requestTime;
 		this.stationList = new ArrayList<>();

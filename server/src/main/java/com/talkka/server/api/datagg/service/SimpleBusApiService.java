@@ -100,8 +100,7 @@ public class SimpleBusApiService implements BusApiService {
 		params.add("routeId", apiRouteId);
 		params.add("stationId", apiStationId);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusArrivalRespDto> resp = restTemplate.getForEntity(uri, BusArrivalRespDto.class);
+			ResponseEntity<BusArrivalRespDto> resp = apiCallWithRetry(path, params, BusArrivalRespDto.class);
 			var body = resp.getBody().msgBody();
 			if (body == null || body.isEmpty()) {
 				return Optional.empty();
@@ -144,9 +143,9 @@ public class SimpleBusApiService implements BusApiService {
 
 		// 재시도마다 새로운 api key 로 시도
 		// 파싱 실패시 RestClientException 터트림
+		URI uri = this.getOpenApiUri(path, params);
 		return retryTemplate.execute(context -> {
 			// 재시도마다 새로운 api key 로 시도
-			URI uri = this.getOpenApiUri(path, params);
 			return restTemplate.getForEntity(uri, type); // 파싱 실패시 RestClientException 터트림
 		});
 	}

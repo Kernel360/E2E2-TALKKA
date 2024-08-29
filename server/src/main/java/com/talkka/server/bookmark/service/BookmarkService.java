@@ -1,9 +1,8 @@
 package com.talkka.server.bookmark.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import com.talkka.server.bookmark.dao.BookmarkDetailEntity;
@@ -22,6 +21,7 @@ import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.bus.dto.BusLiveInfoRespDto;
 import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
 import com.talkka.server.bus.service.BusLiveInfoService;
+import com.talkka.server.common.enums.TimeSlot;
 import com.talkka.server.common.validator.ContentAccessValidator;
 import com.talkka.server.review.exception.ContentAccessException;
 import com.talkka.server.user.dao.UserEntity;
@@ -33,7 +33,6 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class BookmarkService {
-	private static final Logger log = LoggerFactory.getLogger(BookmarkService.class);
 	private final BookmarkRepository bookmarkRepository;
 	private final BookmarkDetailRepository bookmarkDetailRepository;
 	private final UserRepository userRepository;
@@ -123,8 +122,11 @@ public class BookmarkService {
 		UserEntity user = userRepository.findById(userId).orElseThrow(BookmarkUserNotFoundException::new);
 		contentAccessValidator.validateOwnerContentAccess(userId, user.getAuthRole(), bookmark.getUser().getId());
 
+		var now = LocalDateTime.now();
+		var timeSlot = TimeSlot.of(now);
+
 		return bookmark.getDetails().stream()
-			.map((detail) -> busLiveInfoService.getBusLiveInfo(detail.getRouteStation().getId()))
+			.map((detail) -> busLiveInfoService.getBusLiveInfo(detail.getRouteStation().getId(), timeSlot, 1L))
 			.toList();
 	}
 
