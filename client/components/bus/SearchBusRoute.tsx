@@ -1,7 +1,6 @@
 import { useCallback, useState } from "react"
 import useClient from "@/api/useClient"
 import { components } from "@/api/v1"
-import { className } from "postcss-selector-parser"
 
 import {
   Command,
@@ -19,6 +18,7 @@ interface SearchBusRouteProps {
 }
 
 export default function SearchBusRoute({
+  className,
   setSelectedRoute,
 }: SearchBusRouteProps) {
   const [onSearchBar, setOnSearchBar] = useState<boolean>(false)

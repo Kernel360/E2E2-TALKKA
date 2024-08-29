@@ -27,6 +27,7 @@
     "openapi-fetch": "^0.11.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "recharts": "^2.12.7",
     "sharp": "^0.31.3",
     "tailwind-merge": "^1.13.2",
     "tailwindcss-animate": "^1.0.6"
