@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.talkka.server.admin.service.AdminService;
 import com.talkka.server.admin.service.CollectBusRouteService;
-import com.talkka.server.admin.service.PublicApiKeyService;
+// import com.talkka.server.admin.service.PublicApiKeyService;
 import com.talkka.server.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
