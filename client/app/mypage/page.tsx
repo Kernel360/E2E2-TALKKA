@@ -14,10 +14,6 @@ export default function MyPage() {
   const isLogin = localStorage.getItem("isLogin")
   const [userData, setUserData] = useState<UserData | null>(null)
 
-  if (!isLogin) {
-    redirect("/logout")
-    return null
-  }
   // API 요청
   const client = useClient()
   const handleFetchUserData = useCallback(async () => {
@@ -39,6 +35,10 @@ export default function MyPage() {
     handleFetchUserData()
   }, [])
 
+  if (!isLogin) {
+    redirect("/logout")
+    return null
+  }
   return (
     <div className={""}>
       <section
