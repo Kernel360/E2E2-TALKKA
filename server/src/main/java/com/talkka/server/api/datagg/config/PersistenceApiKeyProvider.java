@@ -46,7 +46,6 @@ public class PersistenceApiKeyProvider implements ApiKeyProvider {
 	// 20분마다 사용량 DB에 반영
 	@Scheduled(cron = "0 */20 * * * *")
 	private void persist() {
-		System.out.println("persist key!!");
 		publicApiKeyRepository.saveAll(keys);
 	}
 
