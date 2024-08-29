@@ -1,5 +1,7 @@
 package com.talkka.server.user.service;
 
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +26,10 @@ public class UserService {
 			.orElseThrow(UserNotFoundException::new);
 
 		return UserDto.of(user);
+	}
+
+	public List<UserDto> getAllUser() {
+		return userRepository.findAll().stream().map(UserDto::of).toList();
 	}
 
 	public UserDto createUser(UserCreateDto dto) throws DuplicatedNicknameException {

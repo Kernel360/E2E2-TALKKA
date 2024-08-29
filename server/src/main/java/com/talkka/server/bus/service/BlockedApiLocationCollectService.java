@@ -7,25 +7,25 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.talkka.server.admin.util.CollectedRouteProvider;
 import com.talkka.server.api.core.exception.ApiClientException;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
 import com.talkka.server.api.datagg.service.BusApiService;
 import com.talkka.server.bus.util.ApiCallNumberProvider;
-import com.talkka.server.bus.util.BusLocationCollectProvider;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class BlockedApiLocationCollectService implements BusLocationCollectService {
-	private final BusLocationCollectProvider busLocationCollectProvider;
+	private final CollectedRouteProvider collectedRouteProvider;
 	private final ApiCallNumberProvider apiCallNumberProvider;
 	private final BusApiService busApiService;
 	private final BusLocationService busLocationService;
 
 	public BlockedApiLocationCollectService(
-		@Qualifier("busLocationCollectProperty")
-		BusLocationCollectProvider busLocationCollectProvider,
+		@Qualifier("persistenceCollectedRouteProvider")
+		CollectedRouteProvider collectedRouteProvider,
 		@Qualifier("minuteApiCallNumberProvider")
 		ApiCallNumberProvider apiCallNumberProvider,
 		@Qualifier("simpleBusApiService")
@@ -33,7 +33,7 @@ public class BlockedApiLocationCollectService implements BusLocationCollectServi
 		@Qualifier("busLocationService")
 		BusLocationService busLocationService
 	) {
-		this.busLocationCollectProvider = busLocationCollectProvider;
+		this.collectedRouteProvider = collectedRouteProvider;
 		this.apiCallNumberProvider = apiCallNumberProvider;
 		this.busApiService = busApiService;
 		this.busLocationService = busLocationService;
@@ -42,7 +42,7 @@ public class BlockedApiLocationCollectService implements BusLocationCollectServi
 	@Override
 	@Transactional
 	public void collectLocations() {
-		List<String> apiRouteIdList = busLocationCollectProvider.getTargetIdList();
+		List<String> apiRouteIdList = collectedRouteProvider.getTargetIdList();
 		if (apiRouteIdList.isEmpty()) {
 			log.info("No target routeId to collect bus locations");
 			return;
