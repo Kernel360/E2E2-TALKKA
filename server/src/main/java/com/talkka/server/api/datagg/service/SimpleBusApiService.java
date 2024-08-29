@@ -49,6 +49,7 @@ public class SimpleBusApiService implements BusApiService {
 			ResponseEntity<BusRouteSearchRespDto> resp = apiCallWithRetry(path, params, BusRouteSearchRespDto.class);
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
+			log.warn("{} {}, {}", exception.getMessage(), path, params);
 			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
@@ -62,6 +63,7 @@ public class SimpleBusApiService implements BusApiService {
 			ResponseEntity<BusRouteInfoRespDto> resp = apiCallWithRetry(path, params, BusRouteInfoRespDto.class);
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
+			log.warn("{} {}, {}", exception.getMessage(), path, params);
 			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
@@ -75,6 +77,7 @@ public class SimpleBusApiService implements BusApiService {
 			ResponseEntity<BusRouteStationRespDto> resp = apiCallWithRetry(path, params, BusRouteStationRespDto.class);
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
+			log.warn("{} {}, {}", exception.getMessage(), path, params);
 			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
@@ -88,6 +91,7 @@ public class SimpleBusApiService implements BusApiService {
 			ResponseEntity<BusLocationRespDto> resp = apiCallWithRetry(path, params, BusLocationRespDto.class);
 			return resp.getBody().msgBody();
 		} catch (RestClientException exception) {
+			log.warn("{} {}, {}", exception.getMessage(), path, params);
 			throw new ApiClientException("결과가 없습니다.");
 		}
 	}
@@ -107,6 +111,7 @@ public class SimpleBusApiService implements BusApiService {
 			}
 			return Optional.of(body.get(0));
 		} catch (Exception exception) {
+			log.warn("{} {}, {}", exception.getMessage(), path, params);
 			throw new ApiClientException(exception.getMessage());
 		}
 	}
@@ -144,6 +149,7 @@ public class SimpleBusApiService implements BusApiService {
 		// 재시도마다 새로운 api key 로 시도
 		// 파싱 실패시 RestClientException 터트림
 		URI uri = this.getOpenApiUri(path, params);
+		log.debug("api call: {}", uri);
 		return retryTemplate.execute(context -> {
 			// 재시도마다 새로운 api key 로 시도
 			return restTemplate.getForEntity(uri, type); // 파싱 실패시 RestClientException 터트림

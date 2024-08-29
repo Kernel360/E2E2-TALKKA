@@ -59,10 +59,10 @@ spring:
     password: ${MYSQL_PASSWORD}
   sql:
     init:
-      mode: never # schema.sql 실행시 always 키고 실행하시면 됩니다.
+      mode: always # schema.sql 실행시 always 키고 실행하시면 됩니다.
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
@@ -102,10 +102,10 @@ spring:
     password: ${MYSQL_PASSWORD}
   sql:
     init:
-      mode: always
+      mode: never
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: none
     properties:
       hibernate:
         format_sql: true
