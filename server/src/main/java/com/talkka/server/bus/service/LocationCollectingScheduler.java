@@ -13,7 +13,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import com.talkka.server.bus.util.BusLocationCollectProvider;
+import com.talkka.server.admin.util.CollectedRouteProvider;
 import com.talkka.server.bus.util.LocationCollectingSchedulerConfigProperty;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,7 +25,7 @@ public class LocationCollectingScheduler {
 	private final LocationCollectingSchedulerConfigProperty locationCollectingSchedulerConfigProperty;
 	private final BusLocationCollectService busLocationCollectService;
 	@Autowired
-	private BusLocationCollectProvider busLocationCollectProvider;
+	private CollectedRouteProvider collectedRouteProvider;
 
 	public LocationCollectingScheduler(
 		@Qualifier("locationCollectingSchedulerConfigProperty")
@@ -41,7 +41,7 @@ public class LocationCollectingScheduler {
 	@Scheduled(fixedRate = 1000 * 60) // per minute
 	public void runParallelLocationScheduler() {
 		if (isEnabled()) {
-			List<String> targetList = busLocationCollectProvider.getTargetIdList();
+			List<String> targetList = collectedRouteProvider.getTargetIdList();
 			ExecutorService executor = Executors.newFixedThreadPool(20);
 
 			// CompletableFuture 리스트 생성
