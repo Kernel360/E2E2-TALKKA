@@ -119,7 +119,7 @@ public class SimpleBusApiService implements BusApiService {
 			.scheme("https")
 			.host(host)
 			.path(path)
-			.queryParam("serviceKey", this.apiKeyProvider.getApiKey())
+			.queryParam("serviceKey", this.apiKeyProvider.getApiKey(path))
 			.queryParams(params)
 			.build();
 	}

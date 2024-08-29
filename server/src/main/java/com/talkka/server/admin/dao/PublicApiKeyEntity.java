@@ -31,19 +31,8 @@ public class PublicApiKeyEntity {
 	@Column(name = "secret", nullable = false)
 	private String secret;
 
-	@Column(name = "key_usage", nullable = false)
-	private Integer keyUsage;
-
 	@Column(name = "created_at", nullable = false)
 	@CreatedDate
 	private LocalDateTime createdAt;
-
-	public void use() {
-		this.keyUsage++;
-	}
-
-	public void reset() {
-		this.keyUsage = 0;
-	}
 
 }

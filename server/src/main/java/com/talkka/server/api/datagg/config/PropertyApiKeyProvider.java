@@ -20,7 +20,7 @@ public class PropertyApiKeyProvider implements ApiKeyProvider {
 	private int rollingKeyIndex = 0;
 
 	@Override
-	public String getApiKey() {
+	public String getApiKey(String path) {
 		rollingKeyIndex = (rollingKeyIndex + 1) % keys.size();
 		return keys.get(rollingKeyIndex);
 	}
