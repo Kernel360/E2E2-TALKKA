@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>API 키 관리</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand btn btn-outline-primary" href="/admin">대시보드</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">API 키 관리</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- Key input and button -->
+    <div class="mb-3 d-flex justify-content-center">
+        <input type="text" id="apiKey" class="form-control w-25" placeholder="API 키 입력">
+        <button class="btn btn-primary ms-2" onclick="sendKeyRequest()">API 키 추가</button>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>API 키</th>
+            <th>사용횟수</th>
+            <th>생성일</th>
+            <th>삭제</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="key, iter : ${apiKeys}">
+            <td th:text="${iter.index + 1}"></td>
+            <td th:text="${key.secret}"></td>
+            <td th:text="${key.keyUsage}"></td>
+            <td th:text="${key.createdAt}"></td>
+            <td>
+                <button class="btn btn-danger" th:onclick="deleteApiKey([[${key.secret }]]);">삭제</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript to handle requests -->
+<script>
+    function sendKeyRequest() {
+        const apiKey = document.getElementById('apiKey').value;
+
+        if (!apiKey) {
+            alert('API 키를 입력하세요.');
+            return;
+        }
+
+        fetch('/admin/api/key', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(apiKey)
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('API 키 추가에 실패했습니다. 다시 시도해 주세요.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+            });
+    }
+
+    function deleteApiKey(secret) {
+        if (confirm('이 API 키를 삭제하시겠습니까?')) {
+            fetch('/admin/api/key', {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: secret
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('API 키 삭제에 실패했습니다. 다시 시도해 주세요.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+                });
+        }
+    }
+</script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
