@@ -19,7 +19,7 @@ public class AdminController {
 	private final AdminService adminService;
 	private final UserService userService;
 	private final CollectBusRouteService collectBusRouteService;
-	private final PublicApiKeyService publicApiKeyService;
+	// private final PublicApiKeyService publicApiKeyService;
 
 	@GetMapping("")
 	public String index() {
