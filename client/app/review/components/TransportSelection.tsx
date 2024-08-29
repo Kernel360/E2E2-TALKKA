@@ -5,10 +5,6 @@ import Link from "next/link"
 
 import { TransportType } from "@/types/api/domain/TransportType"
 
-
-
-
-
 interface TransportSelectionProps {
   baseUrl: string
   busUrl: string
@@ -28,7 +24,7 @@ export default function TransportSelection({
   return (
     <div
       className={
-        "flex flex-row justify-between bg-slate-200 rounded-lg w-[280px] font-bold"
+        "flex flex-row justify-between bg-slate-200 rounded-lg w-[80%] font-bold"
       }
     >
       <Link href={`${baseUrl + busUrl}`}>

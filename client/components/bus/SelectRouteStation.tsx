@@ -24,6 +24,7 @@ export default function SelectRouteStation({
 }: RouteStationSelectProps) {
   const client = useClient()
   const [routeStations, setRouteStations] = useState<BusRouteStation[]>([])
+  const [turnSeq, setTurnSeq] = useState<number>(0)
 
   const fetchBusRouteStations = useCallback(async () => {
     if (!route) {
@@ -53,28 +54,59 @@ export default function SelectRouteStation({
     }
   }, [route])
 
+  useEffect(() => {
+    if (routeStations.length > 0) {
+      setTurnSeq(getTurnSeq(routeStations, route))
+    }
+  }, [routeStations])
+
   return (
-    <div className={"w-[230px]"}>
+    <div className={"w-[100%]"}>
       <Select
         onValueChange={(value) => {
           setSelectedRouteStation(
             routeStations.find(
-              (station) => station.stationName === value
+              (station) => getStationName(station, turnSeq) === value
             ) as BusRouteStation
           )
         }}
       >
-        <SelectTrigger>
+        <SelectTrigger className={"w-[100%]"}>
           <SelectValue placeholder={"정류장 선택"} />
         </SelectTrigger>
-        <SelectContent className={""}>
+        <SelectContent className={"w-[90%]"}>
           {routeStations.map((station, idx) => (
-            <SelectItem value={station.stationName} key={idx}>
-              {station.stationName}
+            <SelectItem
+              value={`${getStationName(station, turnSeq)}`}
+              key={idx}
+              className={"w-[250px]"}
+            >
+              {`${getStationName(station, turnSeq)}`}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
     </div>
   )
+}
+
+function getTurnSeq(routeStations: BusRouteStation[], route: BusRoute) {
+  let tSeq = Math.floor(routeStations.length / 2)
+  const endStation = route.endStationName
+  for (let i = 0; i < routeStations.length; i++) {
+    if (routeStations[i].stationName === endStation) {
+      tSeq = i
+
+      console.log(tSeq, routeStations[i].stationName)
+      break
+    }
+  }
+
+  return tSeq
+}
+
+function getStationName(station: BusRouteStation, turnSeq: number) {
+  return `${station.stationName} ${
+    station.stationSeq < turnSeq ? "(상행)" : "(하행)"
+  }`
 }
