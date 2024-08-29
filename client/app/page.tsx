@@ -3,9 +3,9 @@
 import { useState } from "react"
 import { components } from "@/api/v1"
 
-import BusLiveInfoCard from "@/app/bookmark/components/BusLiveInfoCard"
-import SearchBusRoute from "@/app/bookmark/components/SearchBusRoute"
-import SelectRouteStation from "@/app/bookmark/components/SelectRouteStation"
+import BusLiveInfoCard from "@/components/bus/BusLiveInfoCard"
+import SearchBusRoute from "@/components/bus/SearchBusRoute"
+import SelectRouteStation from "@/components/bus/SelectRouteStation"
 
 type BusRoute = components["schemas"]["BusRouteRespDto"]
 type BusRouteStation = components["schemas"]["BusRouteStationRespDto"]

@@ -4,10 +4,10 @@ import { components } from "@/api/v1"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import SearchBusRoute from "@/components/bus/SearchBusRoute"
+import SelectRouteStation from "@/components/bus/SelectRouteStation"
 import BusEditCard from "@/app/bookmark/components/BusEditCard"
 import RouteStationCard from "@/app/bookmark/components/RouteStationCard"
-import SearchBusRoute from "@/app/bookmark/components/SearchBusRoute"
-import SelectRouteStation from "@/app/bookmark/components/SelectRouteStation"
 
 type BookmarkResp = components["schemas"]["BookmarkRespDto"]
 type BookmarkDetailResp = components["schemas"]["BookmarkDetailRespDto"]
