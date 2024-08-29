@@ -7,6 +7,7 @@ import java.util.List;
 import com.talkka.server.bus.dao.BusRemainSeatEntity;
 import com.talkka.server.bus.enums.PlateType;
 
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -15,13 +16,19 @@ public class BusRemainSeatDto {
 	@Getter
 	@AllArgsConstructor
 	private static class SeatInfo {
+		@NotNull
 		LocalDateTime arrivedTime;
+		@NotNull
 		Integer remainSeat;
 	}
 
+	@NotNull
 	private PlateType plateType;
+	@NotNull
 	private String plateNo;
+	@NotNull
 	private LocalDateTime standardTime;
+	@NotNull
 	private final List<SeatInfo> remainSeatList = new ArrayList<>();
 
 	public BusRemainSeatDto(List<BusRemainSeatEntity> seatList) {
