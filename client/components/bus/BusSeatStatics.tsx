@@ -54,13 +54,13 @@ export default function BusSeatStatics({ staticsResp }: BusSeatStaticsProps) {
   const midIndex = Math.floor(stationList.length / 2)
 
   let chartConfig: ChartConfig = {}
-  data.forEach((bus, index) => {
+  data.forEach((bus) => {
     const time =
       getTimeFromDateTIme(bus.remainSeatList[midIndex].arrivedTime) +
       (bus?.plateType === "DOUBLE_DECKER" ? " (2층)" : " (1층)")
     chartConfig[time] = {
       label: time,
-      color: getColor(bus.plateType, index),
+      color: getColor(bus.plateType),
     }
   })
 
