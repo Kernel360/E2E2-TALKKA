@@ -59,7 +59,7 @@ spring:
     password: ${MYSQL_PASSWORD}
   sql:
     init:
-      mode: always # schema.sql 실행시 always 키고 실행하시면 됩니다.
+      mode: never # schema.sql 실행시 always 키고 실행하시면 됩니다.
   jpa:
     hibernate:
       ddl-auto: none
@@ -118,7 +118,7 @@ spring:
           naver:
             client-id: ${NAVER_CLIENT_ID}
             client-secret: ${NAVER_CLIENT_SECRET}
-            redirect_uri: https://talkka-bus.duckdns.org/api/auth/login/naver/code
+            redirect_uri: https://bus.photogrammer.me/api/auth/login/naver/code
             client-name: Naver
             authorization-grant-type: authorization_code
             scope:
@@ -132,4 +132,4 @@ spring:
             user-name-attribute: response
 
 base:
-  url: https://talkka-bus.duckdns.org
+  url: https://bus.photogrammer.me
