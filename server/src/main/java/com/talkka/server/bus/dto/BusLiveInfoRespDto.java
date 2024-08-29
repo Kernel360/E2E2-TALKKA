@@ -10,14 +10,16 @@ public record BusLiveInfoRespDto(
 	@NotNull
 	BusRouteStationRespDto routeStation,
 	BusArrivalRespDto arrivalInfo,
-	BusStaticsDto statics) {
+	BusStaticsDto statics,
+	Integer predictSeatsNow) {
 
 	public static BusLiveInfoRespDto create(
 		Long routeId,
 		String routeName,
 		BusRouteStationRespDto routeStation,
 		BusArrivalRespDto arrivalInfo,
-		BusStaticsDto statics) {
-		return new BusLiveInfoRespDto(routeId, routeName, routeStation, arrivalInfo, statics);
+		BusStaticsDto statics,
+		Integer predictSeatsNow) {
+		return new BusLiveInfoRespDto(routeId, routeName, routeStation, arrivalInfo, statics, predictSeatsNow);
 	}
 }

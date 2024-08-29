@@ -15,7 +15,7 @@ import lombok.Getter;
 public class BusRemainSeatDto {
 	@Getter
 	@AllArgsConstructor
-	private static class SeatInfo {
+	public static class SeatInfo {
 		@NotNull
 		LocalDateTime arrivedTime;
 		@NotNull

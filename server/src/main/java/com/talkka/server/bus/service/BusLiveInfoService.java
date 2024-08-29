@@ -1,16 +1,17 @@
 package com.talkka.server.bus.service;
 
-import java.time.LocalDateTime;
-
 import com.talkka.server.bus.dto.BusLiveInfoRespDto;
 import com.talkka.server.bus.exception.BusRouteStationNotFoundException;
+import com.talkka.server.common.enums.TimeSlot;
 
 public interface BusLiveInfoService {
-
-	public BusLiveInfoRespDto getBusLiveInfo(Long routeStationId)
+	BusLiveInfoRespDto getBusLiveInfo(Long routeStationId, String timeSlot, Long week)
 		throws BusRouteStationNotFoundException;
 
-	public BusLiveInfoRespDto getBusLiveInfo(Long routeStationId, Integer stationNum, LocalDateTime time,
+	BusLiveInfoRespDto getBusLiveInfo(Long routeStationId, TimeSlot timeSlot, Long week)
+		throws BusRouteStationNotFoundException;
+
+	BusLiveInfoRespDto getBusLiveInfo(Long routeStationId, Integer stationNum, TimeSlot time,
 		Integer timeRangeMinute, Long week)
 		throws BusRouteStationNotFoundException;
 }
