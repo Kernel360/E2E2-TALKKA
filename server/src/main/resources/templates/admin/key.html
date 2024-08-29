@@ -41,7 +41,11 @@
         <tr th:each="key, iter : ${apiKeys}">
             <td th:text="${iter.index + 1}"></td>
             <td th:text="${key.secret}"></td>
-            <td th:text="${key.keyUsage}"></td>
+            <td>
+                <div th:each="entry : ${key.keyUsage}">
+                    <span th:text="${entry.key + ' : ' + entry.value}"></span><br/>
+                </div>
+            </td>
             <td th:text="${key.createdAt}"></td>
             <td>
                 <button class="btn btn-danger" th:onclick="deleteApiKey([[${key.secret }]]);">삭제</button>
