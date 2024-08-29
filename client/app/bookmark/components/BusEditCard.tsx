@@ -15,7 +15,7 @@ export default function BusEditCard({
   handleDelete,
 }: BusDetailCardProps) {
   return (
-    <Card className={"w-[250px] h-[100px] p-2"}>
+    <Card className={"w-[100%] h-[100px] p-2"}>
       <div className={"flex flex-row items-end justify-end"}>
         <Badge
           className={`bg-red-500 hover:bg-red-400 cursor-pointer`}

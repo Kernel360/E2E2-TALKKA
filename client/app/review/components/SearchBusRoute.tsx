@@ -28,7 +28,7 @@ export default function SearchBusRoute({
 
   return (
     <>
-      <Command className={`w-[300px] border`}>
+      <Command className={`w-[100%] border`}>
         <CommandInput
           placeholder={"버스 노선을 입력하세요"}
           value={searchKeyword}

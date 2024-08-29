@@ -10,7 +10,7 @@ export default function RouteStationCard({
   stationName,
 }: RouteStationCardProps) {
   return (
-    <Card className={"w-[230px] p-4 flex flex-col items-center justify-center"}>
+    <Card className={"w-[80%] p-4 flex flex-col items-center justify-center"}>
       <CardTitle className={"text-xl"}>{`${
         routeName ? routeName : "버스를 선택해주세요"
       }`}</CardTitle>

@@ -22,17 +22,23 @@ export default function IndexPage() {
     <div className={""}>
       <section
         className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full
-      gap-y-5 w-[300px]"
+      gap-y-5 w-[100%] xs:w-[500px]"
       >
-        <p className={"font-extrabold text-xl"}>경기도 버스 조회</p>
-        <SearchBusRoute setSelectedRoute={setSelectedRoute} />
-        {selectedRoute && (
-          <SelectRouteStation
-            route={selectedRoute}
-            setSelectedRouteStation={setSelectedRouteStation}
-          />
-        )}
-        <BusLiveInfoCard routeStation={selectedRouteStation} />
+        <div
+          className={
+            "border rounded-xl p-2 bg-slate-50 w-[100%] sm:w-[500px] min-h-[300px] flex flex-col items-center justify-center gap-y-5"
+          }
+        >
+          <p className={"font-extrabold text-xl"}>경기도 버스 조회</p>
+          <SearchBusRoute setSelectedRoute={setSelectedRoute} />
+          {selectedRoute && (
+            <SelectRouteStation
+              route={selectedRoute}
+              setSelectedRouteStation={setSelectedRouteStation}
+            />
+          )}
+          <BusLiveInfoCard routeStation={selectedRouteStation} />
+        </div>
       </section>
     </div>
   )

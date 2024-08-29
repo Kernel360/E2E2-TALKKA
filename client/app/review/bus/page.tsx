@@ -160,31 +160,37 @@ export default function BusReviewPage() {
   return (
     <div className={"flex flex-col items-center gap-y-5 my-5"}>
       <p className={"font-extrabold text-xl"}>경기도 버스 조회</p>
-      <SearchBusRoute
-        onRouteSelect={setRouteId}
-        busRouteList={routes}
-        searchKeyword={searchKeyword}
-        setSearchKeyword={setSearchKeyword}
-      />
-      {selectedRoute && <BusCard busRoute={selectedRoute} />}
-      {routeId && (
-        <SelectRouteStation
-          routeStations={routeStations}
-          setStationId={setStationId}
+      <div
+        className={
+          "border rounded-xl p-5 bg-slate-50 w-[300px] min-h-[300px] flex flex-col items-center justify-center gap-y-5"
+        }
+      >
+        <SearchBusRoute
+          onRouteSelect={setRouteId}
+          busRouteList={routes}
+          searchKeyword={searchKeyword}
+          setSearchKeyword={setSearchKeyword}
         />
-      )}
-      {!routeId && <div>버스 노선을 선택해주세요.</div>}
-      {routeId && <SelectTimeSlots setTimeSlot={setTimeSlot} />}
-      {reviews && <BusReviewListContainer reviews={reviews} />}
-      {routeId && stationId && timeSlot && (
-        <CreateBusReview
-          rating={rating}
-          setRating={setRating}
-          content={content}
-          setContent={setContent}
-          fetchPostReview={fetchPostReview}
-        />
-      )}
+        {selectedRoute && <BusCard busRoute={selectedRoute} />}
+        {routeId && (
+          <SelectRouteStation
+            routeStations={routeStations}
+            setStationId={setStationId}
+          />
+        )}
+        {!routeId && <div>버스 노선을 선택해주세요.</div>}
+        {routeId && <SelectTimeSlots setTimeSlot={setTimeSlot} />}
+        {reviews && <BusReviewListContainer reviews={reviews} />}
+        {routeId && stationId && timeSlot && (
+          <CreateBusReview
+            rating={rating}
+            setRating={setRating}
+            content={content}
+            setContent={setContent}
+            fetchPostReview={fetchPostReview}
+          />
+        )}
+      </div>
     </div>
   )
 }

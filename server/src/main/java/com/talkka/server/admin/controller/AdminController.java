@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.talkka.server.admin.service.AdminService;
 import com.talkka.server.admin.service.CollectBusRouteService;
+import com.talkka.server.admin.service.PublicApiKeyService;
 import com.talkka.server.user.service.UserService;
 
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,7 @@ public class AdminController {
 	private final AdminService adminService;
 	private final UserService userService;
 	private final CollectBusRouteService collectBusRouteService;
-	// private final PublicApiKeyService publicApiKeyService;
-	// private final PublicApiKeyService publicApiKeyService;
+	private final PublicApiKeyService publicApiKeyService;
 	// private final DynamicSchedulingConfig dynamicSchedulingConfig;
 
 	@GetMapping("")
@@ -51,11 +51,11 @@ public class AdminController {
 		return "admin/collect";
 	}
 
-	// @GetMapping("/key")
-	// public String publicApiKey(Model model) {
-	// 	model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
-	// 	return "admin/key";
-	// }
+	@GetMapping("/key")
+	public String publicApiKey(Model model) {
+		model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
+		return "admin/key";
+	}
 	//
 	// @GetMapping("/scheduler")
 	// public String scheduler(Model model) {

@@ -17,8 +17,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.talkka.server.api.core.config.ApiKeyProvider;
 import com.talkka.server.api.core.exception.ApiClientException;
-import com.talkka.server.api.datagg.config.BusApiKeyProperty;
 import com.talkka.server.api.datagg.dto.BusArrivalBodyDto;
 import com.talkka.server.api.datagg.dto.BusArrivalRespDto;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SimpleBusApiService implements BusApiService {
 	private static final Logger log = LoggerFactory.getLogger(SimpleBusApiService.class);
-	private final BusApiKeyProperty busApiKeyProperty;
+	private final ApiKeyProvider apiKeyProvider;
 	private final RestTemplate restTemplate = new RestTemplate();
 	private static final String host = "apis.data.go.kr";
 
@@ -100,8 +100,7 @@ public class SimpleBusApiService implements BusApiService {
 		params.add("routeId", apiRouteId);
 		params.add("stationId", apiStationId);
 		try {
-			URI uri = this.getOpenApiUri(path, params);
-			ResponseEntity<BusArrivalRespDto> resp = restTemplate.getForEntity(uri, BusArrivalRespDto.class);
+			ResponseEntity<BusArrivalRespDto> resp = apiCallWithRetry(path, params, BusArrivalRespDto.class);
 			var body = resp.getBody().msgBody();
 			if (body == null || body.isEmpty()) {
 				return Optional.empty();
@@ -119,7 +118,7 @@ public class SimpleBusApiService implements BusApiService {
 			.scheme("https")
 			.host(host)
 			.path(path)
-			.queryParam("serviceKey", this.busApiKeyProperty.getApiKey())
+			.queryParam("serviceKey", this.apiKeyProvider.getApiKey(path))
 			.queryParams(params)
 			.build();
 	}
@@ -144,9 +143,9 @@ public class SimpleBusApiService implements BusApiService {
 
 		// 재시도마다 새로운 api key 로 시도
 		// 파싱 실패시 RestClientException 터트림
+		URI uri = this.getOpenApiUri(path, params);
 		return retryTemplate.execute(context -> {
 			// 재시도마다 새로운 api key 로 시도
-			URI uri = this.getOpenApiUri(path, params);
 			return restTemplate.getForEntity(uri, type); // 파싱 실패시 RestClientException 터트림
 		});
 	}
