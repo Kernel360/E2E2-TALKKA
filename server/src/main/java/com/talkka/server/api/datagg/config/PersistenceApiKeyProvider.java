@@ -1,4 +1,4 @@
-package com.talkka.server.admin.config;
+package com.talkka.server.api.datagg.config;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.talkka.server.admin.dao.PublicApiKeyEntity;
 import com.talkka.server.admin.dao.PublicApiKeyRepository;
+import com.talkka.server.api.core.config.ApiKeyProvider;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;

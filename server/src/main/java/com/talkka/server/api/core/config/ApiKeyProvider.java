@@ -1,4 +1,4 @@
-package com.talkka.server.admin.config;
+package com.talkka.server.api.core.config;
 
 public interface ApiKeyProvider {
 	String getApiKey();

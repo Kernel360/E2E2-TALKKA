@@ -1,9 +1,11 @@
-package com.talkka.server.admin.config;
+package com.talkka.server.api.datagg.config;
 
 import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
+
+import com.talkka.server.api.core.config.ApiKeyProvider;
 
 import lombok.Getter;
 import lombok.Setter;
