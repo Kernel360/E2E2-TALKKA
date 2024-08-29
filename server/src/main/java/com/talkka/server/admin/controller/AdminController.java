@@ -50,9 +50,9 @@ public class AdminController {
 		return "admin/collect";
 	}
 
-	@GetMapping("/key")
-	public String publicApiKey(Model model) {
-		model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
-		return "admin/key";
-	}
+	// @GetMapping("/key")
+	// public String publicApiKey(Model model) {
+	// 	model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
+	// 	return "admin/key";
+	// }
 }
