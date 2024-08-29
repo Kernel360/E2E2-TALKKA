@@ -1,6 +1,6 @@
 import { components } from "@/api/v1"
 
-import BusLiveInfoCard from "@/app/bookmark/components/BusLiveInfoCard"
+import BusLiveInfoCard from "@/components/bus/BusLiveInfoCard"
 
 type BookmarkDetailResp = components["schemas"]["BookmarkDetailRespDto"]
 
