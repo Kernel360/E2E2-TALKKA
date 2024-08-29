@@ -163,6 +163,29 @@ LOAD DATA INFILE '/var/lib/mysql-files/bus_location.csv'
     FIELDS TERMINATED BY ','
     ENCLOSED BY '"'
     LINES TERMINATED BY '\n'
-    IGNORE 1 LINES
+--     IGNORE 1 LINES
     (bus_location_id, api_route_id, api_station_id, station_seq, end_bus, low_plate, plate_no, plate_type,
      remain_seat_count, created_at);
+
+-- 1. 버스별 운행 정보 삽입
+-- 2. CSV 데이터 로드 (임시 테이블에)
+-- 헤더가 있는 경우 IGNORE 1 LINES 활성화
+LOAD DATA INFILE '/var/lib/mysql-files/bus_plate_statistic.csv'
+    INTO TABLE bus_plate_statistic
+    FIELDS TERMINATED BY ','
+    ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+#     IGNORE 1 LINES
+    (end_time, start_time, epoch_day, id, route_id, plate_no, plate_type);
+
+-- 1. 버스 좌석 정보 데이터 삽입
+-- 2. CSV 데이터 로드 (임시 테이블에)
+-- 헤더가 있는 경우 IGNORE 1 LINES 활성화
+LOAD DATA INFILE '/var/lib/mysql-files/bus_remain_seat.csv'
+    INTO TABLE bus_remain_seat
+    FIELDS TERMINATED BY ','
+    ENCLOSED BY '"'
+    LINES TERMINATED BY '\n'
+#     IGNORE 1 LINES
+    (empty_seat, plate_type, station_seq, time, created_at, epoch_day, id, plate_statistic_id, route_id, station_id,
+     plate_no);

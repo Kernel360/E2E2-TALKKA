@@ -15,7 +15,7 @@ export default function MyPage() {
     <div className={""}>
       <section
         className="container flex flex-col items-center justify-center pb-8 pt-6 md:py-10 min-h-full
-      gap-y-5 w-[300px]"
+      gap-y-5 w-[100%]"
       >
         <ModifyContainer />
       </section>
