@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Collect Bus Routes</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand btn btn-outline-primary" href="/admin">대시보드</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Collected Bus Routes</h1>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" role="alert">
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <!-- 숫자 입력칸과 버튼 -->
+    <div class="mb-3 d-flex justify-content-center">
+        <input type="number" id="routeId" class="form-control w-25" placeholder="Enter route number">
+        <button class="btn btn-primary ms-2" onclick="sendCollectRequest()">Collect Route</button>
+    </div>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Route ID</th>
+            <th>Route Name</th>
+            <th>Created At</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="route, iter : ${collectRoutes}">
+            <td th:text="${iter.index + 1}"></td>
+            <td th:text="${route.routeRespDto.routeId}"></td>
+            <td th:text="${route.routeRespDto.routeName}"></td>
+            <td th:text="${route.createdAt}"></td>
+            <td>
+                <button class="btn btn-danger" th:onclick="deleteCollectRoute([[${route.id}]]);">Delete</button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript to handle requests -->
+<script>
+    function sendCollectRequest() {
+        const routeId = document.getElementById('routeId').value;
+
+        if (!routeId) {
+            alert('경로 번호를 입력하세요.');
+            return;
+        }
+
+        fetch('/admin/api/collect', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({routeId: routeId})
+        })
+            .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('경로 수집에 실패했습니다. 다시 시도해 주세요.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+            });
+    }
+
+    function deleteCollectRoute(collectRouteId) {
+        if (confirm('이 경로를 삭제하시겠습니까?')) {
+            fetch('/admin/api/collect' + '/' + collectRouteId, {
+                method: 'DELETE'
+            })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        alert('경로 삭제에 실패했습니다. 다시 시도해 주세요.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('오류가 발생했습니다. 나중에 다시 시도해 주세요.');
+                });
+        }
+    }
+</script>
+
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
