@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 
 import com.talkka.server.bus.dto.BusLiveInfoRespDto;
 import com.talkka.server.common.dto.ErrorRespDto;
+import com.talkka.server.common.enums.TimeSlot;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,5 +25,9 @@ public interface BusLiveInfoApi {
 	})
 	ResponseEntity<?> getBusLiveInfo(
 		@Parameter(description = "노선 정류장 ID", required = true)
-		Long routeStationId);
+		Long routeStationId,
+		@Parameter(description = "시간대", required = true, schema = @Schema(implementation = TimeSlot.class))
+		String timeSlot,
+		@Parameter(description = "주차", required = true)
+		Long week);
 }

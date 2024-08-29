@@ -85,7 +85,7 @@ export default function EditBookmark({
     <div
       className={`
       border rounded-xl p-5 bg-slate-50
-      flex flex-col w-[300px] items-center justify-center gap-y-5 `}
+      flex flex-col w-[100%] items-center justify-center gap-y-5 `}
     >
       {details &&
         details.map((detail, index) => (
@@ -97,7 +97,7 @@ export default function EditBookmark({
             />
           </>
         ))}
-      <div className={"flex flex-col items-center justify-center w-[250px]"}>
+      <div className={"flex flex-col items-center justify-center w-[80%]"}>
         {!addMode && (
           <Badge
             className={`bg-emerald-500 hover:bg-emerald-400 cursor-pointer`}
@@ -119,7 +119,7 @@ export default function EditBookmark({
               stationName={selectedRouteStation?.stationName}
             />
             <SearchBusRoute
-              className={`w-[230px]`}
+              className={`w-[80%]`}
               setSelectedRoute={setSelectedRoute}
             />
             {selectedRoute && (

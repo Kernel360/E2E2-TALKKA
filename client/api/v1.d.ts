@@ -527,9 +527,6 @@ export interface components {
         UserUpdateReqDto: {
             nickname: string;
         };
-        ErrorRespDto: {
-            message: string;
-        };
         /** @description 유저 정보 응답 DTO */
         UserRespDto: {
             /** Format: int64 */
@@ -538,6 +535,9 @@ export interface components {
             email: string;
             nickname: string;
             oauthProvider: string;
+        };
+        ErrorRespDto: {
+            message: string;
         };
         SubwayReviewReqDto: {
             /** Format: int64 */
@@ -768,6 +768,10 @@ export interface components {
             /** Format: int32 */
             remainSeatCnt2: number;
             /** @enum {string} */
+            plateType1: "UNKNOWN" | "SMALL" | "MEDIUM" | "LARGE" | "DOUBLE_DECKER";
+            /** @enum {string} */
+            plateType2: "UNKNOWN" | "SMALL" | "MEDIUM" | "LARGE" | "DOUBLE_DECKER";
+            /** @enum {string} */
             flag: "RUN" | "PASS" | "STOP" | "WAIT" | "UNKNOWN";
         };
         BusLiveInfoRespDto: {
@@ -777,6 +781,8 @@ export interface components {
             routeStation: components["schemas"]["BusRouteStationRespDto"];
             arrivalInfo?: components["schemas"]["BusArrivalRespDto"];
             statics?: components["schemas"]["BusStaticsDto"];
+            /** Format: int32 */
+            predictSeatsNow?: number;
         };
     };
     responses: never;
@@ -1930,7 +1936,12 @@ export interface operations {
     };
     getBusLiveInfo: {
         parameters: {
-            query?: never;
+            query: {
+                /** @description 시간대 */
+                timeSlot: "T_00_00" | "T_00_30" | "T_01_00" | "T_01_30" | "T_02_00" | "T_02_30" | "T_03_00" | "T_03_30" | "T_04_00" | "T_04_30" | "T_05_00" | "T_05_30" | "T_06_00" | "T_06_30" | "T_07_00" | "T_07_30" | "T_08_00" | "T_08_30" | "T_09_00" | "T_09_30" | "T_10_00" | "T_10_30" | "T_11_00" | "T_11_30" | "T_12_00" | "T_12_30" | "T_13_00" | "T_13_30" | "T_14_00" | "T_14_30" | "T_15_00" | "T_15_30" | "T_16_00" | "T_16_30" | "T_17_00" | "T_17_30" | "T_18_00" | "T_18_30" | "T_19_00" | "T_19_30" | "T_20_00" | "T_20_30" | "T_21_00" | "T_21_30" | "T_22_00" | "T_22_30" | "T_23_00" | "T_23_30";
+                /** @description 주차 */
+                week: number;
+            };
             header?: never;
             path: {
                 /** @description 노선 정류장 ID */

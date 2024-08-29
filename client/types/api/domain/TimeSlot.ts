@@ -170,6 +170,14 @@ export function getStringTimeSlot(timeSlot: TimeSlot) {
   return timeSlot.replace("T_", "").replace("_", ":")
 }
 
+export function dateToTimeSlot(date: Date): TimeSlot {
+  const hour = date.getHours()
+  const minute = date.getMinutes()
+  const minuteSlot = minute < 30 ? "00" : "30"
+  const hourSlot = hour < 10 ? `0${hour}` : `${hour}`
+  return `T_${hourSlot}_${minuteSlot}` as TimeSlot
+}
+
 export function getNextSlot(timeSlot: TimeSlot): TimeSlot {
   const validTimeSlots: TimeSlot[] = getValidTimeSlots()
   const currentIndex = validTimeSlots.indexOf(timeSlot)

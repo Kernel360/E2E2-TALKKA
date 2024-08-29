@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react"
 import useClient from "@/api/useClient"
 import { components } from "@/api/v1"
 
+import { TimeSlot, dateToTimeSlot } from "@/types/api/domain/TimeSlot"
 import {
   Card,
   CardContent,
@@ -11,6 +12,8 @@ import {
 } from "@/components/ui/card"
 import ArrivalInfo from "@/components/bus/ArrivalInfo"
 import BusSeatStatics from "@/components/bus/BusSeatStatics"
+import SelectTimeSlots from "@/components/bus/SelectTimeSlots"
+import SelectWeek from "@/components/bus/SelectWeek"
 
 type RouteStation = components["schemas"]["BusRouteStationRespDto"]
 type BusLiveInfoResp = components["schemas"]["BusLiveInfoRespDto"]
@@ -24,6 +27,10 @@ export default function BusLiveInfoCard({
   const [liveInfo, setLiveInfo] = useState<BusLiveInfoResp | undefined>(
     undefined
   )
+  const [timeSlot, setTimeSlot] = useState<TimeSlot>(
+    dateToTimeSlot(new Date(Date.now()))
+  )
+  const [week, setWeek] = useState<number>(1)
   const client = useClient()
 
   const fetchLiveInfos = useCallback(async () => {
@@ -35,6 +42,10 @@ export default function BusLiveInfoCard({
         path: {
           routeStationId: busRouteStationId,
         },
+        query: {
+          timeSlot: timeSlot,
+          week: week,
+        },
       },
     })
     if (error) {
@@ -44,15 +55,21 @@ export default function BusLiveInfoCard({
     if (data) {
       setLiveInfo(data)
     }
-  }, [busRouteStationId])
+  }, [busRouteStationId, timeSlot, week])
 
   useEffect(() => {
     fetchLiveInfos()
-  }, [busRouteStationId])
+  }, [busRouteStationId, timeSlot, week])
 
   return (
-    <div>
-      <Card className={`w-[280px] pb-5 text-center`}>
+    <div className={`flex flex-col gap-y-2 w-[100%]`}>
+      {routeStation && (
+        <div className={`w-[100%] flex flex-row`}>
+          <SelectTimeSlots setTimeSlot={setTimeSlot} />
+          <SelectWeek setWeek={setWeek} />
+        </div>
+      )}
+      <Card className={`w-[100%] pb-5 text-center`}>
         {routeStation && (
           <div className={"flex flex-col items-center justify-center gap-y-2"}>
             <div className={"font-extrabold pt-4"}>버스 정보</div>
@@ -69,11 +86,15 @@ export default function BusLiveInfoCard({
                       locationNo={liveInfo.arrivalInfo.locationNo1}
                       predictTime={liveInfo.arrivalInfo.predictTime1}
                       seats={liveInfo.arrivalInfo.remainSeatCnt1}
+                      predictSeat={liveInfo.predictSeatsNow}
+                      plateType={liveInfo.arrivalInfo.plateType1}
                     />
                     <ArrivalInfo
                       locationNo={liveInfo.arrivalInfo.locationNo2}
                       predictTime={liveInfo.arrivalInfo.predictTime2}
                       seats={liveInfo.arrivalInfo.remainSeatCnt2}
+                      plateType={liveInfo.arrivalInfo.plateType2}
+                      predictSeat={undefined}
                     />
                   </>
                 )}

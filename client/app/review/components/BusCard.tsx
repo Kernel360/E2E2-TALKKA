@@ -15,7 +15,7 @@ interface BusCardProps {
 export default function BusCard({ busRoute }: BusCardProps) {
   if (busRoute == null) return <></>
   return (
-    <Card className={`w-[300px] bg-slate-50 text-center`}>
+    <Card className={`w-[100%] text-center`}>
       {/* 가운데 정렬*/}
       <div className={"font-extrabold pt-4"}>버스 정보</div>
       <CardHeader>

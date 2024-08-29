@@ -19,7 +19,7 @@ export default function SelectTimeSlots({ setTimeSlot }: TimeSlotSelectProps) {
   const timeSlots: TimeSlot[] = getValidTimeSlots()
 
   return (
-    <div className={`w-[300px]`}>
+    <div className={`w-[100%]`}>
       <Select
         onValueChange={(value) => {
           if (value == "none") {
@@ -32,7 +32,7 @@ export default function SelectTimeSlots({ setTimeSlot }: TimeSlotSelectProps) {
         <SelectTrigger>
           <SelectValue placeholder={"시간대 선택"} />
         </SelectTrigger>
-        <SelectContent className={"w-[300px]"}>
+        <SelectContent className={"w-[100%]"}>
           <SelectItem value={"none"} key={"none"}>
             {"선택안함"}
           </SelectItem>

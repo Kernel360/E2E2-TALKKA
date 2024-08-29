@@ -1,5 +1,7 @@
 package com.talkka.server.common.enums;
 
+import java.time.LocalDateTime;
+
 import com.talkka.server.common.exception.enums.InvalidTimeSlotEnumException;
 
 public enum TimeSlot {
@@ -61,5 +63,27 @@ public enum TimeSlot {
 		} catch (IllegalArgumentException exception) {
 			throw new InvalidTimeSlotEnumException();
 		}
+	}
+
+	public static TimeSlot of(LocalDateTime time) {
+		int hour = time.getHour();
+		int minute = time.getMinute();
+		if (minute < 30) {
+			return TimeSlot.valueOf("T_" + String.format("%02d", hour) + "_00");
+		} else {
+			return TimeSlot.valueOf("T_" + String.format("%02d", hour) + "_30");
+		}
+	}
+
+	public LocalDateTime getDateTime() {
+		String[] time = this.name().substring(2).split("_");
+		LocalDateTime now = LocalDateTime.now();
+		int year = now.getYear();
+		int month = now.getMonthValue();
+		int day = now.getDayOfMonth();
+		int hour = Integer.parseInt(time[0]);
+		int minute = Integer.parseInt(time[1]);
+
+		return LocalDateTime.of(year, month, day, hour, minute);
 	}
 }
