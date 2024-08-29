@@ -64,7 +64,7 @@ export default function PathPage() {
 
   useEffect(() => {
     if (!isLogined) {
-      redirect("/logout")
+      redirect("/login")
       return
     }
   }, [])
@@ -74,7 +74,7 @@ export default function PathPage() {
     setRefreshMode(true)
   }
   if (!isLogined) {
-    redirect("/logout")
+    redirect("/login")
     return null
   }
 
