@@ -17,8 +17,8 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.talkka.server.api.core.config.ApiKeyProvider;
 import com.talkka.server.api.core.exception.ApiClientException;
-import com.talkka.server.api.datagg.config.BusApiKeyProperty;
 import com.talkka.server.api.datagg.dto.BusArrivalBodyDto;
 import com.talkka.server.api.datagg.dto.BusArrivalRespDto;
 import com.talkka.server.api.datagg.dto.BusLocationBodyDto;
@@ -36,7 +36,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class SimpleBusApiService implements BusApiService {
 	private static final Logger log = LoggerFactory.getLogger(SimpleBusApiService.class);
-	private final BusApiKeyProperty busApiKeyProperty;
+	private final ApiKeyProvider apiKeyProvider;
 	private final RestTemplate restTemplate = new RestTemplate();
 	private static final String host = "apis.data.go.kr";
 
@@ -119,7 +119,7 @@ public class SimpleBusApiService implements BusApiService {
 			.scheme("https")
 			.host(host)
 			.path(path)
-			.queryParam("serviceKey", this.busApiKeyProperty.getApiKey())
+			.queryParam("serviceKey", this.apiKeyProvider.getApiKey())
 			.queryParams(params)
 			.build();
 	}
