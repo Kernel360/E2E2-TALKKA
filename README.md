@@ -185,8 +185,7 @@
 <br>
 
 ## ERD
-![talkka_db-db](https://github.com/user-attachments/assets/8f007638-f4b9-4b0f-a623-280a88329ebd)
-
+![erd](https://github.com/user-attachments/assets/ebca9fc2-3a5a-4d06-b601-bcbd14a88e63)
 
 ## 기술 스택
 ### BE
