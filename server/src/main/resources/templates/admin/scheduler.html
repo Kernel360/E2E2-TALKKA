@@ -72,7 +72,9 @@
                         cronInput.readOnly = true;
                         editBtn.textContent = 'Edit';
                     } else {
-                        alert('Failed to update the scheduler. Please try again.');
+                        return response.text().then(error => {
+                            alert(error);
+                        });
                     }
                 })
                 .catch(error => {
