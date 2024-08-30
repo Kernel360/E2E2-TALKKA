@@ -1,10 +1,13 @@
 package com.talkka.server.admin.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.talkka.server.admin.scheduler.DynamicSchedulingConfig;
 import com.talkka.server.admin.service.AdminService;
 import com.talkka.server.admin.service.CollectBusRouteService;
 import com.talkka.server.admin.service.PublicApiKeyService;
@@ -20,7 +23,9 @@ public class AdminController {
 	private final UserService userService;
 	private final CollectBusRouteService collectBusRouteService;
 	private final PublicApiKeyService publicApiKeyService;
-	// private final DynamicSchedulingConfig dynamicSchedulingConfig;
+	@Lazy
+	@Autowired
+	private DynamicSchedulingConfig dynamicSchedulingConfig;
 
 	@GetMapping("")
 	public String index() {
@@ -56,11 +61,11 @@ public class AdminController {
 		model.addAttribute("apiKeys", publicApiKeyService.getKeyList());
 		return "admin/key";
 	}
-	//
-	// @GetMapping("/scheduler")
-	// public String scheduler(Model model) {
-	// 	var schedulers = dynamicSchedulingConfig.getSchedulers();
-	// 	model.addAttribute("schedulers", schedulers);
-	// 	return "admin/scheduler";
-	// }
+
+	@GetMapping("/scheduler")
+	public String scheduler(Model model) {
+		var schedulers = dynamicSchedulingConfig.getSchedulers();
+		model.addAttribute("schedulers", schedulers);
+		return "admin/scheduler";
+	}
 }
