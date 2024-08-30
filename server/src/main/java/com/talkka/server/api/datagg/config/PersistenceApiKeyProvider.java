@@ -6,11 +6,11 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.springframework.context.annotation.Primary;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.talkka.server.admin.dao.PublicApiKeyEntity;
 import com.talkka.server.admin.dao.PublicApiKeyRepository;
+import com.talkka.server.admin.scheduler.DynamicScheduled;
 import com.talkka.server.api.core.config.ApiKeyProvider;
 import com.talkka.server.api.core.exception.ApiClientException;
 
@@ -47,7 +47,7 @@ public class PersistenceApiKeyProvider implements ApiKeyProvider {
 
 	// 매일 자정에 키 사용량 리셋
 	@PostConstruct
-	@Scheduled(cron = "0 0 0 * * *")
+	@DynamicScheduled(name = "Api Key Usage Reset", cron = "0 0 0 * * *")
 	public void init() {
 		rollingKeyIndex = 0;
 		keyList.clear();
