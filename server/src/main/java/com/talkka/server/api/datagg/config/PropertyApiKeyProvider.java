@@ -12,6 +12,7 @@ import lombok.Setter;
 
 @Getter
 @Component
+// @Primary
 @ConfigurationProperties(prefix = "openapi.public.bus.service-key")
 public class PropertyApiKeyProvider implements ApiKeyProvider {
 	@Setter
