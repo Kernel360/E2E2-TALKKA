@@ -24,4 +24,12 @@ public class BusLocationService {
 			.toList();
 		busLocationRepository.saveAll(entityList);
 	}
+
+	public List<BusLocationEntity> findAll() {
+		return busLocationRepository.findAll();
+	}
+
+	public List<BusLocationEntity> findByPeriod(LocalDateTime start, LocalDateTime end) {
+		return busLocationRepository.findByCreatedAtBetween(start, end);
+	}
 }
