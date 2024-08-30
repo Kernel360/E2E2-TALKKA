@@ -2,7 +2,6 @@ package com.talkka.server.admin.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.stereotype.Service;
 
@@ -27,9 +26,15 @@ public class AdminService {
 	private final BusRouteStationRepository busRouteStationRepository;
 
 	public List<BookmarkStatRespDto> getBookmarkStats() throws BusRouteStationNotFoundException {
-		Map<Long, Integer> map = bookmarkDetailRepository.countGroupedByBusRouteStationId();
+		// List<Object[]>로 쿼리 결과를 받음
+		List<Object[]> results = bookmarkDetailRepository.countGroupedByBusRouteStationId();
+
 		List<BookmarkStatRespDto> result = new ArrayList<>();
-		for (Long key : map.keySet()) {
+
+		// 결과를 순회하며 처리
+		for (Object[] row : results) {
+			Long key = (Long)row[0];  // routeStation.id
+			Integer count = ((Number)row[1]).intValue();  // COUNT(b)를 Integer로 변환
 			var busRouteStation = busRouteStationRepository.findById(key);
 			if (busRouteStation.isEmpty()) {
 				log.warn("등록되지 않은 노선-정거장 입니다 : {}", key);
@@ -38,18 +43,25 @@ public class AdminService {
 			result.add(
 				new BookmarkStatRespDto(
 					BusRouteStationRespDto.of(busRouteStation.get()),
-					map.get(key)
+					count
 				)
 			);
 		}
-		result.sort((r1, r2) -> r2.count() - r1.count()); // count 로 오름차순 정렬
+
+		// count로 오름차순 정렬
+		result.sort((r1, r2) -> r2.count() - r1.count());
 		return result;
 	}
 
 	public List<BusReviewStatRespDto> getBusReviewStats() {
-		Map<Long, Integer> map = busReviewRepository.countGroupedByBusRouteStationId();
+		// List<Object[]>로 쿼리 결과를 받음
+		List<Object[]> results = busReviewRepository.countGroupedByBusRouteStationId();
 		List<BusReviewStatRespDto> result = new ArrayList<>();
-		for (Long key : map.keySet()) {
+
+		// 결과를 순회하며 처리
+		for (Object[] row : results) {
+			Long key = (Long)row[0];  // routeStation.id
+			Integer count = ((Number)row[1]).intValue();  // COUNT(b)를 Integer로 변환
 			var busRouteStation = busRouteStationRepository.findById(key);
 			if (busRouteStation.isEmpty()) {
 				log.warn("등록되지 않은 노선-정거장 입니다 : {}", key);
@@ -58,11 +70,13 @@ public class AdminService {
 			result.add(
 				new BusReviewStatRespDto(
 					BusRouteStationRespDto.of(busRouteStation.get()),
-					map.get(key)
+					count
 				)
 			);
 		}
-		result.sort((r1, r2) -> r2.count() - r1.count()); // count 로 오름차순 정렬
+
+		// count로 오름차순 정렬
+		result.sort((r1, r2) -> r2.count() - r1.count());
 		return result;
 	}
 }
