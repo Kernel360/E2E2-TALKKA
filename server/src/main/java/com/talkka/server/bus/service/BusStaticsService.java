@@ -13,6 +13,8 @@ import com.talkka.server.bus.dao.BusRouteStationEntity;
 import com.talkka.server.bus.dao.BusRouteStationRepository;
 import com.talkka.server.bus.dto.BusStaticsDto;
 import com.talkka.server.bus.exception.BusRouteNotFoundException;
+import com.talkka.server.bus.util.StaticsCache;
+import com.talkka.server.bus.util.StaticsCacheKey;
 
 import lombok.RequiredArgsConstructor;
 
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class BusStaticsService {
 	private final BusRemainSeatRepository busRemainSeatRepository;
 	private final BusRouteStationRepository busRouteStationRepository;
+	private final StaticsCache staticsCache;
 
 	/**
 	 * 버스 경로 정보를 조회합니다.
@@ -43,6 +46,11 @@ public class BusStaticsService {
 		Long week
 	) {
 		// 타겟 노선정거장 조회
+		var key = new StaticsCacheKey(routeStationId, stationNum, time, timeRangeMinute, week);
+		if (staticsCache.get(key).isPresent()) {
+			return staticsCache.get(key).get();
+		}
+
 		var routeStation = busRouteStationRepository.findById(routeStationId)
 			.orElseThrow(() -> new BusRouteNotFoundException(routeStationId));
 		Long routeId = routeStation.getRoute().getId();
@@ -82,6 +90,8 @@ public class BusStaticsService {
 				)
 			);
 		}
+
+		staticsCache.put(key, new BusStaticsDto(time, routeStationList, data));
 		return new BusStaticsDto(
 			time,
 			routeStationList,
