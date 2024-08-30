@@ -13,10 +13,12 @@ import com.talkka.server.admin.exception.SchedulerNotFoundException;
 import com.talkka.server.admin.scheduler.DynamicSchedulingConfig;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/admin/api/scheduler")
+@Slf4j
 public class SchedulerController {
 	@Lazy
 	@Autowired
@@ -28,6 +30,7 @@ public class SchedulerController {
 		try {
 			dynamicSchedulingConfig.updateCronExpression(dto);
 		} catch (SchedulerNotFoundException exception) {
+			log.error(exception.getMessage());
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}
 		return ResponseEntity.ok().build();
