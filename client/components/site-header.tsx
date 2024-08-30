@@ -5,10 +5,6 @@ import { siteConfig } from "@/config/site"
 import { cn } from "@/lib/utils"
 import { MainNav } from "@/components/main-nav"
 
-
-
-
-
 export function SiteHeader() {
   const cookieStore = cookies()
   const sessionId = cookieStore.get("JSESSIONID")
@@ -16,7 +12,7 @@ export function SiteHeader() {
   console.log("isLogin", isLogin)
   return (
     <header className="bg-background sticky top-0 z-40 w-full border-b">
-      <div className="container flex h-16 items-center space-x-4 justify-between sm:space-x-0 w-full text-xs sm:text-sm">
+      <div className="container flex h-16 items-center space-x-4 justify-between sm:space-x-0 w-full text-sm">
         <MainNav items={siteConfig.mainNav} />
         <div className="flex flex-wrap items-end">
           {isLogin === false ? (

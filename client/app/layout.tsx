@@ -23,6 +23,7 @@ export const metadata: Metadata = {
     shortcut: "/favicon-16x16.png",
     apple: "/apple-touch-icon.png",
   },
+  manifest: "/manifest.json",
 }
 
 interface RootLayoutProps {
@@ -33,7 +34,12 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <>
       <html lang="en" suppressHydrationWarning>
-        <head />
+        <head>
+          <meta
+            name="viewport"
+            content="initial-scale=1.0,user-scalable=no,maximum-scale=1,width=device-width"
+          />
+        </head>
         <body
           className={cn(
             "min-h-screen bg-background font-sans antialiased",

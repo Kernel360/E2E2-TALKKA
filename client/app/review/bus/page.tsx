@@ -159,7 +159,7 @@ export default function BusReviewPage() {
 
   return (
     <div className={"flex flex-col items-center gap-y-5 my-5"}>
-      <p className={"font-extrabold text-xl"}>경기도 버스 조회</p>
+      <p className={"font-extrabold text-xl"}>리뷰</p>
       <div
         className={
           "border rounded-xl p-5 bg-slate-50 w-[300px] min-h-[300px] flex flex-col items-center justify-center gap-y-5"

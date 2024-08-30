@@ -27,10 +27,10 @@ export default function CreateBookmark({ setCreateMode }: CreateRouteProps) {
 
   return (
     <div className={""}>
-      <section className="container flex flex-col items-center justify-center p-4 gap-y-5 w-[300px]">
+      <section className="container flex flex-col items-center justify-center p-4 gap-y-5 w-[100%]">
         <div
           className={
-            "w-full flex flex-col gap-2 bg-slate-100 border rounded-xl p-2 items-center justify-center"
+            "w-[100%] flex flex-col gap-2 bg-slate-100 border rounded-xl p-2 items-center justify-center"
           }
         >
           <span className={"font-bold py-2"}>경로명</span>
