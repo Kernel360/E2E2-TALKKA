@@ -1,7 +1,6 @@
 package com.talkka.server.review.dao;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -28,5 +27,5 @@ public interface BusReviewRepository extends JpaRepository<BusReviewEntity, Long
 		TimeSlot timeSlot);
 
 	@Query("SELECT b.station.id AS key, COUNT(b) AS value FROM bus_review b GROUP BY b.station.id HAVING COUNT(b) > 0")
-	Map<Long, Integer> countGroupedByBusRouteStationId();
+	List<Object[]> countGroupedByBusRouteStationId();
 }

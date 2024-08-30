@@ -50,11 +50,12 @@ public class SecurityConfig {
 			.cors(cors -> cors.configurationSource(corsConfigurationSource()))
 			.authorizeHttpRequests(authorize -> authorize
 				.requestMatchers("/api/auth/login/**").permitAll()
+				.requestMatchers("/admin/**").hasAuthority(AuthRole.ADMIN.getName())
 				.requestMatchers("/dev-login").permitAll()    // 개발용 경로, 이후에 삭제
 				.requestMatchers(HttpMethod.GET, "/api/bus/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/subway/**").permitAll()
 				.requestMatchers(HttpMethod.GET, "/api/bus-review/**").permitAll()
-				.requestMatchers("/swagger-ui/**").permitAll()
+				.requestMatchers("/swagger-ui/**").hasAuthority(AuthRole.ADMIN.getName())
 				.requestMatchers("/api-docs/**").permitAll()
 				.anyRequest().authenticated() //.hasAuthority(AuthRole.USER.getName())
 			)
