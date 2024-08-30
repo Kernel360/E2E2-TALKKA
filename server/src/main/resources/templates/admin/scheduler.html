@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Scheduler Management</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+<!-- Navigation bar -->
+<nav class="navbar navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand btn btn-outline-primary" href="/admin">Dashboard</a>
+    </div>
+</nav>
+
+<div class="container mt-5">
+    <h1 class="text-center mb-4">Scheduler Management</h1>
+
+    <table class="table table-striped table-bordered">
+        <thead>
+        <tr>
+            <th>#</th>
+            <th>Scheduler Name</th>
+            <th>Cron Expression</th>
+            <th>Actions</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="scheduler, iter : ${schedulers}">
+            <td th:text="${iter.index + 1}"></td>
+            <td th:text="${scheduler.name}"></td>
+            <td>
+                <input type="text" th:id="'cron_' + ${iter.index}" th:value="${scheduler.cronString}"
+                       class="form-control"
+                       readonly>
+            </td>
+            <td>
+                <button type="button" class="btn btn-primary" th:id="'editBtn_' + ${iter.index}"
+                        th:onclick="toggleEdit([[${iter.index}]])">Edit
+                </button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- JavaScript to handle edit and save requests -->
+<script>
+    function toggleEdit(index) {
+        const cronInput = document.getElementById('cron_' + index);
+        const editBtn = document.getElementById('editBtn_' + index);
+
+        if (cronInput.readOnly) {
+            // Enable the input field for editing
+            cronInput.readOnly = false;
+            editBtn.textContent = 'Submit';
+        } else {
+            // Send the updated cron expression to the server
+            const schedulerName = cronInput.closest('tr').querySelector('td:nth-child(2)').textContent;
+            const newCron = cronInput.value;
+
+            fetch('/admin/api/scheduler', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({name: schedulerName, cronString: newCron})
+            })
+                .then(response => {
+                    if (response.ok) {
+                        cronInput.readOnly = true;
+                        editBtn.textContent = 'Edit';
+                    } else {
+                        alert('Failed to update the scheduler. Please try again.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('An error occurred. Please try again later.');
+                });
+        }
+    }
+</script>
+
+<!-- Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.min.js"></script>
+</body>
+</html>
