@@ -36,7 +36,7 @@ export default function MyPage() {
   }, [])
 
   if (!isLogin) {
-    redirect("/logout")
+    redirect("/login")
     return null
   }
   return (

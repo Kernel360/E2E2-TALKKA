@@ -9,7 +9,7 @@ export default function MyPage() {
 
   // 쿠키가 존재하지 않으면 로그인 페이지로 리다이렉트
   if (!isLogin) {
-    redirect("/logout")
+    redirect("/login")
   }
   return (
     <div className={""}>

@@ -97,7 +97,7 @@ export default function EditBookmark({
             />
           </>
         ))}
-      <div className={"flex flex-col items-center justify-center w-[80%]"}>
+      <div className={"flex flex-col items-center justify-center w-[90%]"}>
         {!addMode && (
           <Badge
             className={`bg-emerald-500 hover:bg-emerald-400 cursor-pointer`}
@@ -111,7 +111,7 @@ export default function EditBookmark({
         {addMode && (
           <div
             className={
-              "flex flex-col items-center justify-center gap-y-5 border p-2 bg-slate-100"
+              "flex flex-col items-center justify-center gap-y-5 border p-2 bg-slate-100 w-[100%]"
             }
           >
             <RouteStationCard
