@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.talkka.server.admin.dto.SchedulerReqDto;
+import com.talkka.server.admin.exception.InvalidCronExpressionException;
 import com.talkka.server.admin.exception.SchedulerNotFoundException;
 import com.talkka.server.admin.scheduler.DynamicSchedulingConfig;
 
@@ -29,7 +30,7 @@ public class SchedulerController {
 	public ResponseEntity<?> updateScheduler(@RequestBody SchedulerReqDto dto) {
 		try {
 			dynamicSchedulingConfig.updateCronExpression(dto);
-		} catch (SchedulerNotFoundException exception) {
+		} catch (SchedulerNotFoundException | InvalidCronExpressionException exception) {
 			log.error(exception.getMessage());
 			return ResponseEntity.badRequest().body(exception.getMessage());
 		}

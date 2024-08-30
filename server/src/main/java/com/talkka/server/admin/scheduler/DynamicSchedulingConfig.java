@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ScheduledFuture;
+import java.util.regex.Pattern;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -19,6 +20,7 @@ import org.springframework.util.ReflectionUtils;
 
 import com.talkka.server.admin.dto.SchedulerReqDto;
 import com.talkka.server.admin.dto.SchedulerRespDto;
+import com.talkka.server.admin.exception.InvalidCronExpressionException;
 import com.talkka.server.admin.exception.SchedulerNotFoundException;
 
 import jakarta.annotation.PostConstruct;
@@ -35,9 +37,10 @@ public class DynamicSchedulingConfig {
 	private final Map<String, Runnable> taskMap = new HashMap<>();
 	private final MultiValueMap<String, ScheduledFuture<?>> scheduledTasks = new LinkedMultiValueMap<>();
 	private final MultiValueMap<String, String> cronMap = new LinkedMultiValueMap<>();
+	private static final String CRON_REGEX = "^([0-5]?\\d|\\*|\\*/\\d+|\\d+-\\d+|\\d+,\\d+)(\\s+([0-5]?\\d|\\*|\\*/\\d+|\\d+-\\d+|\\d+,\\d+)){4}(\\s+([0-7]|\\*|\\*/\\d+|\\d+-\\d+|\\d+,\\d+|\\?))?$";
 
 	@PostConstruct
-	public void init() {
+	public void init() throws InvalidCronExpressionException {
 		registrar = new ScheduledTaskRegistrar();
 		ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
 		taskScheduler.setPoolSize(20);
@@ -60,8 +63,11 @@ public class DynamicSchedulingConfig {
 					Runnable task = () -> ReflectionUtils.invokeMethod(method, bean);
 					taskMap.put(name, task);
 
-					for (String cron : crons) {
-						cron.trim();
+					for (String c : crons) {
+						final String cron = c.trim();
+						if (!validateCronExpression(cron)) {
+							throw new InvalidCronExpressionException(cron);
+						}
 						ScheduledFuture<?> future = registrar.getScheduler()
 							.schedule(task, triggerContext -> new CronTrigger(cron).nextExecution(triggerContext));
 						scheduledTasks.add(name, future);
@@ -80,19 +86,33 @@ public class DynamicSchedulingConfig {
 		return schedulers;
 	}
 
-	public void updateCronExpression(SchedulerReqDto dto) throws SchedulerNotFoundException {
+	public void updateCronExpression(SchedulerReqDto dto) throws
+		SchedulerNotFoundException,
+		InvalidCronExpressionException {
+		List<String> cronList = new ArrayList<>();
+		for (String c : dto.cronString().split("\\|")) {
+			String cron = c.trim();
+			if (!validateCronExpression(cron)) {
+				throw new InvalidCronExpressionException(cron);
+			}
+			cronList.add(cron);
+		}
 		// 현재 해당 메소드의 스케줄링 작업 전부 멈추고 맵에서 삭제
 		scheduledTasks.get(dto.name()).forEach(future -> future.cancel(false));
 		scheduledTasks.remove(dto.name());
+		cronMap.remove(dto.name());
 		// 해당 메소드 가져옴
 		Runnable task = taskMap.get(dto.name());
 		// 크론식마다 스케줄 작업 추가
-		for (String cron : dto.cronString().split("\\|")) {
-			cron.trim();
+		for (String cron : cronList) {
 			ScheduledFuture<?> future = registrar.getScheduler()
 				.schedule(task, triggerContext -> new CronTrigger(cron).nextExecution(triggerContext));
 			scheduledTasks.add(dto.name(), future);
 			cronMap.add(dto.name(), cron);
 		}
+	}
+
+	private boolean validateCronExpression(String cron) {
+		return Pattern.compile(CRON_REGEX).matcher(cron).matches();
 	}
 }
