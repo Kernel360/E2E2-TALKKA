@@ -184,6 +184,10 @@
   - 한개의 작업에 여러개의 크론식 등록 가능 (구분자 "|")
 <br>
 
+## ERD
+![talkka_db-db](https://github.com/user-attachments/assets/8f007638-f4b9-4b0f-a623-280a88329ebd)
+
+
 ## 기술 스택
 ### BE
 - Spring Boot 3.3.2 / Java 17
