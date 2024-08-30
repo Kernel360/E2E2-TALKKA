@@ -134,7 +134,7 @@
 <br>
 
 <kbd>
-  <img width="800" alt="관리자3" src="https://github.com/user-attachments/assets/78a6abc5-e9bd-4153-bdd6-2b8862377247" style:"border : 1px solid black;">
+  <img width="1439" alt="admin북마크" src="https://github.com/user-attachments/assets/9bb7c79f-6e0d-4873-a7fc-7f748305d50c" style:"border : 1px solid black;">
 </kbd>
 
 #### 북마크 통계
@@ -143,7 +143,7 @@
 <br>
 
 <kbd>
-  <img width="800" alt="관리자4" src="https://github.com/user-attachments/assets/8adc4b6e-9218-4db5-be7c-cb2cf68f8650" style:"border : 1px solid black;">
+  <img width="1440" alt="admin리뷰" src="https://github.com/user-attachments/assets/f1c50652-3606-452a-983f-e5ad4b594c80" style:"border : 1px solid black;">
 </kbd>
 
 #### 리뷰 통계
@@ -152,7 +152,7 @@
 <br>
 
 <kbd>
-  <img width="800" alt="관리자5" src="https://github.com/user-attachments/assets/121f2431-3f0e-44ec-a6db-06bffa9d9fa0" style:"border : 1px solid black;">
+  <img width="1440" alt="admin수집노선" src="https://github.com/user-attachments/assets/99678aee-ef82-4cc6-aad2-7639d188a0a4" style:"border : 1px solid black;">
 </kbd>
 
 #### 수집 버스노선 관리
@@ -161,7 +161,7 @@
 <br>
 
 <kbd>
-  <img width="800" alt="관리자6apikey" src="https://github.com/user-attachments/assets/9fe990da-ba8e-4f9f-8124-49c8bb53ed65" style:"border : 1px solid black;">
+  <img width="1369" alt="admin공공api키" src="https://github.com/user-attachments/assets/a905ba96-306f-47b0-8675-172c1da93592" style:"border : 1px solid black;">
 </kbd>
 
 #### 공공 api key 관리
@@ -172,7 +172,7 @@
 <br>
 
 <kbd>
-  <img width="1440" alt="관리자7" src="https://github.com/user-attachments/assets/169f3e18-800c-41f4-9828-a23f939d194d"  style:"border : 1px solid black;">
+  <img width="1440" alt="admin스케줄러" src="https://github.com/user-attachments/assets/76cd0445-8e0e-4ee2-b0bc-1d7afce919c0" style:"border : 1px solid black;">
 </kbd>
 
 #### 스케줄러 관리
