@@ -238,23 +238,21 @@
 
 <img width="600" src="https://github.com/user-attachments/assets/815293f1-1052-4de8-b9f1-7b4a73d45b1c">
 
-### BE
+BE
 
-- Spring Boot 3.3.2 / Java 17
-- Spring Security (with Session & Cookie)
-- Spring Data JPA
-- MySQL 8
+<img src="https://img.shields.io/badge/Java-ED8B00?style=for-the-badge&logo=openjdk&logoColor=white"> <img src="https://img.shields.io/badge/Spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring_Boot-6DB33F?style=for-the-badge&logo=Spring-Boot&logoColor=white"> <img src="https://img.shields.io/badge/Spring_Data_JPA-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/Spring_Security-6DB33F?style=for-the-badge&logo=Spring-Security&logoColor=white"> <br>
 
-### FE
+FE
 
-- Next.js
-- Shadcn
+<img src="https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=next.js&logoColor=white"> <img src="https://img.shields.io/badge/Shadcn-FF4081?style=for-the-badge&logo=shadcn&logoColor=white">
 
-### Infra / System
+DB
 
-- AWS EC2
-- Nginx
-- Docker
+<img src="https://img.shields.io/badge/MySQL-005C84?style=for-the-badge&logo=mysql&logoColor=white"><br>
+
+Infra / System
+
+<img src="https://img.shields.io/badge/AWS_EC2-FF9900?style=for-the-badge&logo=amazon-aws&logoColor=white"> <img src="https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white"> <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white"><br>
 
 ## 외부 API
 
